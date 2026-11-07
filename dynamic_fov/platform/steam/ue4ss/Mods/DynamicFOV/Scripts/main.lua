@@ -10,7 +10,8 @@
 -- closed, a tick asks nothing of the game. Everything runs from the player controller's tick, inside UE4SS's lock
 -- (dynamic_fov_driver.lua).
 -- The colours and the clean image go through the image settings of the camera seen through (dynamic_fov_image.lua),
--- looked at once a second, and at the next tick after a change.
+-- looked at once a second, and at the next tick after a change; the comfort options through four fields of the
+-- camera's modes (dynamic_fov_comfort.lua), the same way.
 -- When the settings are read: dynamic_fov_watch.lua.
 
 local U = require("dynamic_fov_unreal")
@@ -25,8 +26,9 @@ local Driver = require("dynamic_fov_driver")
 local Hotkey = require("dynamic_fov_hotkey")
 local Panel = require("dynamic_fov_panel")
 local Image = require("dynamic_fov_image")
+local Comfort = require("dynamic_fov_comfort")
 
-local VERSION = "1.0.4"
+local VERSION = "1.0.6"
 local TICK_SECONDS = 0.1          -- a tick: the view's place
 local EARLY = 0.001               -- a frame this close to the next tick reaches it: no tick lost to the clock's steps
 local LOOK_TICKS = 10             -- ticks between two looks (settings, menu, modes): once a second
@@ -71,6 +73,7 @@ local function use(s, at_once)
 	end
 	camera.use(s, at_once)
 	Image.want(s.enabled and Settings.colour_factor(s) or nil, s.enabled and s.clean_image)
+	Comfort.want(s)
 end
 use(Settings.resolve({}, function() end))
 
@@ -84,6 +87,7 @@ end, log, warn)
 panel = Panel.new({ log = log, warn = warn, report = function(fmt, ...) T.bounded("panel", fmt, ...) end,
 	problem = function(fmt, ...) T.bounded("panel problem", fmt, ...) end,
 	saving = function(fmt, ...) T.bounded("panel save", fmt, ...) end, settings_path = SETTINGS_PATH,
+	ticks_a_second = LOOK_TICKS,
 	descriptor_path = DESCRIPTOR_PATH, settings = function() return S.settings end,
 	apply = function(s) use(s, true) end, preview = camera.show, camera = camera.camera })
 
@@ -113,6 +117,13 @@ local function look_image()
 	end
 end
 
+-- The camera found by the last look; a toggle in the panel is one write, so its lines are said even while it is open.
+local function look_comfort()
+	local writes, failed = Comfort.look(camera.camera(), function(fmt, ...) T.bounded("comfort", fmt, ...) end,
+		function(fmt, ...) T.bounded("comfort problem", fmt, ...) end)
+	T.comfort_writes, T.comfort_failed = T.comfort_writes + writes, T.comfort_failed + failed
+end
+
 local function look()
 	S.looks = S.looks + 1
 	watch.check()
@@ -121,6 +132,7 @@ local function look()
 	Layer.recheck()
 	camera.look(S.controller)
 	look_image()
+	look_comfort()
 end
 
 -- Not while the panel is open: each step of a slider moves the view, and would use up the lines in a minute.
@@ -153,6 +165,8 @@ local function tick(pc)
 	end
 	if camera.pending() then T.run("panel", camera.tick) end
 	if Image.pending() then T.run("looks", look_image) end
+	-- Before the first camera, the next look takes the change: no look at each tick for nothing.
+	if Comfort.pending() and camera.camera() ~= nil then T.run("looks", look_comfort) end
 	if S.position ~= nil or not Layer.idle() then T.run("ticks", place) end
 end
 
@@ -167,7 +181,7 @@ local function frame_work(param)
 		S.key = S.settings.panel_key
 		Hotkey.want(S.key, log)
 	end
-	local toggles, escapes = Hotkey.take()
+	local toggles, escapes, moves = Hotkey.take()
 	local now = os.clock()
 	local due = now + EARLY >= S.next_tick
 	local busy = toggles > 0 or escapes > 0 or panel.is_open()
@@ -185,7 +199,7 @@ local function frame_work(param)
 		return
 	end
 	S.no_controller = 0
-	if busy then T.run("panel", panel.frame, pc, toggles, escapes) end
+	if busy then T.run("panel", panel.frame, pc, toggles, escapes, moves) end
 	if due then
 		-- On the clock's tenths rather than a tenth after this frame: ten ticks a second whatever the frame rate. After
 		-- a long frame (a load), a tenth from now: no ticks pile up.

@@ -5,15 +5,18 @@
 -- one made for a key that is no longer the panel's does nothing. UE4SS binds see the keyboard only (GetAsyncKeyState).
 -- UE4SS calls a bind only while exactly its modifier keys are held (Handler.cpp): a bind without any does nothing while
 -- Shift is held, the sprint's key. Each key is also bound with each modifier alone (audit of 5 November 2026).
+-- The keys of the open panel (1.0.5): the arrows, Enter and R, bound without modifiers (the character stands still
+-- while the panel is open). Their presses are counted at all times and handed over at each frame by take(), whose
+-- counts only an open panel uses. UE4SS calls a bind at the press only, so a key held steps once.
 
 local M = {}
 
 M.NONE, M.DEFAULT = "None", "F8"
--- The key that opens Mods Menu unless changed there (OpenKey in its main.js, 0.5.3): one press would open both. Mods
+-- The key that opens Mods Menu unless changed there: one press would open both. Mods
 -- Menu's own setting is not read: a player who moves it is told by the help that F9 is its default only.
 M.MODS_MENU = "F9"
 local MODIFIERS = { "SHIFT", "CONTROL", "ALT" }
--- Mods Menu's key names (KEYS in its main.js, 0.5.3: the keys the game leaves free in play and in its menus), and
+-- Mods Menu's key names (the keys the game leaves free in play and in its menus), and
 -- UE4SS's name for the same key (its Key table, LuaMod.cpp).
 M.NAMES = {
 	F1 = "F1", F2 = "F2", F3 = "F3", F4 = "F4", F5 = "F5", F6 = "F6", F7 = "F7", F8 = "F8", F9 = "F9", F12 = "F12",
@@ -23,31 +26,39 @@ M.NAMES = {
 	NumPadNine = "NUM_NINE", Multiply = "MULTIPLY", Add = "ADD", Subtract = "SUBTRACT", Decimal = "DECIMAL",
 	Divide = "DIVIDE", G = "G", H = "H", J = "J", L = "L", N = "N", U = "U", Y = "Y", Zero = "ZERO", Nine = "NINE",
 }
--- How Mods Menu shows a key where its name is not the one shown (KEY_LABELS in its main.js, 0.5.3).
+-- How Mods Menu shows a key where its name is not the one shown.
 local LABELS = { PageUp = "Page Up", PageDown = "Page Down", Multiply = "NumPad *", Add = "NumPad +",
 	Subtract = "NumPad -", Decimal = "NumPad .", Divide = "NumPad /", Zero = "0", Nine = "9" }
 local DIGITS = { Zero = 0, One = 1, Two = 2, Four = 4, Five = 5, Six = 6, Seven = 7, Eight = 8, Nine = 9 }
 local MAX_PENDING = 8             -- presses kept between two frames
+-- The open panel's keys: UE4SS's name, and the count it adds to.
+local MOVES = { UP_ARROW = "up", DOWN_ARROW = "down", LEFT_ARROW = "left", RIGHT_ARROW = "right", RETURN = "enter",
+	R = "restore" }
+local MOVE_COUNTS = { "up", "down", "left", "right", "enter", "restore" }
 
 local SPELLING = { [M.NONE:lower()] = M.NONE }
 for name in pairs(M.NAMES) do SPELLING[name:lower()] = name end
 
 -- bound[name]: whether the key's bind was made; tried once per key, so at most four binds (with the modifiers) per
 -- name above.
-local P = { current = nil, toggle = 0, escape = 0, bound = {}, escape_tried = false }
+local P = { current = nil, toggle = 0, escape = 0, bound = {}, escape_tried = false, moves = {}, any = false,
+	out = {} }
+for _, c in ipairs(MOVE_COUNTS) do P.moves[c] = 0 end
 
 -- The menu's spelling of a key name given in any case, None included; nil for a key the menu does not offer.
 function M.canonical(text)
 	return type(text) == "string" and SPELLING[text:lower()] or nil
 end
 
--- Returns whether the key works, then why not, or what it misses (a modifier this UE4SS refused).
-local function bind(name, fn)
+-- Returns whether the key works, then why not, or what it misses (a modifier this UE4SS refused). alone: no bind
+-- with a modifier.
+local function bind(name, fn, alone)
 	local keys = rawget(_G, "Key")
 	local code = keys and keys[name]
 	if code == nil then return false, "no such key in this UE4SS" end
 	local ok, err = pcall(RegisterKeyBind, code, fn)
 	if not ok then return false, err end
+	if alone then return true, nil end
 	local mods, missed, why = rawget(_G, "ModifierKey"), {}, nil
 	for _, m in ipairs(MODIFIERS) do
 		local okm, errm = false, "no such modifier in this UE4SS"
@@ -77,6 +88,17 @@ function M.want(name, log)
 		elseif err ~= nil then
 			log("Escape closes the panel, %s", err)
 		end
+		local missed = {}
+		for key, c in pairs(MOVES) do
+			local okm = bind(key, function()
+				if P.moves[c] < MAX_PENDING then P.moves[c], P.any = P.moves[c] + 1, true end
+			end, true)
+			if not okm then missed[#missed + 1] = key end
+		end
+		if #missed > 0 then
+			table.sort(missed)
+			log("these keys do nothing in the panel, UE4SS cannot watch them: %s", table.concat(missed, ", "))
+		end
 	end
 	if P.current == nil or P.bound[name] ~= nil then return end
 	local ok, err = bind(M.NAMES[name], function()
@@ -90,11 +112,16 @@ function M.want(name, log)
 	end
 end
 
--- The presses since the last call: the panel key's, then Escape's.
+-- The presses since the last call: the panel key's, Escape's, and those of the open panel's keys (a table used again,
+-- read only; nil when none).
 function M.take()
 	local toggle, escape = P.toggle, P.escape
 	if toggle > 0 or escape > 0 then P.toggle, P.escape = 0, 0 end
-	return toggle, escape
+	if not P.any then return toggle, escape, nil end
+	P.any = false
+	local out = P.out
+	for _, c in ipairs(MOVE_COUNTS) do out[c], P.moves[c] = P.moves[c], 0 end
+	return toggle, escape, out
 end
 
 -- The panel key's name as the menu writes it, or nil for None.

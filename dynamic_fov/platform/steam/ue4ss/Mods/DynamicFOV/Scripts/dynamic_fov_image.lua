@@ -1,8 +1,8 @@
 -- The colours and the clean image (1.0.3), the only part of the mod that writes a camera's image settings. The engine
 -- views through the view target's first active camera component (Unreal 5.7, AActor::CalcCamera), whose settings come
 -- after the places' own: there the general saturation is the camera's own times the profile (it replaces the places'
--- general one, their ranges stay theirs), and the five effects set at 0 (dynamic_fov_image_values.lua). In play that camera is a cinema camera on the player's character; in a cutscene, the
--- cutscene's own. Each camera's own values are kept at the first write and given back when the setting goes back to
+-- general one, their ranges stay theirs), and the five effects set at 0 (dynamic_fov_image_values.lua). In play that
+-- camera is a cinema camera on the player's character; in a cutscene, the cutscene's own. Each camera's own values are kept at the first write and given back when the setting goes back to
 -- the game's, or the mod is off. Looked at once a second (a value the game put back is written again) and at once
 -- after a change. Nothing is asked of the game while the colours are the game's and the image is not cleaned.
 

@@ -1,8 +1,8 @@
 -- Makes the panel's pieces: texts in the menu's fonts, images, the menu's slider, invisible buttons around a text or an
 -- arrow, rows and group titles, from the game's pieces when found (dynamic_fov_panel_pieces.lua). PanelProbe pass 7,
--- verified in game, plus the buttons and the centred values. Everything a piece shows (texture, font, style) is handed
--- to it here, at the build, and held by it from then on: after the build the panel hands the game no object (crashes
--- of PanelProbe passes 4 and 5, 4 November 2026).
+-- verified in game, plus the buttons and the centred values. Everything a piece shows (texture, font, style, a
+-- controller's icon) is handed to it here, at the build, and held by it from then on: after the build the panel hands
+-- the game no object (crashes of PanelProbe passes 4 and 5, 4 November 2026).
 
 local PanelCalls = require("dynamic_fov_panel_calls")
 
@@ -10,10 +10,13 @@ local M = {}
 
 M.VISIBLE, M.COLLAPSED, M.HIT_TEST_INVISIBLE, M.SELF_HIT_TEST_INVISIBLE = 0, 1, 3, 4
 M.LEFT = 0.62                     -- the strip is full from 62% of the screen's width
-M.FILL, M.CENTRE, M.RIGHT = 0, 2, 3   -- EHorizontalAlignment, and EVerticalAlignment for the first two
--- Rows 44 high since the backdrop's row (1.0.3; 52, then 46 with the Image rows): thirteen rows and three group titles
--- fit between 6 % and 95 % of a 1080 screen.
-local ROW_HEIGHT, SLIDER_WIDTH, VALUE_WIDTH, CHOICE_WIDTH, ARROW_SIZE, TEXT_SIZE = 44, 190, 56, 150, 24, 18
+M.FILL, M.CENTRE, M.RIGHT, M.BOTTOM = 0, 2, 3, 3   -- EHorizontalAlignment and EVerticalAlignment
+M.FILL_SIZE = { SizeRule = 1, Value = 1.0 }        -- a box's child that takes the room left
+-- Rows 44 high since the backdrop's row (1.0.3; 52, then 46 with the Image rows); the group titles too since 1.0.5,
+-- so the place of each line in the box that scrolls is known (dynamic_fov_panel_view.lua).
+M.ROW_HEIGHT = 44
+local SLIDER_WIDTH, VALUE_WIDTH, CHOICE_WIDTH, ARROW_SIZE, TEXT_SIZE = 190, 56, 150, 24, 18
+local ICON_SIZE, ICON_GAP = 26, 8
 local LINE_WIDTH = 560
 -- Interface colours are linear, not sRGB. The menu's row text is white, dark on the selected band (pass 2).
 M.WHITE = { R = 1, G = 1, B = 1, A = 1 }
@@ -82,7 +85,7 @@ function M.builder(tree, got)
 
 	function B.image(key, w, h)
 		local img = B.new("Image")
-		if got[key] then img:SetBrushFromTexture(got[key], false) end
+		if key and got[key] then img:SetBrushFromTexture(got[key], false) end
 		return B.sized(img, w, h), img
 	end
 
@@ -107,6 +110,28 @@ function M.builder(tree, got)
 	function B.text_button(size, colour)
 		local t = B.text("", "font_text", size, colour)
 		return { button = B.button(t), text = t }
+	end
+
+	-- A text button with an icon before its text for each brand of controller (1.0.5): { button, text,
+	-- icons[brand] }. textures[brand]: the icon's texture, or nil when the game does not hold it, and then no icon is
+	-- made for that brand. The icons are hidden; the view shows one or none (dynamic_fov_panel_view.lua).
+	function B.icon_button(size, colour, brands, textures)
+		local h = B.new("HorizontalBox")
+		local icons = {}
+		for _, brand in ipairs(brands) do
+			if textures[brand] ~= nil then
+				local size_box, img = B.image(nil, ICON_SIZE, ICON_SIZE)
+				img:SetBrushFromTexture(textures[brand], false)
+				size_box:SetVisibility(M.COLLAPSED)
+				local slot = h:AddChildToHorizontalBox(size_box)
+				slot:SetVerticalAlignment(M.CENTRE)
+				slot:SetPadding({ Left = 0, Top = 0, Right = ICON_GAP, Bottom = 0 })
+				icons[brand] = size_box
+			end
+		end
+		local t = B.text("", "font_text", size, colour)
+		h:AddChildToHorizontalBox(t):SetVerticalAlignment(M.CENTRE)
+		return { button = B.button(h), text = t, icons = icons }
 	end
 
 	function B.line()
@@ -159,7 +184,7 @@ function M.builder(tree, got)
 		fill(overlay:AddChildToOverlay(h), ROW_PADDING)
 		r.label = B.text("", "font_text", TEXT_SIZE, M.WHITE)
 		local label_slot = h:AddChildToHorizontalBox(r.label)
-		label_slot:SetSize({ SizeRule = 1, Value = 1.0 })
+		label_slot:SetSize(M.FILL_SIZE)
 		label_slot:SetVerticalAlignment(M.CENTRE)
 		if line.kind == "number" then
 			r.slider = B.new("Slider")
@@ -178,16 +203,23 @@ function M.builder(tree, got)
 			r.right = B.button(arrow(false))
 			h:AddChildToHorizontalBox(r.right):SetVerticalAlignment(M.CENTRE)
 		end
-		box:AddChildToVerticalBox(B.sized(frame, nil, ROW_HEIGHT))
+		box:AddChildToVerticalBox(B.sized(frame, nil, M.ROW_HEIGHT))
 		frame:SetVisibility(M.VISIBLE)
 		return r
 	end
 
-	-- A group title and its line; returns the title's text.
+	-- A group title and its line at the bottom of a row's height, the line just above the group's first row as before
+	-- 1.0.5; returns the title's text.
 	function B.heading(box)
+		local inner = B.new("VerticalBox")
 		local title = B.text("", "font_text", TEXT_SIZE, M.GREY)
-		box:AddChildToVerticalBox(title):SetPadding({ Left = 0, Top = 18, Right = 0, Bottom = 4 })
-		box:AddChildToVerticalBox(B.line())
+		inner:AddChildToVerticalBox(title):SetPadding({ Left = 0, Top = 0, Right = 0, Bottom = 4 })
+		inner:AddChildToVerticalBox(B.line())
+		local overlay = B.new("Overlay")
+		local slot = overlay:AddChildToOverlay(inner)
+		slot:SetHorizontalAlignment(M.FILL)
+		slot:SetVerticalAlignment(M.BOTTOM)
+		box:AddChildToVerticalBox(B.sized(overlay, nil, M.ROW_HEIGHT))
 		return title
 	end
 

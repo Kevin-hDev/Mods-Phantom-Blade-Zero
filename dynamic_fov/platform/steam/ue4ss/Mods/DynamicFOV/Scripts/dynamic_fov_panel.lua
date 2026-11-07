@@ -1,10 +1,12 @@
 -- Dynamic FOV's settings panel in play (1.0.2): opened and closed with the panel key (F8 unless changed in Mods Menu),
--- closed too by Escape and by its Close. A frameless strip at the right over a darkened fade, built from the game's own
--- menu pieces (dynamic_fov_panel_view.lua); while it is open the inputs are the panel's (dynamic_fov_panel_input.lua).
--- It opens only in play: a camera the mod manages, no cutscene, the game not paused; it closes when that ends. The
--- game goes on while it is open: the panel is there to change the settings while playing. A change applies to the
--- view at once, and a field of view's row shows its value in the view while the pointer is on it
--- (dynamic_fov_panel_screen.lua); the changes are written when the panel closes (dynamic_fov_panel_edits.lua).
+-- closed too by Escape, by its Close and, since 1.0.5, by the controller's Circle. A frameless strip at the right over
+-- a darkened fade, built from the game's own menu pieces (dynamic_fov_panel_build.lua); while it is open the inputs
+-- are the panel's (dynamic_fov_panel_input.lua), and the controller works in it (dynamic_fov_panel_controls.lua) with
+-- the keys and the mouse (dynamic_fov_panel_changes.lua). It opens only in play: a camera the mod manages, no cutscene,
+-- the game not paused, no other mod's panel open (dynamic_fov_panel_claim.lua); it closes when that ends. The game goes
+-- on while it is open: the panel is there to change the settings while playing. A change applies to the view at once,
+-- and a field of view's row shows its value in the view while it is chosen (dynamic_fov_panel_screen.lua); the
+-- changes are written when the panel closes (dynamic_fov_panel_edits.lua).
 
 local Settings = require("dynamic_fov_settings")
 local Hotkey = require("dynamic_fov_hotkey")
@@ -17,20 +19,28 @@ local Screen = require("dynamic_fov_panel_screen")
 local Game = require("dynamic_fov_panel_game")
 local Input = require("dynamic_fov_panel_input")
 local View = require("dynamic_fov_panel_view")
+local Changes = require("dynamic_fov_panel_changes")
+local Controls = require("dynamic_fov_panel_controls")
+local Claim = require("dynamic_fov_panel_claim")
 
 local M = {}
 
 local NOT_IN_PLAY = "not in play (a cutscene, a dialogue, a special move or another view the mod leaves alone)"
+local OWN = "DynamicFOV"          -- the mod's folder: its name for the other mods' panels
 
 -- d: log(fmt, ...), report(fmt, ...), problem(fmt, ...) and saving(fmt, ...) (the panel's lines, its failures and
--- what its saves say, each bounded on its own), warn(message) (settings lines), settings_path, descriptor_path, settings() (the settings in use), apply(s)
--- (settings changed in the panel), preview(fov or nil), camera() (the player's camera, or nil).
+-- what its saves say, each bounded on its own), warn(message) (settings lines), settings_path, descriptor_path,
+-- settings() (the settings in use), apply(s) (settings changed in the panel), preview(fov or nil), camera() (the
+-- player's camera, or nil), ticks_a_second (P.tick's calls in a second).
 function M.new(d)
-	-- lines: the panel's headings and rows, read once, and screen what it shows of them. undo: the settings before
-	-- Restore defaults, while its button offers to undo it. refused: the last reason given for not opening.
-	-- told: whether the game's refusals of the panel's looks were said.
-	local P = { open = false, lines = nil, screen = nil, failed = nil, undo = nil, refused = nil, told = false }
+	-- lines: the panel's headings and rows, read once, screen what it shows of them, changes what the devices do to
+	-- them. refused: the last reason given for not opening. told: whether the game's refusals of the panel's looks were
+	-- said. gi: the game instance of the opening; ticks: ticks since it, for what is done once a second.
+	local P = { open = false, lines = nil, screen = nil, changes = nil, failed = nil, refused = nil, told = false,
+		gi = nil, ticks = 0 }
 	local E = Edits.new()
+	local controls = Controls.new(d)
+	local claim = Claim.new(OWN, d.report)
 
 	-- The engine's functions checked and the descriptor read, once.
 	local function ready()
@@ -45,6 +55,7 @@ function M.new(d)
 		if D == nil then return false, string.format("%s %s", d.descriptor_path:match("([^/\\]+)$"), problem) end
 		P.lines = Rows.build(D)
 		P.screen = Screen.new(P.lines, D.title, d.preview)
+		P.changes = Changes.new(P.lines, d.warn)
 		d.report("panel: ready (the engine's functions checked, the menu's file read)")
 		return true
 	end
@@ -64,6 +75,24 @@ function M.new(d)
 		d.saving("panel: %s", message)
 	end
 
+	local function build(gi)
+		local start = os.clock()
+		local built, info, absent = View.build(gi, P.lines, d.report)
+		if not built then return false, info end
+		-- 66 to 89 ms at a session's first opening, 5 to 13 ms after a load (logs of 5 to 7 November 2026): once per
+		-- load, at the press of the panel's key, a short freeze the player asks for; spread over frames, the panel
+		-- would show half built (audit of 1.0.5).
+		d.report("panel: built in %d ms", math.floor((os.clock() - start) * 1000 + 0.5))
+		if #info > 0 then d.problem("panel: the game's %s not found, plain ones used", table.concat(info, ", ")) end
+		if #absent > 0 then
+			d.report("panel: controller icons not in memory, the button's name in their place: %s",
+				table.concat(absent, ", "))
+		end
+		return true
+	end
+
+	-- One reading of the other mods' panels: the opening fits in one frame, and while it runs under UE4SS's lock no
+	-- other mod's Lua can open its panel.
 	local function open(pc)
 		if d.settings_path == nil then return refuse("the mod's folder is unknown", true) end
 		local ok, why = ready()
@@ -77,29 +106,34 @@ function M.new(d)
 		end
 		local playable, reason = Layer.playable(cam, d.log)
 		if not playable then return refuse(reason or NOT_IN_PLAY, reason ~= nil) end
+		local other = claim.taken()
+		if other then return refuse(other) end
 		local gi = Game.instance()
 		if gi == nil then return refuse("the game instance is not found", true) end
 		if not View.alive() then
-			local start = os.clock()
-			local built, info = View.build(gi, P.lines, d.report)
+			local built, info = build(gi)
 			if not built then return refuse("the panel could not be built (" .. info .. ")", true) end
-			-- About 15 ms at a session's first opening, 6 ms after a load (5 November 2026): once per load, on a key
-			-- press, so it is not spread over frames.
-			d.report("panel: built in %d ms", math.floor((os.clock() - start) * 1000 + 0.5))
-			if #info > 0 then d.problem("panel: the game's %s not found, plain ones used", table.concat(info, ", ")) end
 		end
+		P.changes.start()
 		P.screen.start(Game.language(gi), Hotkey.label(Hotkey.current()))
 		local shown, err = View.show(true)
 		if not shown then return refuse("the panel could not be shown (" .. tostring(err) .. ")", true) end
-		P.open, P.undo, P.refused = true, nil, nil
+		-- The input context last, P.open right after it: an opening that failed once the game's keys were taken would
+		-- leave them taken, since only an open panel's closing gives them back (audit of 1.0.5).
+		local both = controls.take(pc, gi)
+		P.open, P.refused, P.gi, P.ticks = true, nil, gi, 0
+		controls.start(pc)
+		claim.hold()
 		E.start(d.settings())
-		Input.take(pc, d.problem)
+		Input.take(pc, d.problem, both)
 		d.report("panel: opened")
 	end
 
 	function P.close(pc, why)
 		if not P.open then return end
-		P.open, P.undo = false, nil
+		P.open = false
+		controls.off()
+		claim.release()
 		Input.give_back(pc, d.problem)
 		if View.alive() then
 			local hidden, err = View.show(false)
@@ -113,31 +147,9 @@ function M.new(d)
 		d.report("panel: saved, %s", Settings.describe(saved))
 	end
 
-	-- The settings after what the pointer did since the last frame; a row that cannot change keeps its value.
-	-- Restore defaults, clicked again before any other change, gives back the settings it replaced: an undo rather
-	-- than a question, and nothing is lost to a click gone astray.
-	local function changes(s, input)
-		local new = s
-		for i, line in ipairs(P.lines) do
-			local v, dir = input.moved[i], input.click[i]
-			if v ~= nil then
-				v = Rows.on_step(line, v)
-				if v ~= Rows.value(line, new) and Rows.waits_for(line, new) == nil then
-					new = Rows.with(new, line, v, d.warn)
-				end
-			elseif dir ~= nil and Rows.waits_for(line, new) == nil then
-				new = Rows.with(new, line, Rows.next(line, new, dir), d.warn)
-			end
-		end
-		if new ~= s then P.undo = nil end
-		if input.restore then
-			if P.undo ~= nil then new, P.undo = P.undo, nil else P.undo, new = new, Rows.defaults(new, d.warn) end
-		end
-		return new
-	end
-
-	-- At each frame while the panel is open or a key was pressed: toggles, the panel key's presses, escapes, Escape's.
-	function P.frame(pc, toggles, escapes)
+	-- At each frame while the panel is open or a key was pressed: toggles, the panel key's presses, escapes, Escape's,
+	-- moves, the open panel's keys (dynamic_fov_hotkey.lua, nil when none).
+	function P.frame(pc, toggles, escapes, moves)
 		if P.open and escapes > 0 then
 			P.close(pc, "Escape")
 		elseif toggles % 2 == 1 then
@@ -146,11 +158,16 @@ function M.new(d)
 		if not P.open then return end
 		if not View.alive() then return P.close(pc, "the game took it off the screen") end
 		Input.keep(pc, d.report, d.problem)
+		local now = os.clock()
+		local c, by_pad = controls.frame(pc, now)
+		if c ~= nil and c.close > 0 then return P.close(pc, "the controller's Circle or B") end
 		local s = d.settings()
 		local input = View.read()
-		local new = changes(s, input)
+		local new = P.changes.frame(s, input, moves, c, controls.side(), by_pad, now)
 		if new ~= s then d.apply(new) end
-		P.screen.frame(new, input.over, P.undo ~= nil)
+		View.scroll_to(P.changes.take_scroll(), #P.lines)
+		P.screen.frame(new, P.changes.chosen_row(), P.changes.undo_offered(),
+			P.changes.by_pad() and controls.brand_now() or nil)
 		if not P.told and View.refusals() > 0 then
 			P.told = true
 			d.problem("panel: the game refused a change to the panel; it is tried again at each frame (refusals so "
@@ -159,20 +176,26 @@ function M.new(d)
 		if input.close then P.close(pc, "Close") end
 	end
 
-	-- Ten times a second while it is open: it closes when play stops.
+	-- Ten times a second while it is open: it closes when play stops; once a second its claim is written again and its
+	-- input context looked for.
 	function P.tick(pc)
 		if not P.open then return end
 		local cam = d.camera()
 		if cam == nil or not Layer.playable(cam, d.log) then
-			P.close(pc, "the game left play (a cutscene, a dialogue, a special move or another view)")
+			return P.close(pc, "the game left play (a cutscene, a dialogue, a special move or another view)")
 		elseif Game.paused(pc) == true then
-			P.close(pc, "the game paused")
+			return P.close(pc, "the game paused")
 		end
+		P.ticks = P.ticks + 1
+		if P.ticks % d.ticks_a_second ~= 0 then return end
+		claim.hold()
+		local why = controls.second(pc, P.gi)
+		if why then P.close(pc, why) end
 	end
 
 	-- Settings s just read from the file, with the panel's changes kept on top.
 	function P.on_read(s, read)
-		if P.open then P.undo = nil end
+		if P.open then P.changes.forget_undo() end
 		return E.on_read(s, d.settings(), P.open, read)
 	end
 

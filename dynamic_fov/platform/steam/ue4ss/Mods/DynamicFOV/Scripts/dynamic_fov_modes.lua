@@ -4,8 +4,8 @@
 -- the transition speed of the modes it manages, and puts the game's values back when it is off. The view's place goes
 -- through the camera itself (dynamic_fov_layer.lua).
 --
--- The game may load the modes again as new objects (not seen with CameraProbe): the game's
--- values are kept by mode name, and every scan finds the new objects.
+-- The game may load the modes again as new objects (not seen with CameraProbe): the game's values are kept by mode
+-- name, and every scan finds the new objects.
 
 local U = require("dynamic_fov_unreal")
 
@@ -18,6 +18,7 @@ local MAX_MODES = 512             -- the game has 123; a bound against a camera 
 -- Values closer than this are the same. It covers the game keeping its numbers in 32 bits, and stays well under the
 -- smallest gap between two speeds the menu gives (0.026, between 2.9 s and 3 s).
 local SAME = 1e-3
+M.MAX_MODES, M.SAME = MAX_MODES, SAME   -- the comfort options' scan and comparisons too
 
 -- Setting for each managed mode, by its gameplay tag. Seen in play with CameraProbe: ShoulderDefault (standing,
 -- walking, running, climbing), Sprint, Crouch, Combat (an enemy near, none locked on: it stays after unlocking, until
@@ -27,8 +28,8 @@ local SAME = 1e-3
 -- each is the view of its kind is not verified. Each follows its kind, so the view does not change from one boss to
 -- the next. WeakLockNext is a combat view the game turns to now and then, no enemy locked on: left alone, the mod took
 -- the camera's place away and the field of view went back to the game's 75 for one to three seconds, and the camera
--- jumped (seen in play on 5 November 2026); it follows the normal
--- view, as Combat. What brings it in play is not verified.
+-- jumped (seen in play on 5 November 2026); it follows the normal view, as Combat. What brings it in play is not
+-- verified.
 local EXACT = {
 	["CameraType.ShoulderDefault"] = "normal",
 	["CameraType.Sprint"] = "sprint",

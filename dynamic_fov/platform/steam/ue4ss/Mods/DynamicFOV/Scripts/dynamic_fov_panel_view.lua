@@ -1,26 +1,20 @@
--- The panel on the screen (1.0.2): built once under the game instance, then hidden and shown, never destroyed by the
--- mod (PanelProbe pass 5). On the screen, even hidden, the engine keeps it; taken off the screen by the game (a load)
--- it may be freed at any time, so it is forgotten, never touched again, and built anew at the next opening. It reads
--- what the pointer does (the row under it, the buttons, the sliders) and shows what the panel gives it, setting a text,
--- a colour or a value only when it changes. After the build it hands the game no object: the row under the pointer
--- only shows its own selected band, built in each row (pass 6, after the crashes of passes 4 and 5).
+-- The panel on the screen (1.0.2): built once under the game instance (dynamic_fov_panel_build.lua), then hidden and
+-- shown, never destroyed by the mod (PanelProbe pass 5). On the screen, even hidden, the engine keeps it; taken off the
+-- screen by the game (a load) it may be freed at any time, so it is forgotten, never touched again, and built anew at
+-- the next opening. It reads what the pointer does (the row under it, the buttons, the sliders) and shows what the
+-- panel gives it, setting a text, a colour, a value, a scroll or an icon's visibility only when it changes. After the
+-- build it hands the game no object: the chosen row only shows its own selected band, built in each row (pass 6, after
+-- the crashes of passes 4 and 5), and a controller's icon is one built with the panel, shown or hidden (1.0.5).
 
 local U = require("dynamic_fov_unreal")
-local Pieces = require("dynamic_fov_panel_pieces")
 local Make = require("dynamic_fov_panel_make")
 local Backdrop = require("dynamic_fov_panel_backdrop")
+local Build = require("dynamic_fov_panel_build")
 
 local M = {}
 
-local Z_ORDER = 80
-local TITLE_SIZE, SMALL_SIZE, BUTTON_SIZE = 24, 16, 18
--- The explanation's room is kept whether it has two lines or four, so nothing below it moves.
-local HELP_HEIGHT, HELP_WRAP = 90, 600
--- From 6 % since the backdrop's row (1.0.3, 8 before), with the rows at 44 (dynamic_fov_panel_make.lua).
-local TOP, BOTTOM, SIDE = 0.06, 0.95, 0.025
-
 local W = nil                     -- the built panel
-local built = 0                   -- panels built in this session, for names no other object has
+local ICON_BUTTONS = { "restore", "close" }
 -- What the last read found, one table used again at each frame.
 local R = { over = nil, moved = {}, click = {}, restore = false, close = false }
 
@@ -33,67 +27,19 @@ local function in_viewport(w) return w:IsInViewport() end
 local function hovered(w) return w:IsHovered() end
 local function pressed(b) return b:IsPressed() end
 local function value_of(slider) return slider:GetValue() end
-local function wrap_at(tb, width) tb.WrapTextAt = width end
-
-local function build(outer, lines, log)
-	built = built + 1
-	local suffix = tostring(os.time()) .. "_" .. built
-	local function named(class, owner, name)
-		return StaticConstructObject(Make.class(class), owner,
-			FName("DynamicFOV_" .. name .. "_" .. suffix))
-	end
-	local root = named("UserWidget", outer, "Panel")
-	local tree = named("WidgetTree", root, "Tree")
-	root.WidgetTree = tree
-	local canvas = named("CanvasPanel", tree, "Canvas")
-	tree.RootWidget = canvas
-	local got, missing, found = Pieces.in_memory()
-	log("panel: building, the game's %d pieces in memory", found)
-	local B = Make.builder(tree, got)
-	local bands = Backdrop.build(B, canvas)
-	local box = B.new("VerticalBox")
-	B.place(canvas, box, Make.LEFT + SIDE, TOP, 1 - SIDE, BOTTOM)
-	local w = { root = root, rows = {}, labels = {}, shown = {}, down = {}, bands = bands }
-	w.title = B.text("", "font_text", TITLE_SIZE, Make.WHITE)
-	box:AddChildToVerticalBox(w.title):SetPadding({ Left = 0, Top = 0, Right = 0, Bottom = 2 })
-	w.view_line = B.text("", "font_text", SMALL_SIZE, Make.SOFT)
-	box:AddChildToVerticalBox(w.view_line):SetPadding({ Left = 0, Top = 0, Right = 0, Bottom = 6 })
-	box:AddChildToVerticalBox(B.line())
-	for i, line in ipairs(lines) do
-		if line.kind then
-			w.rows[i] = B.row(box, line)
-			w.labels[i] = w.rows[i].label
-		else
-			w.labels[i] = B.heading(box)
-		end
-	end
-	w.help = B.text("", "font_text", SMALL_SIZE, Make.SOFT)
-	-- A property, not a function: set before the panel reaches the screen, where the engine reads it.
-	local ok, err = pcall(wrap_at, w.help, HELP_WRAP)
-	if not ok then log("panel: the explanation will not wrap (%s)", tostring(err)) end
-	box:AddChildToVerticalBox(B.sized(w.help, nil, HELP_HEIGHT)):SetPadding({ Left = 0, Top = 16, Right = 0, Bottom = 0 })
-	local bottom = B.new("HorizontalBox")
-	box:AddChildToVerticalBox(bottom):SetPadding({ Left = 0, Top = 12, Right = 0, Bottom = 0 })
-	w.restore = B.text_button(BUTTON_SIZE, Make.SOFT)
-	bottom:AddChildToHorizontalBox(w.restore.button)
-	w.close = B.text_button(BUTTON_SIZE, Make.SOFT)
-	local close_slot = bottom:AddChildToHorizontalBox(w.close.button)
-	close_slot:SetSize({ SizeRule = 1, Value = 1.0 })
-	close_slot:SetHorizontalAlignment(Make.RIGHT)
-	root:SetVisibility(Make.COLLAPSED)
-	canvas:SetVisibility(Make.SELF_HIT_TEST_INVISIBLE)
-	root:AddToViewport(Z_ORDER)
-	return w, missing
-end
+local function offset_of(box) return box:GetScrollOffset() end
+local function fraction_of(box) return box:GetViewFraction() end
+local function set_offset(box, v) box:SetScrollOffset(v) end
 
 -- Builds the panel under outer, the game instance, for the panel's lines (dynamic_fov_panel_rows.lua), hidden.
--- Returns true and the names of the game's pieces not found, or false and why.
+-- Returns true, the names of the game's pieces not found and those of the controller's icons not found, or false and
+-- why.
 function M.build(outer, lines, log)
 	W = nil
-	local ok, w, missing = pcall(build, outer, lines, log)
+	local ok, w, missing, absent = pcall(Build.build, outer, lines, log)
 	if not ok then return false, tostring(w) end
 	W = w
-	return true, missing
+	return true, missing, absent
 end
 
 -- Whether a built panel is on the screen. One the game took off it is forgotten.
@@ -147,8 +93,46 @@ function M.buttons(restore, close)
 	text(W.close.text, close)
 end
 
+-- Whether the button ("restore" or "close") has brand's icon: the game held its texture at the build.
+function M.has_icon(which, brand)
+	return W ~= nil and W[which].icons[brand] ~= nil
+end
+
+-- brand's icons shown before the two buttons, the others hidden; none for nil (1.0.5). Set again only when it
+-- changes or the game refused one.
+function M.icons(brand)
+	if W == nil or W.icon_brand == (brand or false) then return end
+	local ok = true
+	for _, which in ipairs(ICON_BUTTONS) do
+		for b, icon in pairs(W[which].icons) do
+			local v = b == brand and Make.HIT_TEST_INVISIBLE or Make.COLLAPSED
+			if not tried(pcall(set_visibility, icon, v)) then ok = false end
+		end
+	end
+	if ok then W.icon_brand = brand or false end
+end
+
+-- Brings line i of n into the box's view, scrolling as little as it can (1.0.5):
+-- every line is ROW_HEIGHT high, so the box's scroll offset and the share of its lines it shows tell which ones show.
+-- A box that cannot say is left as it is.
+function M.scroll_to(i, n)
+	if W == nil or i == nil then return end
+	local h = Make.ROW_HEIGHT
+	local ok1, offset = pcall(offset_of, W.scroll)
+	local ok2, fraction = pcall(fraction_of, W.scroll)
+	offset, fraction = ok1 and U.num(offset), ok2 and U.num(fraction)
+	if not offset or not fraction or fraction <= 0 then return end
+	local view = fraction * n * h
+	local top, bottom = (i - 1) * h, i * h
+	if top < offset then
+		tried(pcall(set_offset, W.scroll, top))
+	elseif bottom > offset + view then
+		tried(pcall(set_offset, W.scroll, bottom - view))
+	end
+end
+
 -- Row i: its value's text and value; locked, it waits for another setting (grey, its slider or arrows off); selected,
--- the pointer is on it (the menu's selected band, dark text). A slider is moved only by more than half a step from
+-- it is the chosen row (the menu's selected band, dark text). A slider is moved only by more than half a step from
 -- where it is, so a slider being dragged is never pulled back to the step.
 function M.row(i, value_text, value, locked, selected)
 	local r = W and W.rows[i]

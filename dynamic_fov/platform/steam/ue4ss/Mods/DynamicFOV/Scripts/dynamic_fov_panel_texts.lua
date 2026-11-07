@@ -1,8 +1,8 @@
 -- The panel's texts in the game's language (1.0.2). The title, the labels, the explanations, the headings and the
 -- presets' names come from DynamicFOV.modsmenu.json, where Mods Menu reads them too: every text about a setting has one
--- place. The panel's own few words are below. The language is chosen as Mods Menu chooses it (its main.js, 0.5.3: lang()
--- and inLang()), so the panel and the menu speak the same, but for Traditional Chinese: Mods Menu has its own words
--- for On, Off and Restore defaults there, and the panel, like our texts, has none yet (English).
+-- place. The panel's own few words are below. The language is chosen as Mods Menu chooses it, so the panel and the
+-- menu speak the same, but for Traditional Chinese: Mods Menu has its own words for On, Off and Restore defaults
+-- there, and the panel, like our texts, has none yet (English).
 
 local Tree = require("dynamic_fov_json_tree")
 
@@ -10,7 +10,7 @@ local M = {}
 
 local MAX_FILE_BYTES = 65536
 local TRADITIONAL = { "zh-hant", "zh-tw", "zh-hk", "zh-mo" }
--- On and Off are Mods Menu's own words for a switch, Restore defaults its row's (PBZ_MM_ZH in its main.js).
+-- On and Off are Mods Menu's own words for a switch, Restore defaults its row's.
 local OWN = {
 	on = { en = "On", ["zh-Hans"] = "开启" },
 	off = { en = "Off", ["zh-Hans"] = "关闭" },

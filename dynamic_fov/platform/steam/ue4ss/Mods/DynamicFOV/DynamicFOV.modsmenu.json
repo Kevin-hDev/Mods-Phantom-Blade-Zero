@@ -4,10 +4,10 @@
     "zh-Hans": "动态视野"
   },
   "description": {
-    "en": "A field of view for each situation (normal view, sprint, crouch, lock-on), the transition time, the camera's distance, height and side, more vivid colours and a clean image. Cutscenes, dialogues and special moves keep the game's camera. The panel key (F8 by default) opens the settings in play.",
-    "zh-Hans": "为不同状态（普通镜头、冲刺、下蹲、锁定敌人）分别设置视野，并可调整过渡时间，以及镜头的距离、高度和左右位置，还能让色彩更鲜艳、画面更纯净。过场动画、对话和特殊招式保持游戏原有镜头。游戏中按面板按键（默认 F8）打开设置。"
+    "en": "A field of view for each situation (normal view, sprint, crouch, lock-on), transition time, camera distance, height and side, comfort options, vivid colours and a clean image. Cutscenes, dialogues and special moves keep the game's camera. The panel key (F8 by default) opens the settings in play.",
+    "zh-Hans": "为不同状态（普通镜头、冲刺、下蹲、锁定敌人）分别设置视野，并可调整过渡时间，以及镜头的距离、高度和左右位置，还有舒适选项，并能让色彩更鲜艳、画面更纯净。过场动画、对话和特殊招式保持游戏原有镜头。游戏中按面板按键（默认 F8）打开设置。"
   },
-  "version": "1.0.4",
+  "version": "1.0.6",
   "settings": [
     {
       "key": "Enabled",
@@ -30,11 +30,18 @@
         "zh-Hans": "预设"
       },
       "help": {
-        "en": "Field of view of each preset: Very Close 49 (sprint 64), Close 62 (sprint 77), Default 75 (sprint 90), Far 90 (sprint 105). Crouch and lock-on take the normal view's value. Custom uses the rows under Custom.",
-        "zh-Hans": "各预设的视野：极近 49（冲刺 64），近 62（冲刺 77），默认 75（冲刺 90），远 90（冲刺 105）。下蹲和锁定沿用普通镜头的数值。自定义：使用“自定义”下方的设置。"
+        "en": "Field of view of each preset: Game 75 (sprint 75), the game's own, Very Close 49 (sprint 64), Close 62 (sprint 77), Default 75 (sprint 90), Far 90 (sprint 105). Crouch and lock-on take the normal view's value. Custom uses the rows under Custom.",
+        "zh-Hans": "各预设的视野：原版 75（冲刺 75），即游戏原值，极近 49（冲刺 64），近 62（冲刺 77），默认 75（冲刺 90），远 90（冲刺 105）。下蹲和锁定沿用普通镜头的数值。自定义：使用“自定义”下方的设置。"
       },
       "default": "Default",
       "options": [
+        {
+          "value": "Game",
+          "label": {
+            "en": "Game",
+            "zh-Hans": "原版"
+          }
+        },
         {
           "value": "VeryClose",
           "label": {
@@ -142,6 +149,65 @@
         "zh-Hans": "单位为厘米：正值使镜头右移，负值左移。游戏镜头位于角色右侧，约 -80 时角色位于画面中央。0 为游戏原值。"
       },
       "default": 0
+    },
+    {
+      "type": "heading",
+      "label": {
+        "en": "Comfort",
+        "zh-Hans": "舒适"
+      }
+    },
+    {
+      "key": "SteadyCharacter",
+      "type": "toggle",
+      "label": {
+        "en": "Steady character",
+        "zh-Hans": "稳定角色位置"
+      },
+      "help": {
+        "en": "On: the camera trails the character by 50 cm at most (the game: up to 300), so the character stays near the middle of the screen when running, turning or stopping. Normal view, sprint and crouch. May show only from the next change of view, such as starting a sprint.",
+        "zh-Hans": "开启：镜头最多落后角色 50 厘米（游戏原值最多 300），奔跑、转向或急停时角色保持在画面中央附近。适用于普通镜头、冲刺和下蹲。可能在下一次切换镜头（例如开始冲刺）时才生效。"
+      },
+      "default": false
+    },
+    {
+      "key": "NoSprintRecentering",
+      "type": "toggle",
+      "label": {
+        "en": "No recentering in sprint",
+        "zh-Hans": "冲刺时不自动回正"
+      },
+      "help": {
+        "en": "On: while sprinting, the game no longer turns the camera behind the character; it stays where you point it. May show only from the next change of view, such as starting a sprint.",
+        "zh-Hans": "开启：冲刺时游戏不再自动把镜头转到角色背后，镜头保持在你调整的方向。可能在下一次切换镜头（例如开始冲刺）时才生效。"
+      },
+      "default": false
+    },
+    {
+      "key": "NoSprintPullBack",
+      "type": "toggle",
+      "label": {
+        "en": "No pull-back in sprint",
+        "zh-Hans": "冲刺时不拉远"
+      },
+      "help": {
+        "en": "On: while sprinting, the camera keeps the normal view's distance (350 instead of 400); Distance then counts from 350 in sprint too. May show only from the next change of view, such as starting a sprint.",
+        "zh-Hans": "开启：冲刺时镜头保持普通镜头的距离（350，而非 400）；此时“距离”在冲刺时也以 350 为基准。可能在下一次切换镜头（例如开始冲刺）时才生效。"
+      },
+      "default": false
+    },
+    {
+      "key": "NoSprintShake",
+      "type": "toggle",
+      "label": {
+        "en": "No shake in sprint",
+        "zh-Hans": "冲刺时无镜头晃动"
+      },
+      "help": {
+        "en": "On: no camera shake while sprinting. May show only from the next change of view, such as starting a sprint.",
+        "zh-Hans": "开启：冲刺时镜头不再晃动。可能在下一次切换镜头（例如开始冲刺）时才生效。"
+      },
+      "default": false
     },
     {
       "type": "heading",

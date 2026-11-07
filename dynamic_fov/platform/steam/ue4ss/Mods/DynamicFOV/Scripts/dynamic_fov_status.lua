@@ -5,11 +5,12 @@
 local M = {}
 
 local MAX_ERROR_LINES = 5        -- a repeated error is written a few times, then only counted
--- Camera, write, position, image, image problem, panel and panel problem lines, then only counted: each kind has its own bound, so one
--- cannot silence another (the panel's openings and closings never silence its failures).
-local MAX_LINES = { camera = 20, write = 40, position = 40, image = 40, ["image problem"] = 20, panel = 60,
-	["panel problem"] = 40,
-	["panel save"] = 10 }
+-- Camera, write, position, image, comfort, panel lines and their problems, then only counted: each kind has its own
+-- bound, so one cannot silence another (the panel's openings and closings never silence its failures). The panel's:
+-- about seven lines an opening since 1.0.5's controller, and up to 20 for the cursor the game turned off
+-- (dynamic_fov_panel_input.lua), so about eleven openings, as in 1.0.4 (audit of 1.0.5).
+local MAX_LINES = { camera = 20, write = 40, position = 40, image = 40, ["image problem"] = 20, comfort = 40,
+	["comfort problem"] = 10, panel = 100, ["panel problem"] = 40, ["panel save"] = 10 }
 
 local function slot()
 	return { calls = 0, busy = 0, longest = 0 }
@@ -25,7 +26,8 @@ end
 
 function M.new(log)
 	local T = { lines = {}, errors = 0, new_errors = 0, slots = { looks = slot(), ticks = slot(), frames = slot(), panel = slot() },
-		writes = 0, failed = 0, sets = 0, set_failed = 0, image_writes = 0, image_failed = 0 }
+		writes = 0, failed = 0, sets = 0, set_failed = 0, image_writes = 0, image_failed = 0, comfort_writes = 0,
+		comfort_failed = 0 }
 	for kind in pairs(MAX_LINES) do T.lines[kind] = 0 end
 
 	function T.bounded(kind, fmt, ...)
@@ -66,7 +68,7 @@ function M.new(log)
 		log("status: %d camera modes, %d managed; in the last %d minutes: %d looks, about %d microseconds a look on "
 			.. "average, the longest under %d ms, mode writes %d%s%s; camera position: "
 			.. "%d ticks at work, about %d microseconds each, the longest under %d ms, layer set %d%s; "
-			.. "image values written %d%s; "
+			.. "image values written %d%s; comfort values written %d%s; "
 			.. "frames %d (%d a second), about %d microseconds each (about %d outside the looks, ticks and panel), the "
 			.. "longest under %d ms; panel: %d calls, about %d microseconds each, the longest under %d ms",
 			math.max(modes, 0), math.max(managed, 0), minutes, l.calls, average_us(l), longest_ms(l), T.writes,
@@ -74,12 +76,13 @@ function M.new(log)
 			T.new_errors > 0 and string.format("; %d errors", T.new_errors) or "",
 			t.calls, average_us(t), longest_ms(t), T.sets,
 			T.set_failed > 0 and string.format(", could not be set %d", T.set_failed) or "", T.image_writes,
-			T.image_failed > 0 and string.format(", could not be written %d", T.image_failed) or "", f.calls,
+			T.image_failed > 0 and string.format(", could not be written %d", T.image_failed) or "", T.comfort_writes,
+			T.comfort_failed > 0 and string.format(", could not be written %d", T.comfort_failed) or "", f.calls,
 			math.floor(f.calls / math.max(minutes * 60, 1) + 0.5), average_us(f), average_us(rest), longest_ms(f),
 			p.calls, average_us(p), longest_ms(p))
 		T.slots.looks, T.slots.ticks, T.slots.frames, T.slots.panel = slot(), slot(), slot(), slot()
 		T.writes, T.failed, T.sets, T.set_failed, T.new_errors = 0, 0, 0, 0, 0
-		T.image_writes, T.image_failed = 0, 0
+		T.image_writes, T.image_failed, T.comfort_writes, T.comfort_failed = 0, 0, 0, 0
 	end
 
 	return T

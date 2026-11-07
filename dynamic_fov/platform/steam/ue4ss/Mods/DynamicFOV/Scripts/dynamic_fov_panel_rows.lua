@@ -31,11 +31,14 @@ end
 for _, k in ipairs(Settings.POSITION_KEYS) do
 	KINDS[k.name] = { kind = "number", field = k.field, min = k.min, max = k.max, step = k.step }
 end
+for _, k in ipairs(Settings.COMFORT_KEYS) do
+	KINDS[k.name] = { kind = "switch", field = k.field }
+end
 
 -- The preset whose four fields of view are the player's own.
 local CUSTOM
 for _, p in ipairs(Settings.PRESETS) do
-	if p.offset == nil then CUSTOM = p.value end
+	if p.custom then CUSTOM = p.value end
 end
 
 local function row_of(e)
@@ -82,7 +85,7 @@ function M.waits_for(row, s)
 end
 
 -- How the row shows value: On or Off, a preset by its name in the menu, a number on its step as Mods Menu writes it
--- (formatNumber in its main.js, 0.5.3: 3 and 1.5, not 3.0). say(text) gives a descriptor's text in the panel's
+-- (3 and 1.5, not 3.0). say(text) gives a descriptor's text in the panel's
 -- language, own(name) one of the panel's own words.
 function M.text(row, value, say, own)
 	if row.kind == "switch" then return own(value and "on" or "off") end
