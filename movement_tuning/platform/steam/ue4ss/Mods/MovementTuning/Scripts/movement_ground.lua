@@ -31,7 +31,7 @@ local gait_lines = 0
 -- reached ("walk", "run"), for the log.
 function M.forget()
 	G = { gaits = nil, next_read = 0, said = false, written = nil, game = nil, writes = 0, rewrites = 0, top = 0,
-		ratio = nil, gait = nil, slowed = 0 }
+		ratio = nil, gait = nil, slowed = 0, lifted = false }
 end
 M.forget()
 
@@ -81,7 +81,7 @@ function M.release(cmc)
 			pcall(function() cmc.MaxWalkSpeed = G.game end)
 		end
 	end
-	G.written, G.game, G.ratio = nil, nil, nil
+	G.written, G.game, G.ratio, G.lifted = nil, nil, nil, false
 end
 
 -- The stick curve's part of the speed (movement_curve.lua): on the ground from the push; in the air the share of the
@@ -106,9 +106,20 @@ local function curved(base, mode, push, left, say)
 	return speed
 end
 
+-- The game's own speed at the last frame (before the long sprint's hold), nil when the mod left the speed to the game.
+function M.game_speed()
+	return G.game
+end
+
+-- { walk, run, sprint }: the gait speeds, nil when unread.
+function M.gaits()
+	return G.gaits
+end
+
 -- cmc, mode: the movement component and its MovementMode, read by main.lua. push, left: the left stick's push and its
--- curve (movement_stick.lua, movement_curve.lua), nil when off.
-function M.frame(pawn, cmc, mode, now, rates, say, push, left)
+-- curve (movement_stick.lua, movement_curve.lua), nil when off. floor: a game speed to lift the game's to, the long
+-- sprint held after a special move (movement_resume.lua), nil when none.
+function M.frame(pawn, cmc, mode, now, rates, say, push, left, floor)
 	if now >= G.next_read then
 		G.next_read = now + READ_EVERY
 		G.gaits = read_gaits(pawn)
@@ -128,19 +139,25 @@ function M.frame(pawn, cmc, mode, now, rates, say, push, left)
 
 	local base = cur
 	if G.written ~= nil then
-		if math.abs(cur - G.written) <= SAME then
+		-- Lifted to the long sprint at the last frame, the same speed is the game's own long sprint back: the game
+		-- rewrites its speed every frame (verified), and taking the old game speed would hold the floor forever.
+		if math.abs(cur - G.written) <= SAME and not G.lifted then
 			base = G.game
 		else
 			G.rewrites = G.rewrites + 1
 		end
 	end
 	G.top = math.max(G.top, base)
+	local game = base
+	G.lifted = floor ~= nil and base < floor
+	if G.lifted then base = floor end
 	local want = curved(base, mode, push, left, say) * M.factor(base, G.gaits, rates)
 	if math.abs(cur - want) > SAME then
 		if not pcall(function() cmc.MaxWalkSpeed = want end) then return end
 		G.writes = G.writes + 1
 	end
-	G.written, G.game = want, base
+	-- The game's own, not the lifted one: built on when the game leaves the mod's speed in place.
+	G.written, G.game = want, game
 end
 
 -- For the status line, then the counts start over.

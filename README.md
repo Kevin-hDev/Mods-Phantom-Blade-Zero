@@ -8,7 +8,7 @@ Movement and camera mods for Phantom Blade Zero, written in Lua for UE4SS.
 | [Tap Strafe](tap_strafe/) | Mid-jump, your character follows the camera as you turn it, with the mouse or the controller's right stick | 1.0.0 |
 | [Dodge Jump](dodge_jump/) | A double and triple jump in the air with the game's own dodge animations, and a jump that goes off right after landing | 1.0.6 |
 | [Dynamic FOV](dynamic_fov/) | A field of view that follows your movement, one per situation (walking, sprinting, crouching, combat), with an in-game panel | 1.0.4 |
-| [Movement Tuning](movement_tuning/) | The speed of each move and attack on its own or all at once, higher jumps, the stick's curve, and automatic sprint | 1.0.1 |
+| [Movement Tuning](movement_tuning/) | The speed of each move and attack on its own or all at once, higher jumps, the stick's curve, automatic sprint, the sprint resumed after a move, faster dodge landings, and the sprint turned off if you want | 1.0.2 |
 | [Slide Anywhere](slide_anywhere/) | Slide anywhere, on flat ground, downhill and uphill, with the game's own slide animation | 1.0.0 |
 
 Each folder holds the mod exactly as it ships on Nexus Mods: its `platform` folder mirrors the game folder.

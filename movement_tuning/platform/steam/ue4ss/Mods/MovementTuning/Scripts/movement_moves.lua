@@ -10,6 +10,9 @@ local M = {}
 local GAME_PACE = { "GA_ExecutionAbilityBase_C", "GA_ExecutedAbilityBase_C", "GA_ContinuousExecutionSimple_Base_C",
 	"BP_PlayerPerfectDodge_Base_C", "BP_HoldDeflect_Base_C" }
 
+-- The dodges' key, read by movement_dodge.lua for their landing.
+M.DODGES = "dodges"
+
 -- In order: the first move whose family holds the ability, or whose pattern is in its class name, wins. Patterns stand
 -- in for families where the game has none, and keep jumps, weapon draws and stances apart should the families be
 -- unreadable.
@@ -19,7 +22,7 @@ M.MOVES = {
 	-- The cart fight's special dodges and DodgeAuto are dodges outside the dodge family. max: its speed stops at 2.5,
 	-- Global's too: the game chains the next dodge only in the dodge's combo phase, which goes as fast as the rest; at 3
 	-- a press at a player's rhythm came after it and the dodge started over.
-	{ key = "dodges", setting = "Dodges", families = { "BP_PlayerDodge_Base_C" },
+	{ key = M.DODGES, setting = "Dodges", families = { "BP_PlayerDodge_Base_C" },
 		patterns = { "AdvancedDash", "SpecialDash", "SpecialDodge", "DodgeAuto" }, max = 2.5 },
 	-- in_jump: shown under the menu's Jump heading, after Jump height, not with the other moves. max: its own speed goes
 	-- up to 5: the jump step lasts 0.27 s, 0.09 s at 3, 0.05 s at 5. default: its speed in a new settings file instead

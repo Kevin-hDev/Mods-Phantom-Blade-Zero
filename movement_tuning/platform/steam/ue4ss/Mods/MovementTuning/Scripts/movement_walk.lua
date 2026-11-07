@@ -1,20 +1,19 @@
 -- The game's walk with auto sprint: the only presser of the walk action.
 --
 -- The game's walk on the keyboard (Left Alt by default, the locomotion ability's WalkInput, IA_Walk) is a switch: each
--- press turns it on or off. The game marks its walk with the Walking tag (CharacterState.Native.Attitude.Walking, read
--- from the mechanic config), which also comes when a light push of the stick walks. While a sprint is pressed, the game
+-- press turns it on or off. The game marks its walk with the Walking tag (movement_tags.lua), which also comes when a
+-- light push of the stick walks. While a sprint is pressed, the game
 -- ignores the press: the tag never came, 26 presses out of 26 (verified in game, 5 November 2026). So when the player
 -- presses a walk key while auto sprint presses the sprint, the mod lets the sprint go, waits for the game's sprint to
 -- end and presses the walk once; while the tag is there, auto sprint stays off.
 
 local U = require("movement_unreal")
 local Press = require("movement_press")
+local Tags = require("movement_tags")
 
 local M = {}
 
-local CONFIG = "PDA_GlobalMechanicConfig_C"
 local LOOK_EVERY = 5      -- seconds between two reads of the walk keys: the player can change them in the game's controls
-local MAX_LOOKS = 15      -- looks for the mechanic config before giving up until the next character
 local MAX_EMPTY = 3       -- reads in a row that find no walk key before the keys found are dropped: the game's key set
                           -- can lack the walk for one read (seen in game), and the player can unbind it
 local MAX_KEYS = 8
@@ -28,14 +27,13 @@ local SPRINT_AFTER = 0.15 -- seconds after auto sprint's last press that a walk 
                           -- sprint ends 0.08 s after the last press (verified in game)
 local MAX_TRIES = 3
 
--- Per character: the ability system, the tags, the walk keys (found: some were read once) and action, the walk key held
--- last frame, the walk asked (pending: { since, tries, next, frames }), auto sprint's last press (sprint_at). wait: the
--- first frame with the ability is left to the stick's work. walks, missed: for the status line, kept across characters.
+-- Per character: the walk keys (found: some were read once) and action, the walk key held last frame, the walk asked
+-- (pending: { since, tries, next, frames }), auto sprint's last press (sprint_at). wait: the first frame with the ability
+-- is left to the stick's work. walks, missed: for the status line, kept across characters.
 local G
 
 function M.forget()
-	G = { asc = nil, tags = nil, looks = 0, next_look = 0, keys = {}, empty = 0, found = false, action = nil,
-		down = false,
+	G = { next_look = 0, keys = {}, empty = 0, found = false, action = nil, down = false,
 		pending = nil, sprint_at = nil, wait = true, failed = false, said = {}, walks = G and G.walks or 0,
 		missed = G and G.missed or 0 }
 end
@@ -50,13 +48,6 @@ end
 local function walk_action(ability)
 	if not U.is_valid(G.action) then pcall(function() G.action = ability.WalkInput end) end
 	return G.action
-end
-
-local function tag(config, field)
-	local name = nil
-	pcall(function() name = config[field].TagName:ToString() end)
-	if type(name) ~= "string" or name == "" or name == "None" then return nil end
-	return { TagName = FName(name) }
 end
 
 local function add_key(keys, mapping)
@@ -89,20 +80,7 @@ local function walk_keys(controller, ability, say)
 	return keys, #list
 end
 
-local function look(controller, pawn, ability, say)
-	if G.tags == nil and G.looks < MAX_LOOKS then
-		G.looks = G.looks + 1
-		local config = nil
-		-- FindFirstOf walks the game's objects until it finds one: MAX_LOOKS walks at most per character.
-		pcall(function() config = FindFirstOf(CONFIG) end)
-		local walking = U.is_valid(config) and tag(config, "Walking Tag") or nil
-		if walking ~= nil then
-			G.tags = { walking = walking, sprinting = tag(config, "Sprinting Tag") }
-		elseif G.looks == MAX_LOOKS then
-			say("the game's walk cannot be found: auto sprint does not stop for it")
-		end
-	end
-	if not U.is_valid(G.asc) then pcall(function() G.asc = pawn.AbilitySystemComponent end) end
+local function look(controller, ability, say)
 	-- A read without the walk keeps the keys found before, up to MAX_EMPTY reads.
 	local keys, read = walk_keys(controller, ability, say)
 	if #keys > 0 then
@@ -118,14 +96,6 @@ local function look(controller, pawn, ability, say)
 	end
 end
 
--- Whether the character holds the tag; nil when it cannot be read. The ability system is checked first.
-local function has(t)
-	if t == nil then return nil end
-	local ok, v = pcall(function() return G.asc:HasMatchingGameplayTag(t) end)
-	if not ok or type(v) ~= "boolean" then return nil end
-	return v
-end
-
 -- The walk asked: settled once the game walks, pressed again a few times when it does not take the press.
 local function settle(walking, now, ability, say)
 	local p = G.pending
@@ -139,7 +109,7 @@ local function settle(walking, now, ability, say)
 		G.pending, G.missed = nil, G.missed + 1
 		return
 	end
-	if has(G.tags.sprinting) == true and now - p.since < SPRINT_WAIT then return end
+	if Tags.has("sprinting") == true and now - p.since < SPRINT_WAIT then return end
 	local _, err = Press.action(walk_action(ability))
 	if err ~= nil then
 		G.failed, G.pending = true, nil
@@ -162,14 +132,19 @@ function M.frame(controller, pawn, ability, now, auto, sprinting, say)
 	end
 	if now >= G.next_look then
 		G.next_look = now + LOOK_EVERY
-		look(controller, pawn, ability, say)
+		look(controller, ability, say)
 	end
-	if G.tags == nil or not U.is_valid(G.asc) then return false end
-	local walking = has(G.tags.walking)
+	if not Tags.look(pawn, now) then
+		G.pending = nil
+		if Tags.gave_up() and not Tags.broken() then
+			say_once(say, "config", "the game's walk cannot be found: auto sprint does not stop for it")
+		end
+		return false
+	end
+	local walking = Tags.has("walking")
 	if walking == nil then
-		-- Not asked again for this character: the call fails the same way each frame.
-		G.tags, G.looks, G.pending = nil, MAX_LOOKS, nil
-		say("the game's walk cannot be read: auto sprint does not stop for it")
+		G.pending = nil
+		say_once(say, "tag", "the game's walk cannot be read: auto sprint does not stop for it")
 		return false
 	end
 	local down = false

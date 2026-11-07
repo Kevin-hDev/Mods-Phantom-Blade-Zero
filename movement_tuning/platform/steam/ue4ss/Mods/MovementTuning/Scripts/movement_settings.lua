@@ -32,10 +32,20 @@ M.STICK = {
 	{ key = "StickCurve", field = "curve", min = 0.5, max = 3, step = 0.05, default = 0.5 },
 }
 M.RIGHT = { key = "RightDeadZone", min = 0, max = 25, step = 1, default = 3 }
+-- Turn off sprint (movement_sprint_off.lua), in the order Kevin gave (7 November 2026): Sprint turns off both sprints,
+-- HighSpeedSprint only the faster one after 2 s of sprint, None leaves both as in the game.
+M.SPRINT_OFF = { key = "TurnOffSprint", options = { "Sprint", "HighSpeedSprint", "None" }, default = "None" }
 -- Auto sprint: the left stick pushed all the way starts the sprint, back under the stop point
 -- (a percent of the stick's travel, 50 by default) stops it; on by default.
 M.AUTO = { key = "AutoSprint", default = true }
 M.AUTO_STOP = { key = "AutoSprintStop", min = 20, max = 90, step = 5, default = 50 }
+-- Sprint resume (movement_resume.lua): full speed as soon as the game gives the stick back after a special move; on by
+-- default, as the halt it removes is what players asked about.
+M.RESUME = { key = "SprintResume", default = true }
+-- Faster dodge landing (movement_landing.lua): the end of a dodge on the ground paced to hold the run's speed. A row of
+-- its own, on by default, apart from the resume so that each row does what it says (Kevin, 7 November 2026, once the
+-- trial of 1.0.9 passed).
+M.LANDING = { key = "DodgeLanding", default = true }
 
 -- On the menu's grid: rounded to its step, so 1.35 written by hand and the menu's 1.35 are the same speed.
 -- Divided rather than multiplied by the step: 27 / 20 is the 1.35 written in the file, 27 x 0.05 is not.
@@ -130,6 +140,10 @@ function M.resolve(raw, warn)
 	s.jump_neutral = s.jump_height == 1
 	s.stick = sticks(raw, warn)
 	s.stick_neutral = s.stick.left == nil and s.stick.right == nil and s.stick.auto == nil
+	s.resume = V.switch(raw, M.RESUME.key:lower(), M.RESUME.key, M.RESUME.default, warn)
+	s.landing = V.switch(raw, M.LANDING.key:lower(), M.LANDING.key, M.LANDING.default, warn)
+	s.turn_off = V.choice(raw, M.SPRINT_OFF.key, M.SPRINT_OFF.options, M.SPRINT_OFF.default, warn)
+	s.sprint_off, s.high_off = s.turn_off == "Sprint", s.turn_off ~= "None"
 	return s
 end
 
@@ -150,9 +164,10 @@ function M.describe(s)
 		parts[#parts + 1] = string.format("%s x%s%s", move.setting, V.show(s.rates[move.key]),
 			s.own[move.key] and "" or " (global)")
 	end
-	return string.format("mod %s, global x%s: %s; attacks x%s; jump height x%s; %s", s.enabled and "on" or "off",
-		V.show(s.all), table.concat(parts, ", "), V.show(s.rates[Moves.ATTACKS]), V.show(s.jump_height),
-		describe_sticks(s.stick))
+	return string.format("mod %s, global x%s: %s; attacks x%s; jump height x%s; %s; sprint resume %s; dodge landing %s; "
+		.. "turn off sprint %s", s.enabled and "on" or "off", V.show(s.all), table.concat(parts, ", "),
+		V.show(s.rates[Moves.ATTACKS]), V.show(s.jump_height), describe_sticks(s.stick), s.resume and "on" or "off",
+		s.landing and "on" or "off", s.turn_off)
 end
 
 -- The file's keys and their defaults, in the menu's order: the moves under the Jump heading (in_jump) come after Jump
@@ -173,8 +188,11 @@ local function entries()
 	list[#list + 1] = { "LeftStick", M.LEFT_DEFAULT }
 	for _, entry in ipairs(M.STICK) do list[#list + 1] = { entry.key, entry.default } end
 	list[#list + 1] = { M.RIGHT.key, tostring(M.RIGHT.default) }
+	list[#list + 1] = { M.SPRINT_OFF.key, M.SPRINT_OFF.default }
 	list[#list + 1] = { M.AUTO.key, M.AUTO.default }
 	list[#list + 1] = { M.AUTO_STOP.key, M.AUTO_STOP.default }
+	list[#list + 1] = { M.RESUME.key, M.RESUME.default }
+	list[#list + 1] = { M.LANDING.key, M.LANDING.default }
 	return list
 end
 
