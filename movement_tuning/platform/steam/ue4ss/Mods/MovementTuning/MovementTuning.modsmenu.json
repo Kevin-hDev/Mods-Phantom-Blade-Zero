@@ -1,0 +1,2382 @@
+{
+  "title": {
+    "en": "Movement Tuning",
+    "zh-Hans": "动作速度调整"
+  },
+  "description": {
+    "en": "Faster walking, running, sprinting, dodges, jumps, wall runs, ladders and attacks: one speed for every move, or a speed for each. Higher jumps. A left stick curve that lets you walk, stick dead zones, auto sprint.",
+    "zh-Hans": "更快的行走、奔跑、冲刺、闪避、跳跃、跑墙、爬梯和攻击：所有动作使用同一速度，或为每个动作单独设置速度。跳得更高。左摇杆曲线让行走更容易，可调整摇杆死区，并支持自动冲刺。"
+  },
+  "version": "1.0.1",
+  "settings": [
+    {
+      "key": "Enabled",
+      "type": "toggle",
+      "label": {
+        "en": "Enabled",
+        "zh-Hans": "启用"
+      },
+      "help": {
+        "en": "Off: every move and attack plays at the game's own speed, jumps keep the game's height, and the sticks and the sprint work as in the game.",
+        "zh-Hans": "关闭：所有动作和攻击恢复游戏原有速度，跳跃恢复游戏原有高度，摇杆和冲刺恢复游戏原有设定。"
+      },
+      "default": true
+    },
+    {
+      "type": "heading",
+      "label": {
+        "en": "Moves",
+        "zh-Hans": "动作"
+      }
+    },
+    {
+      "key": "AllMoves",
+      "type": "number",
+      "min": 1,
+      "max": 3,
+      "step": 0.05,
+      "default": 1.3,
+      "label": {
+        "en": "Global",
+        "zh-Hans": "全局"
+      },
+      "help": {
+        "en": "The speed of every move set to Global below. 1 is the game's own speed, 3 three times as fast. Dodges stop at 2.5.",
+        "zh-Hans": "下方设为“全局”的所有动作的速度。1 为游戏原有速度，3 为三倍速度。闪避最高为 2.5。"
+      }
+    },
+    {
+      "key": "Walk",
+      "type": "choice",
+      "slider": true,
+      "label": {
+        "en": "Walk",
+        "zh-Hans": "行走"
+      },
+      "help": {
+        "en": "Global: same speed as the Global row. 1.0 is the game's own speed, 3.0 three times as fast. Walking, with the stick pushed a little.",
+        "zh-Hans": "全局：与“全局”行的速度相同。1.0 为游戏原有速度，3.0 为三倍速度。行走（轻推摇杆）。"
+      },
+      "default": "Global",
+      "options": [
+        {
+          "value": "Global",
+          "label": {
+            "en": "Global",
+            "zh-Hans": "全局"
+          }
+        },
+        {
+          "value": "1.0",
+          "label": "1.0"
+        },
+        {
+          "value": "1.05",
+          "label": "1.05"
+        },
+        {
+          "value": "1.1",
+          "label": "1.1"
+        },
+        {
+          "value": "1.15",
+          "label": "1.15"
+        },
+        {
+          "value": "1.2",
+          "label": "1.2"
+        },
+        {
+          "value": "1.25",
+          "label": "1.25"
+        },
+        {
+          "value": "1.3",
+          "label": "1.3"
+        },
+        {
+          "value": "1.35",
+          "label": "1.35"
+        },
+        {
+          "value": "1.4",
+          "label": "1.4"
+        },
+        {
+          "value": "1.45",
+          "label": "1.45"
+        },
+        {
+          "value": "1.5",
+          "label": "1.5"
+        },
+        {
+          "value": "1.55",
+          "label": "1.55"
+        },
+        {
+          "value": "1.6",
+          "label": "1.6"
+        },
+        {
+          "value": "1.65",
+          "label": "1.65"
+        },
+        {
+          "value": "1.7",
+          "label": "1.7"
+        },
+        {
+          "value": "1.75",
+          "label": "1.75"
+        },
+        {
+          "value": "1.8",
+          "label": "1.8"
+        },
+        {
+          "value": "1.85",
+          "label": "1.85"
+        },
+        {
+          "value": "1.9",
+          "label": "1.9"
+        },
+        {
+          "value": "1.95",
+          "label": "1.95"
+        },
+        {
+          "value": "2.0",
+          "label": "2.0"
+        },
+        {
+          "value": "2.05",
+          "label": "2.05"
+        },
+        {
+          "value": "2.1",
+          "label": "2.1"
+        },
+        {
+          "value": "2.15",
+          "label": "2.15"
+        },
+        {
+          "value": "2.2",
+          "label": "2.2"
+        },
+        {
+          "value": "2.25",
+          "label": "2.25"
+        },
+        {
+          "value": "2.3",
+          "label": "2.3"
+        },
+        {
+          "value": "2.35",
+          "label": "2.35"
+        },
+        {
+          "value": "2.4",
+          "label": "2.4"
+        },
+        {
+          "value": "2.45",
+          "label": "2.45"
+        },
+        {
+          "value": "2.5",
+          "label": "2.5"
+        },
+        {
+          "value": "2.55",
+          "label": "2.55"
+        },
+        {
+          "value": "2.6",
+          "label": "2.6"
+        },
+        {
+          "value": "2.65",
+          "label": "2.65"
+        },
+        {
+          "value": "2.7",
+          "label": "2.7"
+        },
+        {
+          "value": "2.75",
+          "label": "2.75"
+        },
+        {
+          "value": "2.8",
+          "label": "2.8"
+        },
+        {
+          "value": "2.85",
+          "label": "2.85"
+        },
+        {
+          "value": "2.9",
+          "label": "2.9"
+        },
+        {
+          "value": "2.95",
+          "label": "2.95"
+        },
+        {
+          "value": "3.0",
+          "label": "3.0"
+        }
+      ]
+    },
+    {
+      "key": "Run",
+      "type": "choice",
+      "slider": true,
+      "label": {
+        "en": "Run",
+        "zh-Hans": "奔跑"
+      },
+      "help": {
+        "en": "Global: same speed as the Global row. 1.0 is the game's own speed, 3.0 three times as fast. Running, the usual pace.",
+        "zh-Hans": "全局：与“全局”行的速度相同。1.0 为游戏原有速度，3.0 为三倍速度。奔跑，平时的移动速度。"
+      },
+      "default": "Global",
+      "options": [
+        {
+          "value": "Global",
+          "label": {
+            "en": "Global",
+            "zh-Hans": "全局"
+          }
+        },
+        {
+          "value": "1.0",
+          "label": "1.0"
+        },
+        {
+          "value": "1.05",
+          "label": "1.05"
+        },
+        {
+          "value": "1.1",
+          "label": "1.1"
+        },
+        {
+          "value": "1.15",
+          "label": "1.15"
+        },
+        {
+          "value": "1.2",
+          "label": "1.2"
+        },
+        {
+          "value": "1.25",
+          "label": "1.25"
+        },
+        {
+          "value": "1.3",
+          "label": "1.3"
+        },
+        {
+          "value": "1.35",
+          "label": "1.35"
+        },
+        {
+          "value": "1.4",
+          "label": "1.4"
+        },
+        {
+          "value": "1.45",
+          "label": "1.45"
+        },
+        {
+          "value": "1.5",
+          "label": "1.5"
+        },
+        {
+          "value": "1.55",
+          "label": "1.55"
+        },
+        {
+          "value": "1.6",
+          "label": "1.6"
+        },
+        {
+          "value": "1.65",
+          "label": "1.65"
+        },
+        {
+          "value": "1.7",
+          "label": "1.7"
+        },
+        {
+          "value": "1.75",
+          "label": "1.75"
+        },
+        {
+          "value": "1.8",
+          "label": "1.8"
+        },
+        {
+          "value": "1.85",
+          "label": "1.85"
+        },
+        {
+          "value": "1.9",
+          "label": "1.9"
+        },
+        {
+          "value": "1.95",
+          "label": "1.95"
+        },
+        {
+          "value": "2.0",
+          "label": "2.0"
+        },
+        {
+          "value": "2.05",
+          "label": "2.05"
+        },
+        {
+          "value": "2.1",
+          "label": "2.1"
+        },
+        {
+          "value": "2.15",
+          "label": "2.15"
+        },
+        {
+          "value": "2.2",
+          "label": "2.2"
+        },
+        {
+          "value": "2.25",
+          "label": "2.25"
+        },
+        {
+          "value": "2.3",
+          "label": "2.3"
+        },
+        {
+          "value": "2.35",
+          "label": "2.35"
+        },
+        {
+          "value": "2.4",
+          "label": "2.4"
+        },
+        {
+          "value": "2.45",
+          "label": "2.45"
+        },
+        {
+          "value": "2.5",
+          "label": "2.5"
+        },
+        {
+          "value": "2.55",
+          "label": "2.55"
+        },
+        {
+          "value": "2.6",
+          "label": "2.6"
+        },
+        {
+          "value": "2.65",
+          "label": "2.65"
+        },
+        {
+          "value": "2.7",
+          "label": "2.7"
+        },
+        {
+          "value": "2.75",
+          "label": "2.75"
+        },
+        {
+          "value": "2.8",
+          "label": "2.8"
+        },
+        {
+          "value": "2.85",
+          "label": "2.85"
+        },
+        {
+          "value": "2.9",
+          "label": "2.9"
+        },
+        {
+          "value": "2.95",
+          "label": "2.95"
+        },
+        {
+          "value": "3.0",
+          "label": "3.0"
+        }
+      ]
+    },
+    {
+      "key": "Sprint",
+      "type": "choice",
+      "slider": true,
+      "label": {
+        "en": "Sprint",
+        "zh-Hans": "冲刺"
+      },
+      "help": {
+        "en": "Global: same speed as the Global row. 1.0 is the game's own speed, 3.0 three times as fast. Sprinting, and the faster sprint that follows after about 2 seconds.",
+        "zh-Hans": "全局：与“全局”行的速度相同。1.0 为游戏原有速度，3.0 为三倍速度。冲刺，以及约 2 秒后进入的高速冲刺。"
+      },
+      "default": "Global",
+      "options": [
+        {
+          "value": "Global",
+          "label": {
+            "en": "Global",
+            "zh-Hans": "全局"
+          }
+        },
+        {
+          "value": "1.0",
+          "label": "1.0"
+        },
+        {
+          "value": "1.05",
+          "label": "1.05"
+        },
+        {
+          "value": "1.1",
+          "label": "1.1"
+        },
+        {
+          "value": "1.15",
+          "label": "1.15"
+        },
+        {
+          "value": "1.2",
+          "label": "1.2"
+        },
+        {
+          "value": "1.25",
+          "label": "1.25"
+        },
+        {
+          "value": "1.3",
+          "label": "1.3"
+        },
+        {
+          "value": "1.35",
+          "label": "1.35"
+        },
+        {
+          "value": "1.4",
+          "label": "1.4"
+        },
+        {
+          "value": "1.45",
+          "label": "1.45"
+        },
+        {
+          "value": "1.5",
+          "label": "1.5"
+        },
+        {
+          "value": "1.55",
+          "label": "1.55"
+        },
+        {
+          "value": "1.6",
+          "label": "1.6"
+        },
+        {
+          "value": "1.65",
+          "label": "1.65"
+        },
+        {
+          "value": "1.7",
+          "label": "1.7"
+        },
+        {
+          "value": "1.75",
+          "label": "1.75"
+        },
+        {
+          "value": "1.8",
+          "label": "1.8"
+        },
+        {
+          "value": "1.85",
+          "label": "1.85"
+        },
+        {
+          "value": "1.9",
+          "label": "1.9"
+        },
+        {
+          "value": "1.95",
+          "label": "1.95"
+        },
+        {
+          "value": "2.0",
+          "label": "2.0"
+        },
+        {
+          "value": "2.05",
+          "label": "2.05"
+        },
+        {
+          "value": "2.1",
+          "label": "2.1"
+        },
+        {
+          "value": "2.15",
+          "label": "2.15"
+        },
+        {
+          "value": "2.2",
+          "label": "2.2"
+        },
+        {
+          "value": "2.25",
+          "label": "2.25"
+        },
+        {
+          "value": "2.3",
+          "label": "2.3"
+        },
+        {
+          "value": "2.35",
+          "label": "2.35"
+        },
+        {
+          "value": "2.4",
+          "label": "2.4"
+        },
+        {
+          "value": "2.45",
+          "label": "2.45"
+        },
+        {
+          "value": "2.5",
+          "label": "2.5"
+        },
+        {
+          "value": "2.55",
+          "label": "2.55"
+        },
+        {
+          "value": "2.6",
+          "label": "2.6"
+        },
+        {
+          "value": "2.65",
+          "label": "2.65"
+        },
+        {
+          "value": "2.7",
+          "label": "2.7"
+        },
+        {
+          "value": "2.75",
+          "label": "2.75"
+        },
+        {
+          "value": "2.8",
+          "label": "2.8"
+        },
+        {
+          "value": "2.85",
+          "label": "2.85"
+        },
+        {
+          "value": "2.9",
+          "label": "2.9"
+        },
+        {
+          "value": "2.95",
+          "label": "2.95"
+        },
+        {
+          "value": "3.0",
+          "label": "3.0"
+        }
+      ]
+    },
+    {
+      "key": "Dodges",
+      "type": "choice",
+      "slider": true,
+      "label": {
+        "en": "Dodges",
+        "zh-Hans": "闪避"
+      },
+      "help": {
+        "en": "Global: same speed as the Global row. 1.0 is the game's own speed, 2.5 two and a half times as fast. Chained dodges play faster. A single dodge lasts as long as before and covers more ground. Global stops at 2.5 here too: any faster and the next dodge can't be chained in time.",
+        "zh-Hans": "全局：与“全局”行的速度相同。1.0 为游戏原有速度，2.5 为 2.5 倍速度。连续闪避会更快。单次闪避持续时间不变，但移动距离更远。设为“全局”时同样最高 2.5：再快就来不及接上下一次闪避。"
+      },
+      "default": "Global",
+      "options": [
+        {
+          "value": "Global",
+          "label": {
+            "en": "Global",
+            "zh-Hans": "全局"
+          }
+        },
+        {
+          "value": "1.0",
+          "label": "1.0"
+        },
+        {
+          "value": "1.05",
+          "label": "1.05"
+        },
+        {
+          "value": "1.1",
+          "label": "1.1"
+        },
+        {
+          "value": "1.15",
+          "label": "1.15"
+        },
+        {
+          "value": "1.2",
+          "label": "1.2"
+        },
+        {
+          "value": "1.25",
+          "label": "1.25"
+        },
+        {
+          "value": "1.3",
+          "label": "1.3"
+        },
+        {
+          "value": "1.35",
+          "label": "1.35"
+        },
+        {
+          "value": "1.4",
+          "label": "1.4"
+        },
+        {
+          "value": "1.45",
+          "label": "1.45"
+        },
+        {
+          "value": "1.5",
+          "label": "1.5"
+        },
+        {
+          "value": "1.55",
+          "label": "1.55"
+        },
+        {
+          "value": "1.6",
+          "label": "1.6"
+        },
+        {
+          "value": "1.65",
+          "label": "1.65"
+        },
+        {
+          "value": "1.7",
+          "label": "1.7"
+        },
+        {
+          "value": "1.75",
+          "label": "1.75"
+        },
+        {
+          "value": "1.8",
+          "label": "1.8"
+        },
+        {
+          "value": "1.85",
+          "label": "1.85"
+        },
+        {
+          "value": "1.9",
+          "label": "1.9"
+        },
+        {
+          "value": "1.95",
+          "label": "1.95"
+        },
+        {
+          "value": "2.0",
+          "label": "2.0"
+        },
+        {
+          "value": "2.05",
+          "label": "2.05"
+        },
+        {
+          "value": "2.1",
+          "label": "2.1"
+        },
+        {
+          "value": "2.15",
+          "label": "2.15"
+        },
+        {
+          "value": "2.2",
+          "label": "2.2"
+        },
+        {
+          "value": "2.25",
+          "label": "2.25"
+        },
+        {
+          "value": "2.3",
+          "label": "2.3"
+        },
+        {
+          "value": "2.35",
+          "label": "2.35"
+        },
+        {
+          "value": "2.4",
+          "label": "2.4"
+        },
+        {
+          "value": "2.45",
+          "label": "2.45"
+        },
+        {
+          "value": "2.5",
+          "label": "2.5"
+        }
+      ]
+    },
+    {
+      "key": "WallRunUp",
+      "type": "choice",
+      "slider": true,
+      "label": {
+        "en": "Running up walls",
+        "zh-Hans": "向上跑墙"
+      },
+      "help": {
+        "en": "Global: same speed as the Global row. 1.0 is the game's own speed, 3.0 three times as fast. Running up a wall, a pole or a column.",
+        "zh-Hans": "全局：与“全局”行的速度相同。1.0 为游戏原有速度，3.0 为三倍速度。沿墙壁、杆子或柱子向上奔跑。"
+      },
+      "default": "Global",
+      "options": [
+        {
+          "value": "Global",
+          "label": {
+            "en": "Global",
+            "zh-Hans": "全局"
+          }
+        },
+        {
+          "value": "1.0",
+          "label": "1.0"
+        },
+        {
+          "value": "1.05",
+          "label": "1.05"
+        },
+        {
+          "value": "1.1",
+          "label": "1.1"
+        },
+        {
+          "value": "1.15",
+          "label": "1.15"
+        },
+        {
+          "value": "1.2",
+          "label": "1.2"
+        },
+        {
+          "value": "1.25",
+          "label": "1.25"
+        },
+        {
+          "value": "1.3",
+          "label": "1.3"
+        },
+        {
+          "value": "1.35",
+          "label": "1.35"
+        },
+        {
+          "value": "1.4",
+          "label": "1.4"
+        },
+        {
+          "value": "1.45",
+          "label": "1.45"
+        },
+        {
+          "value": "1.5",
+          "label": "1.5"
+        },
+        {
+          "value": "1.55",
+          "label": "1.55"
+        },
+        {
+          "value": "1.6",
+          "label": "1.6"
+        },
+        {
+          "value": "1.65",
+          "label": "1.65"
+        },
+        {
+          "value": "1.7",
+          "label": "1.7"
+        },
+        {
+          "value": "1.75",
+          "label": "1.75"
+        },
+        {
+          "value": "1.8",
+          "label": "1.8"
+        },
+        {
+          "value": "1.85",
+          "label": "1.85"
+        },
+        {
+          "value": "1.9",
+          "label": "1.9"
+        },
+        {
+          "value": "1.95",
+          "label": "1.95"
+        },
+        {
+          "value": "2.0",
+          "label": "2.0"
+        },
+        {
+          "value": "2.05",
+          "label": "2.05"
+        },
+        {
+          "value": "2.1",
+          "label": "2.1"
+        },
+        {
+          "value": "2.15",
+          "label": "2.15"
+        },
+        {
+          "value": "2.2",
+          "label": "2.2"
+        },
+        {
+          "value": "2.25",
+          "label": "2.25"
+        },
+        {
+          "value": "2.3",
+          "label": "2.3"
+        },
+        {
+          "value": "2.35",
+          "label": "2.35"
+        },
+        {
+          "value": "2.4",
+          "label": "2.4"
+        },
+        {
+          "value": "2.45",
+          "label": "2.45"
+        },
+        {
+          "value": "2.5",
+          "label": "2.5"
+        },
+        {
+          "value": "2.55",
+          "label": "2.55"
+        },
+        {
+          "value": "2.6",
+          "label": "2.6"
+        },
+        {
+          "value": "2.65",
+          "label": "2.65"
+        },
+        {
+          "value": "2.7",
+          "label": "2.7"
+        },
+        {
+          "value": "2.75",
+          "label": "2.75"
+        },
+        {
+          "value": "2.8",
+          "label": "2.8"
+        },
+        {
+          "value": "2.85",
+          "label": "2.85"
+        },
+        {
+          "value": "2.9",
+          "label": "2.9"
+        },
+        {
+          "value": "2.95",
+          "label": "2.95"
+        },
+        {
+          "value": "3.0",
+          "label": "3.0"
+        }
+      ]
+    },
+    {
+      "key": "WallRunSide",
+      "type": "choice",
+      "slider": true,
+      "label": {
+        "en": "Running along walls",
+        "zh-Hans": "横向跑墙"
+      },
+      "help": {
+        "en": "Global: same speed as the Global row. 1.0 is the game's own speed, 3.0 three times as fast. Running along a wall and the jump off at its end.",
+        "zh-Hans": "全局：与“全局”行的速度相同。1.0 为游戏原有速度，3.0 为三倍速度。沿墙壁横向奔跑，以及在尽头跃离墙面。"
+      },
+      "default": "Global",
+      "options": [
+        {
+          "value": "Global",
+          "label": {
+            "en": "Global",
+            "zh-Hans": "全局"
+          }
+        },
+        {
+          "value": "1.0",
+          "label": "1.0"
+        },
+        {
+          "value": "1.05",
+          "label": "1.05"
+        },
+        {
+          "value": "1.1",
+          "label": "1.1"
+        },
+        {
+          "value": "1.15",
+          "label": "1.15"
+        },
+        {
+          "value": "1.2",
+          "label": "1.2"
+        },
+        {
+          "value": "1.25",
+          "label": "1.25"
+        },
+        {
+          "value": "1.3",
+          "label": "1.3"
+        },
+        {
+          "value": "1.35",
+          "label": "1.35"
+        },
+        {
+          "value": "1.4",
+          "label": "1.4"
+        },
+        {
+          "value": "1.45",
+          "label": "1.45"
+        },
+        {
+          "value": "1.5",
+          "label": "1.5"
+        },
+        {
+          "value": "1.55",
+          "label": "1.55"
+        },
+        {
+          "value": "1.6",
+          "label": "1.6"
+        },
+        {
+          "value": "1.65",
+          "label": "1.65"
+        },
+        {
+          "value": "1.7",
+          "label": "1.7"
+        },
+        {
+          "value": "1.75",
+          "label": "1.75"
+        },
+        {
+          "value": "1.8",
+          "label": "1.8"
+        },
+        {
+          "value": "1.85",
+          "label": "1.85"
+        },
+        {
+          "value": "1.9",
+          "label": "1.9"
+        },
+        {
+          "value": "1.95",
+          "label": "1.95"
+        },
+        {
+          "value": "2.0",
+          "label": "2.0"
+        },
+        {
+          "value": "2.05",
+          "label": "2.05"
+        },
+        {
+          "value": "2.1",
+          "label": "2.1"
+        },
+        {
+          "value": "2.15",
+          "label": "2.15"
+        },
+        {
+          "value": "2.2",
+          "label": "2.2"
+        },
+        {
+          "value": "2.25",
+          "label": "2.25"
+        },
+        {
+          "value": "2.3",
+          "label": "2.3"
+        },
+        {
+          "value": "2.35",
+          "label": "2.35"
+        },
+        {
+          "value": "2.4",
+          "label": "2.4"
+        },
+        {
+          "value": "2.45",
+          "label": "2.45"
+        },
+        {
+          "value": "2.5",
+          "label": "2.5"
+        },
+        {
+          "value": "2.55",
+          "label": "2.55"
+        },
+        {
+          "value": "2.6",
+          "label": "2.6"
+        },
+        {
+          "value": "2.65",
+          "label": "2.65"
+        },
+        {
+          "value": "2.7",
+          "label": "2.7"
+        },
+        {
+          "value": "2.75",
+          "label": "2.75"
+        },
+        {
+          "value": "2.8",
+          "label": "2.8"
+        },
+        {
+          "value": "2.85",
+          "label": "2.85"
+        },
+        {
+          "value": "2.9",
+          "label": "2.9"
+        },
+        {
+          "value": "2.95",
+          "label": "2.95"
+        },
+        {
+          "value": "3.0",
+          "label": "3.0"
+        }
+      ]
+    },
+    {
+      "key": "Ladders",
+      "type": "choice",
+      "slider": true,
+      "label": {
+        "en": "Ladders",
+        "zh-Hans": "梯子"
+      },
+      "help": {
+        "en": "Global: same speed as the Global row. 1.0 is the game's own speed, 3.0 three times as fast. Climbing up and down ladders.",
+        "zh-Hans": "全局：与“全局”行的速度相同。1.0 为游戏原有速度，3.0 为三倍速度。上下攀爬梯子。"
+      },
+      "default": "Global",
+      "options": [
+        {
+          "value": "Global",
+          "label": {
+            "en": "Global",
+            "zh-Hans": "全局"
+          }
+        },
+        {
+          "value": "1.0",
+          "label": "1.0"
+        },
+        {
+          "value": "1.05",
+          "label": "1.05"
+        },
+        {
+          "value": "1.1",
+          "label": "1.1"
+        },
+        {
+          "value": "1.15",
+          "label": "1.15"
+        },
+        {
+          "value": "1.2",
+          "label": "1.2"
+        },
+        {
+          "value": "1.25",
+          "label": "1.25"
+        },
+        {
+          "value": "1.3",
+          "label": "1.3"
+        },
+        {
+          "value": "1.35",
+          "label": "1.35"
+        },
+        {
+          "value": "1.4",
+          "label": "1.4"
+        },
+        {
+          "value": "1.45",
+          "label": "1.45"
+        },
+        {
+          "value": "1.5",
+          "label": "1.5"
+        },
+        {
+          "value": "1.55",
+          "label": "1.55"
+        },
+        {
+          "value": "1.6",
+          "label": "1.6"
+        },
+        {
+          "value": "1.65",
+          "label": "1.65"
+        },
+        {
+          "value": "1.7",
+          "label": "1.7"
+        },
+        {
+          "value": "1.75",
+          "label": "1.75"
+        },
+        {
+          "value": "1.8",
+          "label": "1.8"
+        },
+        {
+          "value": "1.85",
+          "label": "1.85"
+        },
+        {
+          "value": "1.9",
+          "label": "1.9"
+        },
+        {
+          "value": "1.95",
+          "label": "1.95"
+        },
+        {
+          "value": "2.0",
+          "label": "2.0"
+        },
+        {
+          "value": "2.05",
+          "label": "2.05"
+        },
+        {
+          "value": "2.1",
+          "label": "2.1"
+        },
+        {
+          "value": "2.15",
+          "label": "2.15"
+        },
+        {
+          "value": "2.2",
+          "label": "2.2"
+        },
+        {
+          "value": "2.25",
+          "label": "2.25"
+        },
+        {
+          "value": "2.3",
+          "label": "2.3"
+        },
+        {
+          "value": "2.35",
+          "label": "2.35"
+        },
+        {
+          "value": "2.4",
+          "label": "2.4"
+        },
+        {
+          "value": "2.45",
+          "label": "2.45"
+        },
+        {
+          "value": "2.5",
+          "label": "2.5"
+        },
+        {
+          "value": "2.55",
+          "label": "2.55"
+        },
+        {
+          "value": "2.6",
+          "label": "2.6"
+        },
+        {
+          "value": "2.65",
+          "label": "2.65"
+        },
+        {
+          "value": "2.7",
+          "label": "2.7"
+        },
+        {
+          "value": "2.75",
+          "label": "2.75"
+        },
+        {
+          "value": "2.8",
+          "label": "2.8"
+        },
+        {
+          "value": "2.85",
+          "label": "2.85"
+        },
+        {
+          "value": "2.9",
+          "label": "2.9"
+        },
+        {
+          "value": "2.95",
+          "label": "2.95"
+        },
+        {
+          "value": "3.0",
+          "label": "3.0"
+        }
+      ]
+    },
+    {
+      "key": "OtherMoves",
+      "type": "choice",
+      "slider": true,
+      "label": {
+        "en": "Ropes, slides and ledges",
+        "zh-Hans": "绳索、滑行和攀越"
+      },
+      "help": {
+        "en": "Global: same speed as the Global row. 1.0 is the game's own speed, 3.0 three times as fast. Ropes, slides, ledges, obstacles and gaps you squeeze through. The swing on a rope keeps the game's own pace.",
+        "zh-Hans": "全局：与“全局”行的速度相同。1.0 为游戏原有速度，3.0 为三倍速度。绳索、滑行、攀越、翻越障碍和钻过缝隙。绳索摆荡保持游戏原有节奏。"
+      },
+      "default": "Global",
+      "options": [
+        {
+          "value": "Global",
+          "label": {
+            "en": "Global",
+            "zh-Hans": "全局"
+          }
+        },
+        {
+          "value": "1.0",
+          "label": "1.0"
+        },
+        {
+          "value": "1.05",
+          "label": "1.05"
+        },
+        {
+          "value": "1.1",
+          "label": "1.1"
+        },
+        {
+          "value": "1.15",
+          "label": "1.15"
+        },
+        {
+          "value": "1.2",
+          "label": "1.2"
+        },
+        {
+          "value": "1.25",
+          "label": "1.25"
+        },
+        {
+          "value": "1.3",
+          "label": "1.3"
+        },
+        {
+          "value": "1.35",
+          "label": "1.35"
+        },
+        {
+          "value": "1.4",
+          "label": "1.4"
+        },
+        {
+          "value": "1.45",
+          "label": "1.45"
+        },
+        {
+          "value": "1.5",
+          "label": "1.5"
+        },
+        {
+          "value": "1.55",
+          "label": "1.55"
+        },
+        {
+          "value": "1.6",
+          "label": "1.6"
+        },
+        {
+          "value": "1.65",
+          "label": "1.65"
+        },
+        {
+          "value": "1.7",
+          "label": "1.7"
+        },
+        {
+          "value": "1.75",
+          "label": "1.75"
+        },
+        {
+          "value": "1.8",
+          "label": "1.8"
+        },
+        {
+          "value": "1.85",
+          "label": "1.85"
+        },
+        {
+          "value": "1.9",
+          "label": "1.9"
+        },
+        {
+          "value": "1.95",
+          "label": "1.95"
+        },
+        {
+          "value": "2.0",
+          "label": "2.0"
+        },
+        {
+          "value": "2.05",
+          "label": "2.05"
+        },
+        {
+          "value": "2.1",
+          "label": "2.1"
+        },
+        {
+          "value": "2.15",
+          "label": "2.15"
+        },
+        {
+          "value": "2.2",
+          "label": "2.2"
+        },
+        {
+          "value": "2.25",
+          "label": "2.25"
+        },
+        {
+          "value": "2.3",
+          "label": "2.3"
+        },
+        {
+          "value": "2.35",
+          "label": "2.35"
+        },
+        {
+          "value": "2.4",
+          "label": "2.4"
+        },
+        {
+          "value": "2.45",
+          "label": "2.45"
+        },
+        {
+          "value": "2.5",
+          "label": "2.5"
+        },
+        {
+          "value": "2.55",
+          "label": "2.55"
+        },
+        {
+          "value": "2.6",
+          "label": "2.6"
+        },
+        {
+          "value": "2.65",
+          "label": "2.65"
+        },
+        {
+          "value": "2.7",
+          "label": "2.7"
+        },
+        {
+          "value": "2.75",
+          "label": "2.75"
+        },
+        {
+          "value": "2.8",
+          "label": "2.8"
+        },
+        {
+          "value": "2.85",
+          "label": "2.85"
+        },
+        {
+          "value": "2.9",
+          "label": "2.9"
+        },
+        {
+          "value": "2.95",
+          "label": "2.95"
+        },
+        {
+          "value": "3.0",
+          "label": "3.0"
+        }
+      ]
+    },
+    {
+      "key": "WeaponDraw",
+      "type": "choice",
+      "slider": true,
+      "label": {
+        "en": "Weapon draw",
+        "zh-Hans": "拔刀收刀"
+      },
+      "help": {
+        "en": "Global: same speed as the Global row. 1.0 is the game's own speed, 3.0 three times as fast. Drawing and putting away your weapon.",
+        "zh-Hans": "全局：与“全局”行的速度相同。1.0 为游戏原有速度，3.0 为三倍速度。拔出和收起武器。"
+      },
+      "default": "Global",
+      "options": [
+        {
+          "value": "Global",
+          "label": {
+            "en": "Global",
+            "zh-Hans": "全局"
+          }
+        },
+        {
+          "value": "1.0",
+          "label": "1.0"
+        },
+        {
+          "value": "1.05",
+          "label": "1.05"
+        },
+        {
+          "value": "1.1",
+          "label": "1.1"
+        },
+        {
+          "value": "1.15",
+          "label": "1.15"
+        },
+        {
+          "value": "1.2",
+          "label": "1.2"
+        },
+        {
+          "value": "1.25",
+          "label": "1.25"
+        },
+        {
+          "value": "1.3",
+          "label": "1.3"
+        },
+        {
+          "value": "1.35",
+          "label": "1.35"
+        },
+        {
+          "value": "1.4",
+          "label": "1.4"
+        },
+        {
+          "value": "1.45",
+          "label": "1.45"
+        },
+        {
+          "value": "1.5",
+          "label": "1.5"
+        },
+        {
+          "value": "1.55",
+          "label": "1.55"
+        },
+        {
+          "value": "1.6",
+          "label": "1.6"
+        },
+        {
+          "value": "1.65",
+          "label": "1.65"
+        },
+        {
+          "value": "1.7",
+          "label": "1.7"
+        },
+        {
+          "value": "1.75",
+          "label": "1.75"
+        },
+        {
+          "value": "1.8",
+          "label": "1.8"
+        },
+        {
+          "value": "1.85",
+          "label": "1.85"
+        },
+        {
+          "value": "1.9",
+          "label": "1.9"
+        },
+        {
+          "value": "1.95",
+          "label": "1.95"
+        },
+        {
+          "value": "2.0",
+          "label": "2.0"
+        },
+        {
+          "value": "2.05",
+          "label": "2.05"
+        },
+        {
+          "value": "2.1",
+          "label": "2.1"
+        },
+        {
+          "value": "2.15",
+          "label": "2.15"
+        },
+        {
+          "value": "2.2",
+          "label": "2.2"
+        },
+        {
+          "value": "2.25",
+          "label": "2.25"
+        },
+        {
+          "value": "2.3",
+          "label": "2.3"
+        },
+        {
+          "value": "2.35",
+          "label": "2.35"
+        },
+        {
+          "value": "2.4",
+          "label": "2.4"
+        },
+        {
+          "value": "2.45",
+          "label": "2.45"
+        },
+        {
+          "value": "2.5",
+          "label": "2.5"
+        },
+        {
+          "value": "2.55",
+          "label": "2.55"
+        },
+        {
+          "value": "2.6",
+          "label": "2.6"
+        },
+        {
+          "value": "2.65",
+          "label": "2.65"
+        },
+        {
+          "value": "2.7",
+          "label": "2.7"
+        },
+        {
+          "value": "2.75",
+          "label": "2.75"
+        },
+        {
+          "value": "2.8",
+          "label": "2.8"
+        },
+        {
+          "value": "2.85",
+          "label": "2.85"
+        },
+        {
+          "value": "2.9",
+          "label": "2.9"
+        },
+        {
+          "value": "2.95",
+          "label": "2.95"
+        },
+        {
+          "value": "3.0",
+          "label": "3.0"
+        }
+      ]
+    },
+    {
+      "key": "Stance",
+      "type": "choice",
+      "slider": true,
+      "label": {
+        "en": "Stance",
+        "zh-Hans": "架势"
+      },
+      "help": {
+        "en": "Global: same speed as the Global row. 1.0 is the game's own speed, 3.0 three times as fast. Going into and out of the stance.",
+        "zh-Hans": "全局：与“全局”行的速度相同。1.0 为游戏原有速度，3.0 为三倍速度。进入和退出架势。"
+      },
+      "default": "Global",
+      "options": [
+        {
+          "value": "Global",
+          "label": {
+            "en": "Global",
+            "zh-Hans": "全局"
+          }
+        },
+        {
+          "value": "1.0",
+          "label": "1.0"
+        },
+        {
+          "value": "1.05",
+          "label": "1.05"
+        },
+        {
+          "value": "1.1",
+          "label": "1.1"
+        },
+        {
+          "value": "1.15",
+          "label": "1.15"
+        },
+        {
+          "value": "1.2",
+          "label": "1.2"
+        },
+        {
+          "value": "1.25",
+          "label": "1.25"
+        },
+        {
+          "value": "1.3",
+          "label": "1.3"
+        },
+        {
+          "value": "1.35",
+          "label": "1.35"
+        },
+        {
+          "value": "1.4",
+          "label": "1.4"
+        },
+        {
+          "value": "1.45",
+          "label": "1.45"
+        },
+        {
+          "value": "1.5",
+          "label": "1.5"
+        },
+        {
+          "value": "1.55",
+          "label": "1.55"
+        },
+        {
+          "value": "1.6",
+          "label": "1.6"
+        },
+        {
+          "value": "1.65",
+          "label": "1.65"
+        },
+        {
+          "value": "1.7",
+          "label": "1.7"
+        },
+        {
+          "value": "1.75",
+          "label": "1.75"
+        },
+        {
+          "value": "1.8",
+          "label": "1.8"
+        },
+        {
+          "value": "1.85",
+          "label": "1.85"
+        },
+        {
+          "value": "1.9",
+          "label": "1.9"
+        },
+        {
+          "value": "1.95",
+          "label": "1.95"
+        },
+        {
+          "value": "2.0",
+          "label": "2.0"
+        },
+        {
+          "value": "2.05",
+          "label": "2.05"
+        },
+        {
+          "value": "2.1",
+          "label": "2.1"
+        },
+        {
+          "value": "2.15",
+          "label": "2.15"
+        },
+        {
+          "value": "2.2",
+          "label": "2.2"
+        },
+        {
+          "value": "2.25",
+          "label": "2.25"
+        },
+        {
+          "value": "2.3",
+          "label": "2.3"
+        },
+        {
+          "value": "2.35",
+          "label": "2.35"
+        },
+        {
+          "value": "2.4",
+          "label": "2.4"
+        },
+        {
+          "value": "2.45",
+          "label": "2.45"
+        },
+        {
+          "value": "2.5",
+          "label": "2.5"
+        },
+        {
+          "value": "2.55",
+          "label": "2.55"
+        },
+        {
+          "value": "2.6",
+          "label": "2.6"
+        },
+        {
+          "value": "2.65",
+          "label": "2.65"
+        },
+        {
+          "value": "2.7",
+          "label": "2.7"
+        },
+        {
+          "value": "2.75",
+          "label": "2.75"
+        },
+        {
+          "value": "2.8",
+          "label": "2.8"
+        },
+        {
+          "value": "2.85",
+          "label": "2.85"
+        },
+        {
+          "value": "2.9",
+          "label": "2.9"
+        },
+        {
+          "value": "2.95",
+          "label": "2.95"
+        },
+        {
+          "value": "3.0",
+          "label": "3.0"
+        }
+      ]
+    },
+    {
+      "type": "heading",
+      "label": {
+        "en": "Combat",
+        "zh-Hans": "战斗"
+      }
+    },
+    {
+      "key": "Attacks",
+      "type": "number",
+      "min": 1,
+      "max": 3,
+      "step": 0.05,
+      "default": 1,
+      "label": {
+        "en": "Attacks",
+        "zh-Hans": "攻击"
+      },
+      "help": {
+        "en": "How fast your attacks play. 1 is the game's own speed, 3 three times as fast. Parries, perfect dodges and executions keep the game's own speed.",
+        "zh-Hans": "攻击动作的速度。1 为游戏原有速度，3 为三倍速度。精确格挡、精确闪避和处决保持游戏原有速度。"
+      }
+    },
+    {
+      "type": "heading",
+      "label": {
+        "en": "Jump",
+        "zh-Hans": "跳跃"
+      }
+    },
+    {
+      "key": "JumpHeight",
+      "type": "number",
+      "min": 1,
+      "max": 3,
+      "step": 0.05,
+      "default": 1.5,
+      "label": {
+        "en": "Jump height",
+        "zh-Hans": "跳跃高度"
+      },
+      "help": {
+        "en": "How high you jump from the ground. 1 is the game's own height, 3 three times as high. A higher jump stays a little longer in the air: 1.3 times as long at 3.",
+        "zh-Hans": "从地面起跳的高度。1 为游戏原有高度，3 为三倍高度。跳得越高，滞空时间会稍长：高度为 3 倍时，滞空时间为 1.3 倍。"
+      }
+    },
+    {
+      "key": "Jump",
+      "type": "choice",
+      "slider": true,
+      "label": {
+        "en": "Jump recovery",
+        "zh-Hans": "跳跃衔接"
+      },
+      "help": {
+        "en": "Global: same speed as the Global row. 1.0 is the game's own speed, 5.0 five times as fast. How soon you can attack or dodge after jumping: the game's jump step is this many times shorter. It does not change the height or the time in the air.",
+        "zh-Hans": "全局：与“全局”行的速度相同。1.0 为游戏原有速度，5.0 为五倍速度。跳跃后多快可以攻击或闪避：游戏的跳跃阶段按此倍数缩短。不改变跳跃高度和滞空时间。"
+      },
+      "default": "5.0",
+      "options": [
+        {
+          "value": "Global",
+          "label": {
+            "en": "Global",
+            "zh-Hans": "全局"
+          }
+        },
+        {
+          "value": "1.0",
+          "label": "1.0"
+        },
+        {
+          "value": "1.1",
+          "label": "1.1"
+        },
+        {
+          "value": "1.2",
+          "label": "1.2"
+        },
+        {
+          "value": "1.3",
+          "label": "1.3"
+        },
+        {
+          "value": "1.4",
+          "label": "1.4"
+        },
+        {
+          "value": "1.5",
+          "label": "1.5"
+        },
+        {
+          "value": "1.6",
+          "label": "1.6"
+        },
+        {
+          "value": "1.7",
+          "label": "1.7"
+        },
+        {
+          "value": "1.8",
+          "label": "1.8"
+        },
+        {
+          "value": "1.9",
+          "label": "1.9"
+        },
+        {
+          "value": "2.0",
+          "label": "2.0"
+        },
+        {
+          "value": "2.1",
+          "label": "2.1"
+        },
+        {
+          "value": "2.2",
+          "label": "2.2"
+        },
+        {
+          "value": "2.3",
+          "label": "2.3"
+        },
+        {
+          "value": "2.4",
+          "label": "2.4"
+        },
+        {
+          "value": "2.5",
+          "label": "2.5"
+        },
+        {
+          "value": "2.6",
+          "label": "2.6"
+        },
+        {
+          "value": "2.7",
+          "label": "2.7"
+        },
+        {
+          "value": "2.8",
+          "label": "2.8"
+        },
+        {
+          "value": "2.9",
+          "label": "2.9"
+        },
+        {
+          "value": "3.0",
+          "label": "3.0"
+        },
+        {
+          "value": "3.1",
+          "label": "3.1"
+        },
+        {
+          "value": "3.2",
+          "label": "3.2"
+        },
+        {
+          "value": "3.3",
+          "label": "3.3"
+        },
+        {
+          "value": "3.4",
+          "label": "3.4"
+        },
+        {
+          "value": "3.5",
+          "label": "3.5"
+        },
+        {
+          "value": "3.6",
+          "label": "3.6"
+        },
+        {
+          "value": "3.7",
+          "label": "3.7"
+        },
+        {
+          "value": "3.8",
+          "label": "3.8"
+        },
+        {
+          "value": "3.9",
+          "label": "3.9"
+        },
+        {
+          "value": "4.0",
+          "label": "4.0"
+        },
+        {
+          "value": "4.1",
+          "label": "4.1"
+        },
+        {
+          "value": "4.2",
+          "label": "4.2"
+        },
+        {
+          "value": "4.3",
+          "label": "4.3"
+        },
+        {
+          "value": "4.4",
+          "label": "4.4"
+        },
+        {
+          "value": "4.5",
+          "label": "4.5"
+        },
+        {
+          "value": "4.6",
+          "label": "4.6"
+        },
+        {
+          "value": "4.7",
+          "label": "4.7"
+        },
+        {
+          "value": "4.8",
+          "label": "4.8"
+        },
+        {
+          "value": "4.9",
+          "label": "4.9"
+        },
+        {
+          "value": "5.0",
+          "label": "5.0"
+        }
+      ]
+    },
+    {
+      "type": "heading",
+      "label": {
+        "en": "Stick",
+        "zh-Hans": "摇杆"
+      }
+    },
+    {
+      "key": "LeftStick",
+      "type": "choice",
+      "label": {
+        "en": "Left stick",
+        "zh-Hans": "左摇杆"
+      },
+      "help": {
+        "en": "How the left stick sets your pace. Game: you run from about halfway. Smooth: you walk until about three quarters of the stick, at a speed that follows your push. Custom: the four rows below.",
+        "zh-Hans": "左摇杆如何决定移动速度。游戏原有：推到约一半即开始奔跑。平滑：推到约四分之三前都是行走，速度随推动幅度变化。自定义：使用下方四项设置。"
+      },
+      "default": "Custom",
+      "options": [
+        {
+          "value": "Game",
+          "label": {
+            "en": "Game",
+            "zh-Hans": "游戏原有"
+          }
+        },
+        {
+          "value": "Smooth",
+          "label": {
+            "en": "Smooth",
+            "zh-Hans": "平滑"
+          }
+        },
+        {
+          "value": "Custom",
+          "label": {
+            "en": "Custom",
+            "zh-Hans": "自定义"
+          }
+        }
+      ]
+    },
+    {
+      "key": "LeftDeadZone",
+      "type": "number",
+      "min": 0,
+      "max": 25,
+      "step": 1,
+      "default": 4,
+      "label": {
+        "en": "Left dead zone",
+        "zh-Hans": "左摇杆死区"
+      },
+      "help": {
+        "en": "Custom only. How much of the stick's travel, in percent, does nothing. The game's is 25. At 0, a worn stick can move your character by itself.",
+        "zh-Hans": "仅在“自定义”模式下有效。摇杆行程中不起作用的百分比。游戏原有为 25。设为 0 时，磨损的摇杆可能让角色自行移动。"
+      }
+    },
+    {
+      "key": "RunPoint",
+      "type": "number",
+      "min": 45,
+      "max": 95,
+      "step": 1,
+      "default": 80,
+      "label": {
+        "en": "Run point",
+        "zh-Hans": "奔跑起点"
+      },
+      "help": {
+        "en": "Custom only. How far you push the stick, in percent of its travel, before you run. The game's is about 57.",
+        "zh-Hans": "仅在“自定义”模式下有效。摇杆推到行程的百分之多少开始奔跑。游戏原有约为 57。"
+      }
+    },
+    {
+      "key": "SlowestWalk",
+      "type": "number",
+      "min": 30,
+      "max": 100,
+      "step": 5,
+      "default": 30,
+      "label": {
+        "en": "Slowest walk",
+        "zh-Hans": "最慢行走"
+      },
+      "help": {
+        "en": "Custom only. Your speed at the lightest push, in percent of the game's walk; the run starts slower too. 100: the game's speeds at any push.",
+        "zh-Hans": "仅在“自定义”模式下有效。轻推摇杆时的速度，为游戏原有行走速度的百分比；奔跑起步也会相应放慢。100：任何推动幅度都使用游戏原有速度。"
+      }
+    },
+    {
+      "key": "StickCurve",
+      "type": "number",
+      "min": 0.5,
+      "max": 3,
+      "step": 0.05,
+      "default": 0.5,
+      "label": {
+        "en": "Curve",
+        "zh-Hans": "曲线"
+      },
+      "help": {
+        "en": "Custom only. 1: the speed grows evenly with your push. Higher: more of the stick's travel for the slow speeds. Under 1: the speed rises quickly from a light push.",
+        "zh-Hans": "仅在“自定义”模式下有效。1：速度随推动幅度均匀增加。更高：更多摇杆行程用于低速。低于 1：轻推即可快速提速。"
+      }
+    },
+    {
+      "key": "RightDeadZone",
+      "type": "choice",
+      "slider": true,
+      "label": {
+        "en": "Right dead zone",
+        "zh-Hans": "右摇杆死区"
+      },
+      "help": {
+        "en": "How much of the right stick's travel, in percent, does nothing before the camera turns. Smaller: the camera starts turning sooner. Game: the game's own, 20.",
+        "zh-Hans": "镜头转动前右摇杆行程中不起作用的百分比。越小，镜头越早开始转动。游戏原有：保持游戏设定（20）。"
+      },
+      "default": "3",
+      "options": [
+        {
+          "value": "Game",
+          "label": {
+            "en": "Game",
+            "zh-Hans": "游戏原有"
+          }
+        },
+        {
+          "value": "0",
+          "label": "0"
+        },
+        {
+          "value": "1",
+          "label": "1"
+        },
+        {
+          "value": "2",
+          "label": "2"
+        },
+        {
+          "value": "3",
+          "label": "3"
+        },
+        {
+          "value": "4",
+          "label": "4"
+        },
+        {
+          "value": "5",
+          "label": "5"
+        },
+        {
+          "value": "6",
+          "label": "6"
+        },
+        {
+          "value": "7",
+          "label": "7"
+        },
+        {
+          "value": "8",
+          "label": "8"
+        },
+        {
+          "value": "9",
+          "label": "9"
+        },
+        {
+          "value": "10",
+          "label": "10"
+        },
+        {
+          "value": "11",
+          "label": "11"
+        },
+        {
+          "value": "12",
+          "label": "12"
+        },
+        {
+          "value": "13",
+          "label": "13"
+        },
+        {
+          "value": "14",
+          "label": "14"
+        },
+        {
+          "value": "15",
+          "label": "15"
+        },
+        {
+          "value": "16",
+          "label": "16"
+        },
+        {
+          "value": "17",
+          "label": "17"
+        },
+        {
+          "value": "18",
+          "label": "18"
+        },
+        {
+          "value": "19",
+          "label": "19"
+        },
+        {
+          "value": "20",
+          "label": "20"
+        },
+        {
+          "value": "21",
+          "label": "21"
+        },
+        {
+          "value": "22",
+          "label": "22"
+        },
+        {
+          "value": "23",
+          "label": "23"
+        },
+        {
+          "value": "24",
+          "label": "24"
+        },
+        {
+          "value": "25",
+          "label": "25"
+        }
+      ]
+    },
+    {
+      "type": "heading",
+      "label": {
+        "en": "Sprint",
+        "zh-Hans": "冲刺"
+      }
+    },
+    {
+      "key": "AutoSprint",
+      "type": "toggle",
+      "label": {
+        "en": "Auto sprint",
+        "zh-Hans": "自动冲刺"
+      },
+      "help": {
+        "en": "Push the left stick all the way to sprint, without holding the dodge button. On the keyboard, the move keys count as the stick all the way: you sprint whenever you move. Holding the button still works. The game's walk key (Left Alt by default) stops it.",
+        "zh-Hans": "将左摇杆推到底即可冲刺，无需长按闪避键。使用键盘时，移动键等同于摇杆推到底：只要移动就会冲刺。长按闪避键仍然可用。游戏自带的行走键（默认左 Alt）会停止自动冲刺。"
+      },
+      "default": true
+    },
+    {
+      "key": "AutoSprintStop",
+      "type": "number",
+      "min": 20,
+      "max": 90,
+      "step": 5,
+      "default": 50,
+      "label": {
+        "en": "Auto sprint stop",
+        "zh-Hans": "自动冲刺停止点"
+      },
+      "help": {
+        "en": "Auto sprint stops when the left stick goes back under this percent of its travel.",
+        "zh-Hans": "左摇杆回到行程的此百分比以下时，自动冲刺停止。"
+      }
+    }
+  ]
+}

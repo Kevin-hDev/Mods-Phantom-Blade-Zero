@@ -1,0 +1,108 @@
+-- Tap Strafe's settings: <ModName>.config.json in the mod's folder, the file Mods Menu (Nexus 149) edits, so the menu
+-- and a hand edit change the same and only settings file. Tolerant reading: an unknown key is ignored, a missing or
+-- wrong value falls back to its default and is reported in UE4SS.log.
+-- Same file handling as Jump Strafe's jump_strafe_settings.lua; only the keys and their values differ.
+
+local Json = require("tap_strafe_json")
+
+local M = {}
+
+-- One setting, the switch.
+M.DEFAULTS = { enabled = true }
+
+local MAX_FILE_BYTES = 16384
+local NO_SUCH_FILE = 2
+-- A hand edit may write a switch as text, or as the number 0 or 1.
+local BOOLEANS = { ["true"] = true, yes = true, on = true, ["1"] = true,
+	["false"] = false, no = false, off = false, ["0"] = false }
+
+local function trim(s)
+	return (s:gsub("^%s+", ""):gsub("%s+$", ""))
+end
+
+local function switch(raw, key, name, default, warn)
+	local value = raw[key]
+	if value == nil then return default end
+	if type(value) == "string" then
+		value = BOOLEANS[trim(value):lower()]
+	elseif value == 0 or value == 1 then
+		value = value == 1
+	end
+	if type(value) == "boolean" then return value end
+	warn(string.format("%s must be true or false; using %s", name, tostring(default)))
+	return default
+end
+
+-- raw: the file's keys, lowercased.
+function M.resolve(raw, warn)
+	return { enabled = switch(raw, "enabled", "Enabled", M.DEFAULTS.enabled, warn) }
+end
+
+function M.describe(s)
+	return string.format("mod %s", s.enabled and "on" or "off")
+end
+
+-- The folder of the mod whose script is at script_path (".../TapStrafe/Scripts/main.lua"), or nil.
+function M.mod_dir(script_path)
+	return script_path:gsub("^@", ""):match("^(.*)[/\\]Scripts[/\\][^/\\]+$")
+end
+
+-- The menu looks for <ModName>.config.json, ModName being the mod's folder name.
+function M.file_in(mod_dir)
+	return mod_dir .. "/" .. mod_dir:match("([^/\\]+)$") .. ".config.json"
+end
+
+-- No format number in the file: Mods Menu shows every key of the config as a row, which the player could even
+-- edit (seen on 3 November 2026). A future format will add one; a file without it is this format.
+function M.default_text()
+	return Json.encode({
+		{ "Enabled", M.DEFAULTS.enabled },
+	})
+end
+
+-- Written to a temporary file, then renamed: the config is never seen half written.
+local function create(path, warn)
+	local temporary = path .. ".tmp"
+	local f = io.open(temporary, "wb")
+	local ok = f ~= nil and f:write(M.default_text()) ~= nil
+	if f ~= nil then f:close() end
+	ok = ok and os.rename(temporary, path)
+	if ok then
+		warn("created the settings file with the defaults")
+	else
+		os.remove(temporary)
+		warn("could not create the settings file; the Mods Menu cannot change the settings until it exists")
+	end
+end
+
+-- The menu's bridge only replaces an existing config, so the file is made as soon as the mod starts.
+function M.ensure_file(path, warn)
+	local f, _, code = io.open(path, "rb")
+	if f ~= nil then
+		f:close()
+	elseif code == NO_SUCH_FILE then
+		create(path, warn)
+	end
+end
+
+-- Returns the settings, or nil when the file exists but cannot be read at this moment (the caller tries again).
+function M.load(path, warn)
+	local f, _, code = io.open(path, "rb")
+	if f == nil then
+		if code ~= NO_SUCH_FILE then return nil end
+		create(path, warn)
+		return M.resolve({}, warn)
+	end
+	local text = f:read(MAX_FILE_BYTES)
+	f:close()
+	local values, reason = Json.decode(text or "")
+	if values == nil then
+		warn(string.format("the settings file is not valid JSON (%s); using the defaults", reason))
+		return M.resolve({}, warn)
+	end
+	local raw = {}
+	for key, value in pairs(values) do raw[key:lower()] = value end
+	return M.resolve(raw, warn)
+end
+
+return M

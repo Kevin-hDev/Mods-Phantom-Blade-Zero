@@ -1,0 +1,661 @@
+{
+  "title": {
+    "en": "Slide Anywhere",
+    "zh-Hans": "随处滑铲"
+  },
+  "description": {
+    "en": "Slide on any ground while running, flat ground, downhill and uphill, with the game's own slide animation, and on landing from a jump. Pick your slide button in the settings: none is set by default.",
+    "zh-Hans": "奔跑时可在任意地面上滑铲：平地、下坡和上坡均可，使用游戏自带的滑铲动作；跳跃落地时也能滑铲。请在设置中选择滑铲按键：默认未设置。"
+  },
+  "version": "1.0.0",
+  "settings": [
+    {
+      "key": "Enabled",
+      "type": "toggle",
+      "label": {
+        "en": "Enabled",
+        "zh-Hans": "启用"
+      },
+      "help": {
+        "en": "Off: the mod does nothing and no slide starts. A slide under way stops at once.",
+        "zh-Hans": "关闭：模组不再生效，不会触发滑铲。正在进行的滑铲会立即停止。"
+      },
+      "default": true
+    },
+    {
+      "key": "SlideButton",
+      "type": "choice",
+      "label": {
+        "en": "Slide: controller",
+        "zh-Hans": "滑铲：手柄"
+      },
+      "help": {
+        "en": "The controller button that slides while you run, or just before you land from a jump. Press it again to stop the slide. None by default: pick one to use the mod. The game's own action on that button still happens too: to avoid a clash, pick one the game does not use, or move that action in the game's controls or with a remapping mod.",
+        "zh-Hans": "奔跑时，或跳跃落地前一瞬按下即可滑铲的手柄按键。再按一次可停止滑铲。默认未设置：请选择一个按键才能使用本模组。该按键在游戏中原有的功能也会同时触发：为避免冲突，请选择游戏未使用的按键，或在游戏的按键设置中或用改键模组把该功能移到其他按键上。"
+      },
+      "default": "None",
+      "options": [
+        {
+          "value": "None",
+          "label": {
+            "en": "None",
+            "zh-Hans": "未设置"
+          }
+        },
+        {
+          "value": "Gamepad_FaceButton_Bottom",
+          "label": {
+            "en": "Cross / A",
+            "zh-Hans": "叉键 / A"
+          }
+        },
+        {
+          "value": "Gamepad_FaceButton_Right",
+          "label": {
+            "en": "Circle / B",
+            "zh-Hans": "圆圈键 / B"
+          }
+        },
+        {
+          "value": "Gamepad_FaceButton_Left",
+          "label": {
+            "en": "Square / X",
+            "zh-Hans": "方块键 / X"
+          }
+        },
+        {
+          "value": "Gamepad_FaceButton_Top",
+          "label": {
+            "en": "Triangle / Y",
+            "zh-Hans": "三角键 / Y"
+          }
+        },
+        {
+          "value": "Gamepad_LeftShoulder",
+          "label": {
+            "en": "L1 / LB",
+            "zh-Hans": "L1 / LB"
+          }
+        },
+        {
+          "value": "Gamepad_RightShoulder",
+          "label": {
+            "en": "R1 / RB",
+            "zh-Hans": "R1 / RB"
+          }
+        },
+        {
+          "value": "Gamepad_LeftTrigger",
+          "label": {
+            "en": "L2 / LT",
+            "zh-Hans": "L2 / LT"
+          }
+        },
+        {
+          "value": "Gamepad_RightTrigger",
+          "label": {
+            "en": "R2 / RT",
+            "zh-Hans": "R2 / RT"
+          }
+        },
+        {
+          "value": "Gamepad_LeftThumbstick",
+          "label": {
+            "en": "L3 / LS",
+            "zh-Hans": "L3 / LS"
+          }
+        },
+        {
+          "value": "Gamepad_RightThumbstick",
+          "label": {
+            "en": "R3 / RS",
+            "zh-Hans": "R3 / RS"
+          }
+        },
+        {
+          "value": "Gamepad_DPad_Up",
+          "label": {
+            "en": "D-pad Up",
+            "zh-Hans": "方向键上"
+          }
+        },
+        {
+          "value": "Gamepad_DPad_Down",
+          "label": {
+            "en": "D-pad Down",
+            "zh-Hans": "方向键下"
+          }
+        },
+        {
+          "value": "Gamepad_DPad_Left",
+          "label": {
+            "en": "D-pad Left",
+            "zh-Hans": "方向键左"
+          }
+        },
+        {
+          "value": "Gamepad_DPad_Right",
+          "label": {
+            "en": "D-pad Right",
+            "zh-Hans": "方向键右"
+          }
+        }
+      ]
+    },
+    {
+      "key": "SlideKey",
+      "type": "choice",
+      "label": {
+        "en": "Slide: keyboard and mouse",
+        "zh-Hans": "滑铲：键盘和鼠标"
+      },
+      "help": {
+        "en": "The key or mouse button that slides while you run, or just before you land from a jump. Press it again to stop the slide. None by default: pick one to use the mod. The game's own action on that button still happens too: to avoid a clash, pick one the game does not use, or move that action in the game's controls or with a remapping mod.",
+        "zh-Hans": "奔跑时，或跳跃落地前一瞬按下即可滑铲的键盘按键或鼠标按键。再按一次可停止滑铲。默认未设置：请选择一个按键才能使用本模组。该按键在游戏中原有的功能也会同时触发：为避免冲突，请选择游戏未使用的按键，或在游戏的按键设置中或用改键模组把该功能移到其他按键上。"
+      },
+      "default": "None",
+      "options": [
+        {
+          "value": "None",
+          "label": {
+            "en": "None",
+            "zh-Hans": "未设置"
+          }
+        },
+        {
+          "value": "LeftShift",
+          "label": {
+            "en": "Left Shift",
+            "zh-Hans": "左Shift"
+          }
+        },
+        {
+          "value": "SpaceBar",
+          "label": {
+            "en": "Space",
+            "zh-Hans": "空格键"
+          }
+        },
+        {
+          "value": "LeftControl",
+          "label": {
+            "en": "Left Ctrl",
+            "zh-Hans": "左Ctrl"
+          }
+        },
+        {
+          "value": "LeftAlt",
+          "label": {
+            "en": "Left Alt",
+            "zh-Hans": "左Alt"
+          }
+        },
+        {
+          "value": "Tab",
+          "label": {
+            "en": "Tab",
+            "zh-Hans": "Tab键"
+          }
+        },
+        {
+          "value": "CapsLock",
+          "label": {
+            "en": "Caps Lock",
+            "zh-Hans": "大写锁定键"
+          }
+        },
+        {
+          "value": "RightShift",
+          "label": {
+            "en": "Right Shift",
+            "zh-Hans": "右Shift"
+          }
+        },
+        {
+          "value": "RightControl",
+          "label": {
+            "en": "Right Ctrl",
+            "zh-Hans": "右Ctrl"
+          }
+        },
+        {
+          "value": "RightAlt",
+          "label": {
+            "en": "Right Alt",
+            "zh-Hans": "右Alt"
+          }
+        },
+        {
+          "value": "LeftMouseButton",
+          "label": {
+            "en": "Left mouse button",
+            "zh-Hans": "鼠标左键"
+          }
+        },
+        {
+          "value": "RightMouseButton",
+          "label": {
+            "en": "Right mouse button",
+            "zh-Hans": "鼠标右键"
+          }
+        },
+        {
+          "value": "MiddleMouseButton",
+          "label": {
+            "en": "Middle mouse button",
+            "zh-Hans": "鼠标中键"
+          }
+        },
+        {
+          "value": "ThumbMouseButton",
+          "label": {
+            "en": "Mouse button 4",
+            "zh-Hans": "鼠标按键 4"
+          }
+        },
+        {
+          "value": "ThumbMouseButton2",
+          "label": {
+            "en": "Mouse button 5",
+            "zh-Hans": "鼠标按键 5"
+          }
+        },
+        {
+          "value": "A",
+          "label": {
+            "en": "A",
+            "zh-Hans": "A"
+          }
+        },
+        {
+          "value": "B",
+          "label": {
+            "en": "B",
+            "zh-Hans": "B"
+          }
+        },
+        {
+          "value": "C",
+          "label": {
+            "en": "C",
+            "zh-Hans": "C"
+          }
+        },
+        {
+          "value": "D",
+          "label": {
+            "en": "D",
+            "zh-Hans": "D"
+          }
+        },
+        {
+          "value": "E",
+          "label": {
+            "en": "E",
+            "zh-Hans": "E"
+          }
+        },
+        {
+          "value": "F",
+          "label": {
+            "en": "F",
+            "zh-Hans": "F"
+          }
+        },
+        {
+          "value": "G",
+          "label": {
+            "en": "G",
+            "zh-Hans": "G"
+          }
+        },
+        {
+          "value": "H",
+          "label": {
+            "en": "H",
+            "zh-Hans": "H"
+          }
+        },
+        {
+          "value": "I",
+          "label": {
+            "en": "I",
+            "zh-Hans": "I"
+          }
+        },
+        {
+          "value": "J",
+          "label": {
+            "en": "J",
+            "zh-Hans": "J"
+          }
+        },
+        {
+          "value": "K",
+          "label": {
+            "en": "K",
+            "zh-Hans": "K"
+          }
+        },
+        {
+          "value": "L",
+          "label": {
+            "en": "L",
+            "zh-Hans": "L"
+          }
+        },
+        {
+          "value": "M",
+          "label": {
+            "en": "M",
+            "zh-Hans": "M"
+          }
+        },
+        {
+          "value": "N",
+          "label": {
+            "en": "N",
+            "zh-Hans": "N"
+          }
+        },
+        {
+          "value": "O",
+          "label": {
+            "en": "O",
+            "zh-Hans": "O"
+          }
+        },
+        {
+          "value": "P",
+          "label": {
+            "en": "P",
+            "zh-Hans": "P"
+          }
+        },
+        {
+          "value": "Q",
+          "label": {
+            "en": "Q",
+            "zh-Hans": "Q"
+          }
+        },
+        {
+          "value": "R",
+          "label": {
+            "en": "R",
+            "zh-Hans": "R"
+          }
+        },
+        {
+          "value": "S",
+          "label": {
+            "en": "S",
+            "zh-Hans": "S"
+          }
+        },
+        {
+          "value": "T",
+          "label": {
+            "en": "T",
+            "zh-Hans": "T"
+          }
+        },
+        {
+          "value": "U",
+          "label": {
+            "en": "U",
+            "zh-Hans": "U"
+          }
+        },
+        {
+          "value": "V",
+          "label": {
+            "en": "V",
+            "zh-Hans": "V"
+          }
+        },
+        {
+          "value": "W",
+          "label": {
+            "en": "W",
+            "zh-Hans": "W"
+          }
+        },
+        {
+          "value": "X",
+          "label": {
+            "en": "X",
+            "zh-Hans": "X"
+          }
+        },
+        {
+          "value": "Y",
+          "label": {
+            "en": "Y",
+            "zh-Hans": "Y"
+          }
+        },
+        {
+          "value": "Z",
+          "label": {
+            "en": "Z",
+            "zh-Hans": "Z"
+          }
+        }
+      ]
+    },
+    {
+      "key": "SlideHold",
+      "type": "toggle",
+      "label": {
+        "en": "Hold to keep sliding",
+        "zh-Hans": "按住持续滑铲"
+      },
+      "help": {
+        "en": "On: a press still gives the normal slide, and holding the slide button instead keeps the slide going with its speed: steady on flat ground, faster downhill, slower uphill, until a slope slows it to running speed. Let go and the slide stops. In the air, hold the button as you land to slide.",
+        "zh-Hans": "开启：按一下仍是普通滑铲；改为按住滑铲键，滑铲会保持速度持续进行：平地上速度不变，下坡加速，上坡减速，直到坡度让速度降到奔跑速度为止。松开即停止滑铲。在空中时，落地的同时按住按键即可滑铲。"
+      },
+      "default": false
+    },
+    {
+      "key": "SlideSpeed",
+      "type": "choice",
+      "slider": true,
+      "label": {
+        "en": "Slide speed",
+        "zh-Hans": "滑铲速度"
+      },
+      "help": {
+        "en": "How fast you slide. 1.0 is the mod's own speed, 3.0 three times as fast at the start. The slide lasts as long and still ends at running speed, so faster slides go farther.",
+        "zh-Hans": "滑铲的速度。1.0 为模组原有速度，3.0 为起步时的三倍速度。滑铲持续时间不变，结束时仍回到奔跑速度，因此速度越高，滑得越远。"
+      },
+      "default": "1.0",
+      "options": [
+        {
+          "value": "1.0",
+          "label": "1.0"
+        },
+        {
+          "value": "1.1",
+          "label": "1.1"
+        },
+        {
+          "value": "1.2",
+          "label": "1.2"
+        },
+        {
+          "value": "1.3",
+          "label": "1.3"
+        },
+        {
+          "value": "1.4",
+          "label": "1.4"
+        },
+        {
+          "value": "1.5",
+          "label": "1.5"
+        },
+        {
+          "value": "1.6",
+          "label": "1.6"
+        },
+        {
+          "value": "1.7",
+          "label": "1.7"
+        },
+        {
+          "value": "1.8",
+          "label": "1.8"
+        },
+        {
+          "value": "1.9",
+          "label": "1.9"
+        },
+        {
+          "value": "2.0",
+          "label": "2.0"
+        },
+        {
+          "value": "2.1",
+          "label": "2.1"
+        },
+        {
+          "value": "2.2",
+          "label": "2.2"
+        },
+        {
+          "value": "2.3",
+          "label": "2.3"
+        },
+        {
+          "value": "2.4",
+          "label": "2.4"
+        },
+        {
+          "value": "2.5",
+          "label": "2.5"
+        },
+        {
+          "value": "2.6",
+          "label": "2.6"
+        },
+        {
+          "value": "2.7",
+          "label": "2.7"
+        },
+        {
+          "value": "2.8",
+          "label": "2.8"
+        },
+        {
+          "value": "2.9",
+          "label": "2.9"
+        },
+        {
+          "value": "3.0",
+          "label": "3.0"
+        }
+      ]
+    },
+    {
+      "key": "SlideLength",
+      "type": "choice",
+      "slider": true,
+      "label": {
+        "en": "Slide length",
+        "zh-Hans": "滑铲时长"
+      },
+      "help": {
+        "en": "How long you slide. 1.0 is the mod's own length, 3.0 three times as long and about three times as far on flat ground. Uphill, the slope still slows you down. With Hold to keep sliding, a slide you hold lasts as long as you hold the button.",
+        "zh-Hans": "滑铲持续的时间。1.0 为模组原有时长，3.0 为三倍时长，在平地上滑行距离也约为三倍。上坡时，坡度仍会让你减速。开启“按住持续滑铲”时，按住的滑铲持续到松开按键为止。"
+      },
+      "default": "1.0",
+      "options": [
+        {
+          "value": "1.0",
+          "label": "1.0"
+        },
+        {
+          "value": "1.1",
+          "label": "1.1"
+        },
+        {
+          "value": "1.2",
+          "label": "1.2"
+        },
+        {
+          "value": "1.3",
+          "label": "1.3"
+        },
+        {
+          "value": "1.4",
+          "label": "1.4"
+        },
+        {
+          "value": "1.5",
+          "label": "1.5"
+        },
+        {
+          "value": "1.6",
+          "label": "1.6"
+        },
+        {
+          "value": "1.7",
+          "label": "1.7"
+        },
+        {
+          "value": "1.8",
+          "label": "1.8"
+        },
+        {
+          "value": "1.9",
+          "label": "1.9"
+        },
+        {
+          "value": "2.0",
+          "label": "2.0"
+        },
+        {
+          "value": "2.1",
+          "label": "2.1"
+        },
+        {
+          "value": "2.2",
+          "label": "2.2"
+        },
+        {
+          "value": "2.3",
+          "label": "2.3"
+        },
+        {
+          "value": "2.4",
+          "label": "2.4"
+        },
+        {
+          "value": "2.5",
+          "label": "2.5"
+        },
+        {
+          "value": "2.6",
+          "label": "2.6"
+        },
+        {
+          "value": "2.7",
+          "label": "2.7"
+        },
+        {
+          "value": "2.8",
+          "label": "2.8"
+        },
+        {
+          "value": "2.9",
+          "label": "2.9"
+        },
+        {
+          "value": "3.0",
+          "label": "3.0"
+        }
+      ]
+    }
+  ]
+}

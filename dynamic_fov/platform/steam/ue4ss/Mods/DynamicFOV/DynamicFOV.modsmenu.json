@@ -1,0 +1,331 @@
+{
+  "title": {
+    "en": "Dynamic FOV",
+    "zh-Hans": "动态视野"
+  },
+  "description": {
+    "en": "A field of view for each situation (normal view, sprint, crouch, lock-on), the transition time, the camera's distance, height and side, more vivid colours and a clean image. Cutscenes, dialogues and special moves keep the game's camera. The panel key (F8 by default) opens the settings in play.",
+    "zh-Hans": "为不同状态（普通镜头、冲刺、下蹲、锁定敌人）分别设置视野，并可调整过渡时间，以及镜头的距离、高度和左右位置，还能让色彩更鲜艳、画面更纯净。过场动画、对话和特殊招式保持游戏原有镜头。游戏中按面板按键（默认 F8）打开设置。"
+  },
+  "version": "1.0.4",
+  "settings": [
+    {
+      "key": "Enabled",
+      "type": "toggle",
+      "label": {
+        "en": "Enabled",
+        "zh-Hans": "启用"
+      },
+      "help": {
+        "en": "Off: the game's own field of view, camera position, colours and image everywhere.",
+        "zh-Hans": "关闭：各处均使用游戏原有的视野、镜头位置、色彩和画面。"
+      },
+      "default": true
+    },
+    {
+      "key": "Preset",
+      "type": "choice",
+      "label": {
+        "en": "Preset",
+        "zh-Hans": "预设"
+      },
+      "help": {
+        "en": "Field of view of each preset: Very Close 49 (sprint 64), Close 62 (sprint 77), Default 75 (sprint 90), Far 90 (sprint 105). Crouch and lock-on take the normal view's value. Custom uses the rows under Custom.",
+        "zh-Hans": "各预设的视野：极近 49（冲刺 64），近 62（冲刺 77），默认 75（冲刺 90），远 90（冲刺 105）。下蹲和锁定沿用普通镜头的数值。自定义：使用“自定义”下方的设置。"
+      },
+      "default": "Default",
+      "options": [
+        {
+          "value": "VeryClose",
+          "label": {
+            "en": "Very Close",
+            "zh-Hans": "极近"
+          }
+        },
+        {
+          "value": "Close",
+          "label": {
+            "en": "Close",
+            "zh-Hans": "近"
+          }
+        },
+        {
+          "value": "Default",
+          "label": {
+            "en": "Default",
+            "zh-Hans": "默认"
+          }
+        },
+        {
+          "value": "Far",
+          "label": {
+            "en": "Far",
+            "zh-Hans": "远"
+          }
+        },
+        {
+          "value": "Custom",
+          "label": {
+            "en": "Custom",
+            "zh-Hans": "自定义"
+          }
+        }
+      ]
+    },
+    {
+      "key": "TransitionTime",
+      "type": "number",
+      "min": 0.2,
+      "max": 3,
+      "step": 0.1,
+      "label": {
+        "en": "Transition time",
+        "zh-Hans": "过渡时间"
+      },
+      "help": {
+        "en": "Seconds the view takes to change from one situation to another, with every preset. The game's is 1.5 (crouching: about 0.3).",
+        "zh-Hans": "视野从一种状态切换到另一种状态所需的秒数，适用于所有预设。游戏原值为 1.5（下蹲时约 0.3）。"
+      },
+      "default": 1.5
+    },
+    {
+      "type": "heading",
+      "label": {
+        "en": "Camera position",
+        "zh-Hans": "镜头位置"
+      }
+    },
+    {
+      "key": "Distance",
+      "type": "number",
+      "min": -50,
+      "max": 100,
+      "step": 5,
+      "label": {
+        "en": "Distance",
+        "zh-Hans": "距离"
+      },
+      "help": {
+        "en": "In % of each view's own distance: negative brings the camera closer, positive takes it farther. 0 is the game's. These three rows apply in all four situations; dialogues, cutscenes and special moves keep the game's camera.",
+        "zh-Hans": "按各镜头原有距离的百分比计：负值拉近镜头，正值拉远镜头。0 为游戏原值。这三项在四种状态下通用；对话、过场动画和特殊招式保持游戏原有镜头。"
+      },
+      "default": 0
+    },
+    {
+      "key": "Height",
+      "type": "number",
+      "min": -100,
+      "max": 100,
+      "step": 5,
+      "label": {
+        "en": "Height",
+        "zh-Hans": "高度"
+      },
+      "help": {
+        "en": "In cm: positive raises the camera, negative lowers it. 0 is the game's.",
+        "zh-Hans": "单位为厘米：正值升高镜头，负值降低镜头。0 为游戏原值。"
+      },
+      "default": 0
+    },
+    {
+      "key": "Side",
+      "type": "number",
+      "min": -200,
+      "max": 200,
+      "step": 5,
+      "label": {
+        "en": "Side",
+        "zh-Hans": "左右位置"
+      },
+      "help": {
+        "en": "In cm: positive moves the camera to the right, negative to the left. The game's camera sits to the right of the character; about -80 puts the character in the middle. 0 is the game's.",
+        "zh-Hans": "单位为厘米：正值使镜头右移，负值左移。游戏镜头位于角色右侧，约 -80 时角色位于画面中央。0 为游戏原值。"
+      },
+      "default": 0
+    },
+    {
+      "type": "heading",
+      "label": {
+        "en": "Custom",
+        "zh-Hans": "自定义"
+      }
+    },
+    {
+      "key": "FieldOfView",
+      "type": "number",
+      "min": 40,
+      "max": 150,
+      "step": 1,
+      "label": {
+        "en": "Field of view",
+        "zh-Hans": "视野"
+      },
+      "help": {
+        "en": "With Preset on Custom: standing, walking, running, climbing, and fighting with no enemy locked on. The game's is 75.",
+        "zh-Hans": "预设为“自定义”时生效：站立、行走、奔跑、攀爬，以及战斗中未锁定敌人时的视野。游戏原值为 75。"
+      },
+      "default": 75
+    },
+    {
+      "key": "Sprint",
+      "type": "number",
+      "min": 40,
+      "max": 150,
+      "step": 1,
+      "label": {
+        "en": "Sprint",
+        "zh-Hans": "冲刺"
+      },
+      "help": {
+        "en": "With Preset on Custom: while sprinting. The game keeps 75, the same as the normal view.",
+        "zh-Hans": "预设为“自定义”时生效：冲刺时的视野。游戏原值为 75，与普通镜头相同。"
+      },
+      "default": 90
+    },
+    {
+      "key": "Crouch",
+      "type": "number",
+      "min": 40,
+      "max": 150,
+      "step": 1,
+      "label": {
+        "en": "Crouch",
+        "zh-Hans": "下蹲"
+      },
+      "help": {
+        "en": "With Preset on Custom: while crouching. The game's is 75.",
+        "zh-Hans": "预设为“自定义”时生效：下蹲时的视野。游戏原值为 75。"
+      },
+      "default": 75
+    },
+    {
+      "key": "LockOn",
+      "type": "number",
+      "min": 40,
+      "max": 150,
+      "step": 1,
+      "label": {
+        "en": "Lock-on",
+        "zh-Hans": "锁定"
+      },
+      "help": {
+        "en": "With Preset on Custom: with an enemy locked on, standing or moving. Unlocking goes back to the normal view. The game's is 75.",
+        "zh-Hans": "预设为“自定义”时生效：锁定敌人时（站立或移动）的视野。解除锁定后恢复普通镜头的视野。游戏原值为 75。"
+      },
+      "default": 75
+    },
+    {
+      "type": "heading",
+      "label": {
+        "en": "Image",
+        "zh-Hans": "画面"
+      }
+    },
+    {
+      "key": "Colours",
+      "type": "choice",
+      "label": {
+        "en": "Colours",
+        "zh-Hans": "色彩"
+      },
+      "help": {
+        "en": "More vivid colours everywhere: the colour saturation set to 120% up to 200% of normal; each place keeps its own tones. Game: the game's colours. Works with every preset.",
+        "zh-Hans": "让各处色彩更鲜艳：将色彩饱和度设为正常值的 120% 到 200%，各场景保留自身色调。原版：游戏原有色彩。适用于所有预设。"
+      },
+      "default": "Game",
+      "options": [
+        {
+          "value": "Game",
+          "label": {
+            "en": "Game",
+            "zh-Hans": "原版"
+          }
+        },
+        {
+          "value": "120",
+          "label": {
+            "en": "120%",
+            "zh-Hans": "120%"
+          }
+        },
+        {
+          "value": "140",
+          "label": {
+            "en": "140%",
+            "zh-Hans": "140%"
+          }
+        },
+        {
+          "value": "160",
+          "label": {
+            "en": "160%",
+            "zh-Hans": "160%"
+          }
+        },
+        {
+          "value": "180",
+          "label": {
+            "en": "180%",
+            "zh-Hans": "180%"
+          }
+        },
+        {
+          "value": "200",
+          "label": {
+            "en": "200%",
+            "zh-Hans": "200%"
+          }
+        }
+      ]
+    },
+    {
+      "key": "CleanImage",
+      "type": "toggle",
+      "label": {
+        "en": "Clean image",
+        "zh-Hans": "纯净画面"
+      },
+      "help": {
+        "en": "On: no vignette (darker screen edges), film grain, bloom (glow around lights), chromatic aberration or lens flares. Off: the game's image.",
+        "zh-Hans": "开启：无暗角（画面边缘变暗）、胶片颗粒、泛光（光源周围的辉光）、色差和镜头光晕。关闭：游戏原有画面。"
+      },
+      "default": false
+    },
+    {
+      "type": "heading",
+      "label": {
+        "en": "Settings panel",
+        "zh-Hans": "设置面板"
+      }
+    },
+    {
+      "key": "PanelOpacity",
+      "type": "number",
+      "min": 40,
+      "max": 90,
+      "step": 5,
+      "label": {
+        "en": "Panel background",
+        "zh-Hans": "面板背景"
+      },
+      "help": {
+        "en": "How dark the settings panel's background is, in %: higher hides more of the game behind the panel.",
+        "zh-Hans": "设置面板背景的深浅（%）：数值越高，对面板后方游戏画面的遮挡越多。"
+      },
+      "default": 65
+    },
+    {
+      "key": "PanelKey",
+      "type": "key",
+      "label": {
+        "en": "Panel key",
+        "zh-Hans": "面板按键"
+      },
+      "help": {
+        "en": "The key that opens and closes this mod's settings panel while you play: a strip at the right of the screen where the settings above apply as you change them, the game going on meanwhile. Escape closes it too. It opens only in play, not in menus, cutscenes or dialogues. F9 opens Mods Menu by default: choosing it keeps F8. None: no panel.",
+        "zh-Hans": "在游戏中打开和关闭本模组设置面板的按键：面板位于画面右侧，上方各项设置均可在其中调整并立即生效，期间游戏不会暂停。按 Esc 也可关闭。仅在游戏进行中可以打开，菜单、过场动画和对话中不可用。F9 默认用于打开模组菜单，选择 F9 时仍保持 F8。无：不使用面板。"
+      },
+      "default": "F8"
+    }
+  ]
+}

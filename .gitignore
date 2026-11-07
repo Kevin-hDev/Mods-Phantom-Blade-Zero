@@ -1,0 +1,5 @@
+AGENTS.md
+CLAUDE.md
+*.tmp
+# A player's settings file, never shipped in an archive, so never here either.
+*.config.json

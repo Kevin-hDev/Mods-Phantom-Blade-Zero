@@ -1,0 +1,1070 @@
+{
+  "title": {
+    "en": "Dodge Jump",
+    "zh-Hans": "闪避跳跃"
+  },
+  "description": {
+    "en": "Double and triple jumps in the air, with the game's own dodge animations. A jump pressed just before or just after landing is no longer lost: you jump again as soon as the game allows it.",
+    "zh-Hans": "在空中进行二段跳和三段跳，使用游戏自带的闪避动作。落地前一瞬或刚落地时按下的跳跃键不会再被吞掉：游戏一允许，角色就会立即起跳。"
+  },
+  "version": "1.0.6",
+  "settings": [
+    {
+      "key": "Enabled",
+      "type": "toggle",
+      "label": {
+        "en": "Enabled",
+        "zh-Hans": "启用"
+      },
+      "help": {
+        "en": "Off: the mod does nothing. No jumps in the air, and a jump pressed early is lost again.",
+        "zh-Hans": "关闭：模组不再生效。无法在空中跳跃，提前按下的跳跃键也会再次被吞掉。"
+      },
+      "default": true
+    },
+    {
+      "key": "Chains",
+      "type": "choice",
+      "slider": true,
+      "label": {
+        "en": "Air jump sets",
+        "zh-Hans": "空中跳跃组数"
+      },
+      "help": {
+        "en": "1: a double jump, then a triple jump. 2: two of each. 3: three of each, six jumps in the air.",
+        "zh-Hans": "1：一次二段跳，然后一次三段跳。2：各两次。3：各三次，共六次空中跳跃。"
+      },
+      "default": "1",
+      "options": [
+        {
+          "value": "1",
+          "label": "1"
+        },
+        {
+          "value": "2",
+          "label": "2"
+        },
+        {
+          "value": "3",
+          "label": "3"
+        }
+      ]
+    },
+    {
+      "key": "AirJumpSpeed",
+      "type": "choice",
+      "slider": true,
+      "label": {
+        "en": "Air jump speed",
+        "zh-Hans": "空中跳跃速度"
+      },
+      "help": {
+        "en": "How fast your double and triple jumps play. 1.0 is the game's own speed, 3.0 three times as fast. Height and time in the air stay the same, so faster jumps go farther.",
+        "zh-Hans": "二段跳和三段跳动作的速度。1.0 为游戏原有速度，3.0 为三倍速度。跳跃高度和滞空时间不变，速度越高，跳得越远。"
+      },
+      "default": "1.0",
+      "options": [
+        {
+          "value": "1.0",
+          "label": "1.0"
+        },
+        {
+          "value": "1.1",
+          "label": "1.1"
+        },
+        {
+          "value": "1.2",
+          "label": "1.2"
+        },
+        {
+          "value": "1.3",
+          "label": "1.3"
+        },
+        {
+          "value": "1.4",
+          "label": "1.4"
+        },
+        {
+          "value": "1.5",
+          "label": "1.5"
+        },
+        {
+          "value": "1.6",
+          "label": "1.6"
+        },
+        {
+          "value": "1.7",
+          "label": "1.7"
+        },
+        {
+          "value": "1.8",
+          "label": "1.8"
+        },
+        {
+          "value": "1.9",
+          "label": "1.9"
+        },
+        {
+          "value": "2.0",
+          "label": "2.0"
+        },
+        {
+          "value": "2.1",
+          "label": "2.1"
+        },
+        {
+          "value": "2.2",
+          "label": "2.2"
+        },
+        {
+          "value": "2.3",
+          "label": "2.3"
+        },
+        {
+          "value": "2.4",
+          "label": "2.4"
+        },
+        {
+          "value": "2.5",
+          "label": "2.5"
+        },
+        {
+          "value": "2.6",
+          "label": "2.6"
+        },
+        {
+          "value": "2.7",
+          "label": "2.7"
+        },
+        {
+          "value": "2.8",
+          "label": "2.8"
+        },
+        {
+          "value": "2.9",
+          "label": "2.9"
+        },
+        {
+          "value": "3.0",
+          "label": "3.0"
+        }
+      ]
+    },
+    {
+      "key": "AirJumpSoundVolume",
+      "type": "choice",
+      "slider": true,
+      "label": {
+        "en": "Air jump sound volume",
+        "zh-Hans": "空中跳跃音效音量"
+      },
+      "help": {
+        "en": "How loud the sounds of your double and triple jumps are. 100% is the mod's usual volume, close to the game's own dodges. 0% turns them off.",
+        "zh-Hans": "二段跳和三段跳音效的音量。100% 为模组的默认音量，接近游戏原有闪避的音量。0% 关闭音效。"
+      },
+      "default": "100",
+      "options": [
+        {
+          "value": "0",
+          "label": "0%"
+        },
+        {
+          "value": "5",
+          "label": "5%"
+        },
+        {
+          "value": "10",
+          "label": "10%"
+        },
+        {
+          "value": "15",
+          "label": "15%"
+        },
+        {
+          "value": "20",
+          "label": "20%"
+        },
+        {
+          "value": "25",
+          "label": "25%"
+        },
+        {
+          "value": "30",
+          "label": "30%"
+        },
+        {
+          "value": "35",
+          "label": "35%"
+        },
+        {
+          "value": "40",
+          "label": "40%"
+        },
+        {
+          "value": "45",
+          "label": "45%"
+        },
+        {
+          "value": "50",
+          "label": "50%"
+        },
+        {
+          "value": "55",
+          "label": "55%"
+        },
+        {
+          "value": "60",
+          "label": "60%"
+        },
+        {
+          "value": "65",
+          "label": "65%"
+        },
+        {
+          "value": "70",
+          "label": "70%"
+        },
+        {
+          "value": "75",
+          "label": "75%"
+        },
+        {
+          "value": "80",
+          "label": "80%"
+        },
+        {
+          "value": "85",
+          "label": "85%"
+        },
+        {
+          "value": "90",
+          "label": "90%"
+        },
+        {
+          "value": "95",
+          "label": "95%"
+        },
+        {
+          "value": "100",
+          "label": "100%"
+        }
+      ]
+    },
+    {
+      "key": "AirJumpButton",
+      "type": "choice",
+      "label": {
+        "en": "Air jump: controller",
+        "zh-Hans": "空中跳跃：手柄"
+      },
+      "help": {
+        "en": "The controller button that jumps in the air. R1 by default, the game's dodge. If you moved the dodge to another button, pick that one. The game's own action on that button still happens too: to avoid a clash, move it to another button in the game's controls or with a remapping mod.",
+        "zh-Hans": "在空中跳跃所用的手柄按键。默认为 R1，即游戏的闪避键。如果你把闪避改到了其他按键，请选择那个按键。该按键在游戏中原有的功能也会同时触发：为避免冲突，请在游戏的按键设置中或用改键模组把该功能移到其他按键上。"
+      },
+      "default": "Gamepad_RightShoulder",
+      "options": [
+        {
+          "value": "Gamepad_FaceButton_Bottom",
+          "label": {
+            "en": "Cross / A",
+            "zh-Hans": "叉键 / A"
+          }
+        },
+        {
+          "value": "Gamepad_FaceButton_Right",
+          "label": {
+            "en": "Circle / B",
+            "zh-Hans": "圆圈键 / B"
+          }
+        },
+        {
+          "value": "Gamepad_FaceButton_Left",
+          "label": {
+            "en": "Square / X",
+            "zh-Hans": "方块键 / X"
+          }
+        },
+        {
+          "value": "Gamepad_FaceButton_Top",
+          "label": {
+            "en": "Triangle / Y",
+            "zh-Hans": "三角键 / Y"
+          }
+        },
+        {
+          "value": "Gamepad_LeftShoulder",
+          "label": {
+            "en": "L1 / LB",
+            "zh-Hans": "L1 / LB"
+          }
+        },
+        {
+          "value": "Gamepad_RightShoulder",
+          "label": {
+            "en": "R1 / RB",
+            "zh-Hans": "R1 / RB"
+          }
+        },
+        {
+          "value": "Gamepad_LeftTrigger",
+          "label": {
+            "en": "L2 / LT",
+            "zh-Hans": "L2 / LT"
+          }
+        },
+        {
+          "value": "Gamepad_RightTrigger",
+          "label": {
+            "en": "R2 / RT",
+            "zh-Hans": "R2 / RT"
+          }
+        },
+        {
+          "value": "Gamepad_LeftThumbstick",
+          "label": {
+            "en": "L3 / LS",
+            "zh-Hans": "L3 / LS"
+          }
+        },
+        {
+          "value": "Gamepad_RightThumbstick",
+          "label": {
+            "en": "R3 / RS",
+            "zh-Hans": "R3 / RS"
+          }
+        },
+        {
+          "value": "Gamepad_DPad_Up",
+          "label": {
+            "en": "D-pad Up",
+            "zh-Hans": "方向键上"
+          }
+        },
+        {
+          "value": "Gamepad_DPad_Down",
+          "label": {
+            "en": "D-pad Down",
+            "zh-Hans": "方向键下"
+          }
+        },
+        {
+          "value": "Gamepad_DPad_Left",
+          "label": {
+            "en": "D-pad Left",
+            "zh-Hans": "方向键左"
+          }
+        },
+        {
+          "value": "Gamepad_DPad_Right",
+          "label": {
+            "en": "D-pad Right",
+            "zh-Hans": "方向键右"
+          }
+        }
+      ]
+    },
+    {
+      "key": "AirJumpKey",
+      "type": "choice",
+      "label": {
+        "en": "Air jump: keyboard and mouse",
+        "zh-Hans": "空中跳跃：键盘和鼠标"
+      },
+      "help": {
+        "en": "The key or mouse button that jumps in the air. Left Shift by default, the game's dodge. If you moved the dodge to another key, pick that one. The game's own action on that button still happens too: to avoid a clash, move it to another button in the game's controls or with a remapping mod.",
+        "zh-Hans": "在空中跳跃所用的键盘按键或鼠标按键。默认为左Shift，即游戏的闪避键。如果你把闪避改到了其他按键，请选择那个按键。该按键在游戏中原有的功能也会同时触发：为避免冲突，请在游戏的按键设置中或用改键模组把该功能移到其他按键上。"
+      },
+      "default": "LeftShift",
+      "options": [
+        {
+          "value": "LeftShift",
+          "label": {
+            "en": "Left Shift",
+            "zh-Hans": "左Shift"
+          }
+        },
+        {
+          "value": "SpaceBar",
+          "label": {
+            "en": "Space",
+            "zh-Hans": "空格键"
+          }
+        },
+        {
+          "value": "LeftControl",
+          "label": {
+            "en": "Left Ctrl",
+            "zh-Hans": "左Ctrl"
+          }
+        },
+        {
+          "value": "LeftAlt",
+          "label": {
+            "en": "Left Alt",
+            "zh-Hans": "左Alt"
+          }
+        },
+        {
+          "value": "Tab",
+          "label": {
+            "en": "Tab",
+            "zh-Hans": "Tab键"
+          }
+        },
+        {
+          "value": "CapsLock",
+          "label": {
+            "en": "Caps Lock",
+            "zh-Hans": "大写锁定键"
+          }
+        },
+        {
+          "value": "RightShift",
+          "label": {
+            "en": "Right Shift",
+            "zh-Hans": "右Shift"
+          }
+        },
+        {
+          "value": "RightControl",
+          "label": {
+            "en": "Right Ctrl",
+            "zh-Hans": "右Ctrl"
+          }
+        },
+        {
+          "value": "RightAlt",
+          "label": {
+            "en": "Right Alt",
+            "zh-Hans": "右Alt"
+          }
+        },
+        {
+          "value": "LeftMouseButton",
+          "label": {
+            "en": "Left mouse button",
+            "zh-Hans": "鼠标左键"
+          }
+        },
+        {
+          "value": "RightMouseButton",
+          "label": {
+            "en": "Right mouse button",
+            "zh-Hans": "鼠标右键"
+          }
+        },
+        {
+          "value": "MiddleMouseButton",
+          "label": {
+            "en": "Middle mouse button",
+            "zh-Hans": "鼠标中键"
+          }
+        },
+        {
+          "value": "ThumbMouseButton",
+          "label": {
+            "en": "Mouse button 4",
+            "zh-Hans": "鼠标按键 4"
+          }
+        },
+        {
+          "value": "ThumbMouseButton2",
+          "label": {
+            "en": "Mouse button 5",
+            "zh-Hans": "鼠标按键 5"
+          }
+        },
+        {
+          "value": "A",
+          "label": {
+            "en": "A",
+            "zh-Hans": "A"
+          }
+        },
+        {
+          "value": "B",
+          "label": {
+            "en": "B",
+            "zh-Hans": "B"
+          }
+        },
+        {
+          "value": "C",
+          "label": {
+            "en": "C",
+            "zh-Hans": "C"
+          }
+        },
+        {
+          "value": "D",
+          "label": {
+            "en": "D",
+            "zh-Hans": "D"
+          }
+        },
+        {
+          "value": "E",
+          "label": {
+            "en": "E",
+            "zh-Hans": "E"
+          }
+        },
+        {
+          "value": "F",
+          "label": {
+            "en": "F",
+            "zh-Hans": "F"
+          }
+        },
+        {
+          "value": "G",
+          "label": {
+            "en": "G",
+            "zh-Hans": "G"
+          }
+        },
+        {
+          "value": "H",
+          "label": {
+            "en": "H",
+            "zh-Hans": "H"
+          }
+        },
+        {
+          "value": "I",
+          "label": {
+            "en": "I",
+            "zh-Hans": "I"
+          }
+        },
+        {
+          "value": "J",
+          "label": {
+            "en": "J",
+            "zh-Hans": "J"
+          }
+        },
+        {
+          "value": "K",
+          "label": {
+            "en": "K",
+            "zh-Hans": "K"
+          }
+        },
+        {
+          "value": "L",
+          "label": {
+            "en": "L",
+            "zh-Hans": "L"
+          }
+        },
+        {
+          "value": "M",
+          "label": {
+            "en": "M",
+            "zh-Hans": "M"
+          }
+        },
+        {
+          "value": "N",
+          "label": {
+            "en": "N",
+            "zh-Hans": "N"
+          }
+        },
+        {
+          "value": "O",
+          "label": {
+            "en": "O",
+            "zh-Hans": "O"
+          }
+        },
+        {
+          "value": "P",
+          "label": {
+            "en": "P",
+            "zh-Hans": "P"
+          }
+        },
+        {
+          "value": "Q",
+          "label": {
+            "en": "Q",
+            "zh-Hans": "Q"
+          }
+        },
+        {
+          "value": "R",
+          "label": {
+            "en": "R",
+            "zh-Hans": "R"
+          }
+        },
+        {
+          "value": "S",
+          "label": {
+            "en": "S",
+            "zh-Hans": "S"
+          }
+        },
+        {
+          "value": "T",
+          "label": {
+            "en": "T",
+            "zh-Hans": "T"
+          }
+        },
+        {
+          "value": "U",
+          "label": {
+            "en": "U",
+            "zh-Hans": "U"
+          }
+        },
+        {
+          "value": "V",
+          "label": {
+            "en": "V",
+            "zh-Hans": "V"
+          }
+        },
+        {
+          "value": "W",
+          "label": {
+            "en": "W",
+            "zh-Hans": "W"
+          }
+        },
+        {
+          "value": "X",
+          "label": {
+            "en": "X",
+            "zh-Hans": "X"
+          }
+        },
+        {
+          "value": "Y",
+          "label": {
+            "en": "Y",
+            "zh-Hans": "Y"
+          }
+        },
+        {
+          "value": "Z",
+          "label": {
+            "en": "Z",
+            "zh-Hans": "Z"
+          }
+        }
+      ]
+    },
+    {
+      "key": "JumpButton",
+      "type": "choice",
+      "label": {
+        "en": "Jump: controller",
+        "zh-Hans": "跳跃：手柄"
+      },
+      "help": {
+        "en": "The controller button you jump with, Cross by default. A jump pressed on it just before or just after landing is not lost. If you moved the jump to another button, pick that one. The game's own action on that button still happens too: to avoid a clash, move it to another button in the game's controls or with a remapping mod.",
+        "zh-Hans": "你用来跳跃的手柄按键，默认为叉键。在落地前一瞬或刚落地时按下它，跳跃不会被吞掉。如果你把跳跃改到了其他按键，请选择那个按键。该按键在游戏中原有的功能也会同时触发：为避免冲突，请在游戏的按键设置中或用改键模组把该功能移到其他按键上。"
+      },
+      "default": "Gamepad_FaceButton_Bottom",
+      "options": [
+        {
+          "value": "Gamepad_FaceButton_Bottom",
+          "label": {
+            "en": "Cross / A",
+            "zh-Hans": "叉键 / A"
+          }
+        },
+        {
+          "value": "Gamepad_FaceButton_Right",
+          "label": {
+            "en": "Circle / B",
+            "zh-Hans": "圆圈键 / B"
+          }
+        },
+        {
+          "value": "Gamepad_FaceButton_Left",
+          "label": {
+            "en": "Square / X",
+            "zh-Hans": "方块键 / X"
+          }
+        },
+        {
+          "value": "Gamepad_FaceButton_Top",
+          "label": {
+            "en": "Triangle / Y",
+            "zh-Hans": "三角键 / Y"
+          }
+        },
+        {
+          "value": "Gamepad_LeftShoulder",
+          "label": {
+            "en": "L1 / LB",
+            "zh-Hans": "L1 / LB"
+          }
+        },
+        {
+          "value": "Gamepad_RightShoulder",
+          "label": {
+            "en": "R1 / RB",
+            "zh-Hans": "R1 / RB"
+          }
+        },
+        {
+          "value": "Gamepad_LeftTrigger",
+          "label": {
+            "en": "L2 / LT",
+            "zh-Hans": "L2 / LT"
+          }
+        },
+        {
+          "value": "Gamepad_RightTrigger",
+          "label": {
+            "en": "R2 / RT",
+            "zh-Hans": "R2 / RT"
+          }
+        },
+        {
+          "value": "Gamepad_LeftThumbstick",
+          "label": {
+            "en": "L3 / LS",
+            "zh-Hans": "L3 / LS"
+          }
+        },
+        {
+          "value": "Gamepad_RightThumbstick",
+          "label": {
+            "en": "R3 / RS",
+            "zh-Hans": "R3 / RS"
+          }
+        },
+        {
+          "value": "Gamepad_DPad_Up",
+          "label": {
+            "en": "D-pad Up",
+            "zh-Hans": "方向键上"
+          }
+        },
+        {
+          "value": "Gamepad_DPad_Down",
+          "label": {
+            "en": "D-pad Down",
+            "zh-Hans": "方向键下"
+          }
+        },
+        {
+          "value": "Gamepad_DPad_Left",
+          "label": {
+            "en": "D-pad Left",
+            "zh-Hans": "方向键左"
+          }
+        },
+        {
+          "value": "Gamepad_DPad_Right",
+          "label": {
+            "en": "D-pad Right",
+            "zh-Hans": "方向键右"
+          }
+        }
+      ]
+    },
+    {
+      "key": "JumpKey",
+      "type": "choice",
+      "label": {
+        "en": "Jump: keyboard and mouse",
+        "zh-Hans": "跳跃：键盘和鼠标"
+      },
+      "help": {
+        "en": "The key or mouse button you jump with, Space by default. A jump pressed on it just before or just after landing is not lost. If you moved the jump to another key, pick that one. The game's own action on that button still happens too: to avoid a clash, move it to another button in the game's controls or with a remapping mod.",
+        "zh-Hans": "你用来跳跃的键盘按键或鼠标按键，默认为空格键。在落地前一瞬或刚落地时按下它，跳跃不会被吞掉。如果你把跳跃改到了其他按键，请选择那个按键。该按键在游戏中原有的功能也会同时触发：为避免冲突，请在游戏的按键设置中或用改键模组把该功能移到其他按键上。"
+      },
+      "default": "SpaceBar",
+      "options": [
+        {
+          "value": "LeftShift",
+          "label": {
+            "en": "Left Shift",
+            "zh-Hans": "左Shift"
+          }
+        },
+        {
+          "value": "SpaceBar",
+          "label": {
+            "en": "Space",
+            "zh-Hans": "空格键"
+          }
+        },
+        {
+          "value": "LeftControl",
+          "label": {
+            "en": "Left Ctrl",
+            "zh-Hans": "左Ctrl"
+          }
+        },
+        {
+          "value": "LeftAlt",
+          "label": {
+            "en": "Left Alt",
+            "zh-Hans": "左Alt"
+          }
+        },
+        {
+          "value": "Tab",
+          "label": {
+            "en": "Tab",
+            "zh-Hans": "Tab键"
+          }
+        },
+        {
+          "value": "CapsLock",
+          "label": {
+            "en": "Caps Lock",
+            "zh-Hans": "大写锁定键"
+          }
+        },
+        {
+          "value": "RightShift",
+          "label": {
+            "en": "Right Shift",
+            "zh-Hans": "右Shift"
+          }
+        },
+        {
+          "value": "RightControl",
+          "label": {
+            "en": "Right Ctrl",
+            "zh-Hans": "右Ctrl"
+          }
+        },
+        {
+          "value": "RightAlt",
+          "label": {
+            "en": "Right Alt",
+            "zh-Hans": "右Alt"
+          }
+        },
+        {
+          "value": "LeftMouseButton",
+          "label": {
+            "en": "Left mouse button",
+            "zh-Hans": "鼠标左键"
+          }
+        },
+        {
+          "value": "RightMouseButton",
+          "label": {
+            "en": "Right mouse button",
+            "zh-Hans": "鼠标右键"
+          }
+        },
+        {
+          "value": "MiddleMouseButton",
+          "label": {
+            "en": "Middle mouse button",
+            "zh-Hans": "鼠标中键"
+          }
+        },
+        {
+          "value": "ThumbMouseButton",
+          "label": {
+            "en": "Mouse button 4",
+            "zh-Hans": "鼠标按键 4"
+          }
+        },
+        {
+          "value": "ThumbMouseButton2",
+          "label": {
+            "en": "Mouse button 5",
+            "zh-Hans": "鼠标按键 5"
+          }
+        },
+        {
+          "value": "A",
+          "label": {
+            "en": "A",
+            "zh-Hans": "A"
+          }
+        },
+        {
+          "value": "B",
+          "label": {
+            "en": "B",
+            "zh-Hans": "B"
+          }
+        },
+        {
+          "value": "C",
+          "label": {
+            "en": "C",
+            "zh-Hans": "C"
+          }
+        },
+        {
+          "value": "D",
+          "label": {
+            "en": "D",
+            "zh-Hans": "D"
+          }
+        },
+        {
+          "value": "E",
+          "label": {
+            "en": "E",
+            "zh-Hans": "E"
+          }
+        },
+        {
+          "value": "F",
+          "label": {
+            "en": "F",
+            "zh-Hans": "F"
+          }
+        },
+        {
+          "value": "G",
+          "label": {
+            "en": "G",
+            "zh-Hans": "G"
+          }
+        },
+        {
+          "value": "H",
+          "label": {
+            "en": "H",
+            "zh-Hans": "H"
+          }
+        },
+        {
+          "value": "I",
+          "label": {
+            "en": "I",
+            "zh-Hans": "I"
+          }
+        },
+        {
+          "value": "J",
+          "label": {
+            "en": "J",
+            "zh-Hans": "J"
+          }
+        },
+        {
+          "value": "K",
+          "label": {
+            "en": "K",
+            "zh-Hans": "K"
+          }
+        },
+        {
+          "value": "L",
+          "label": {
+            "en": "L",
+            "zh-Hans": "L"
+          }
+        },
+        {
+          "value": "M",
+          "label": {
+            "en": "M",
+            "zh-Hans": "M"
+          }
+        },
+        {
+          "value": "N",
+          "label": {
+            "en": "N",
+            "zh-Hans": "N"
+          }
+        },
+        {
+          "value": "O",
+          "label": {
+            "en": "O",
+            "zh-Hans": "O"
+          }
+        },
+        {
+          "value": "P",
+          "label": {
+            "en": "P",
+            "zh-Hans": "P"
+          }
+        },
+        {
+          "value": "Q",
+          "label": {
+            "en": "Q",
+            "zh-Hans": "Q"
+          }
+        },
+        {
+          "value": "R",
+          "label": {
+            "en": "R",
+            "zh-Hans": "R"
+          }
+        },
+        {
+          "value": "S",
+          "label": {
+            "en": "S",
+            "zh-Hans": "S"
+          }
+        },
+        {
+          "value": "T",
+          "label": {
+            "en": "T",
+            "zh-Hans": "T"
+          }
+        },
+        {
+          "value": "U",
+          "label": {
+            "en": "U",
+            "zh-Hans": "U"
+          }
+        },
+        {
+          "value": "V",
+          "label": {
+            "en": "V",
+            "zh-Hans": "V"
+          }
+        },
+        {
+          "value": "W",
+          "label": {
+            "en": "W",
+            "zh-Hans": "W"
+          }
+        },
+        {
+          "value": "X",
+          "label": {
+            "en": "X",
+            "zh-Hans": "X"
+          }
+        },
+        {
+          "value": "Y",
+          "label": {
+            "en": "Y",
+            "zh-Hans": "Y"
+          }
+        },
+        {
+          "value": "Z",
+          "label": {
+            "en": "Z",
+            "zh-Hans": "Z"
+          }
+        }
+      ]
+    }
+  ]
+}

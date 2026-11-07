@@ -1,0 +1,193 @@
+-- Movement Tuning's settings, as read from MovementTuning.config.json (the file Mods Menu edits; file handling in
+-- movement_file.lua). Tolerant reading: an unknown key is ignored, a missing or wrong value falls back to its default
+-- and is reported in UE4SS.log.
+
+local Json = require("movement_json")
+local Moves = require("movement_moves")
+local Curve = require("movement_curve")
+local V = require("movement_values")
+
+local M = {}
+
+-- Speeds and jump height from the game's own (1) to three times. Slower is not offered: the mod pushes a timeline's
+-- time forward, and pushing it back has never been tried. A move can have its own max (movement_moves.lua), higher or
+-- lower: a lower one caps Global for that move too. Steps of 0.05, asked by a player for finer settings: 0.01 (1 % of
+-- speed) cannot be felt and would give each move's list 201 choices.
+M.MIN, M.MAX, M.STEP = 1.0, 3.0, 0.05
+M.GLOBAL = "Global"               -- a move that follows the Global speed (key AllMoves: its first name, kept for older files)
+-- The defaults, for a new settings file and a key missing from one; Jump recovery's is in movement_moves.lua.
+M.DEFAULTS = { enabled = true, all = 1.3, attacks = 1.0, jump_height = 1.5 }
+
+-- The sticks: a preset to switch on or a curve of one's own, and the dead zones of both sticks. Left stick Game
+-- changes nothing; Smooth is the preset (movement_curve.lua); Custom follows the rows below it. Percents, whole
+-- numbers in the file, as the menu shows them.
+M.GAME = "Game"
+M.LEFT = { M.GAME, "Smooth", "Custom" }
+M.LEFT_DEFAULT = "Custom"
+-- RunPoint 80: at 90 or 95, the normal run held only between the run point and auto sprint's 99 %, too thin to stay in.
+M.STICK = {
+	{ key = "LeftDeadZone", field = "dead", min = 0, max = 25, step = 1, default = 4 },
+	{ key = "RunPoint", field = "run_point", min = 45, max = 95, step = 1, default = 80 },
+	{ key = "SlowestWalk", field = "slowest", min = 30, max = 100, step = 5, default = 30 },
+	{ key = "StickCurve", field = "curve", min = 0.5, max = 3, step = 0.05, default = 0.5 },
+}
+M.RIGHT = { key = "RightDeadZone", min = 0, max = 25, step = 1, default = 3 }
+-- Auto sprint: the left stick pushed all the way starts the sprint, back under the stop point
+-- (a percent of the stick's travel, 50 by default) stops it; on by default.
+M.AUTO = { key = "AutoSprint", default = true }
+M.AUTO_STOP = { key = "AutoSprintStop", min = 20, max = 90, step = 5, default = 50 }
+
+-- On the menu's grid: rounded to its step, so 1.35 written by hand and the menu's 1.35 are the same speed.
+-- Divided rather than multiplied by the step: 27 / 20 is the 1.35 written in the file, 27 x 0.05 is not.
+local function on_grid(n, step)
+	return math.floor(n / step + 0.5) / (1 / step)
+end
+
+-- A number or a number in text, from MIN to max (MAX when not given), on step (STEP when not given); nil for anything
+-- else.
+local function speed(value, max, step)
+	max = max or M.MAX
+	if type(value) == "string" then value = tonumber(V.trim(value)) end
+	if type(value) ~= "number" or value ~= value or value < M.MIN or value > max then return nil end
+	return on_grid(value, step or M.STEP)
+end
+
+local function number(raw, key, name, default, warn)
+	local value = raw[key]
+	if value == nil then return default end
+	local n = speed(value)
+	if n ~= nil then return n end
+	warn(string.format("%s must be %s to %s; using %s", name, V.show(M.MIN), V.show(M.MAX), V.show(default)))
+	return default
+end
+
+-- A move's own speed, or nil when it follows Global. Missing: its default (move.default, nil for Global).
+local function move_speed(raw, move, warn)
+	local value = raw[move.setting:lower()]
+	if value == nil then return move.default end
+	if V.word(value) == M.GLOBAL:lower() then return nil end
+	local max = move.max or M.MAX
+	local n = speed(value, max, move.step)
+	if n ~= nil then return n end
+	-- Over a cap lower than Global's (dodges): the cap, as a file written before the cap was asked for the fastest.
+	local over = max < M.MAX and speed(value) ~= nil
+	warn(string.format("%s must be %s or %s to %s; using %s", move.setting, M.GLOBAL, V.show(M.MIN), V.show(max),
+		over and V.show(max) or move.default and V.show(move.default) or M.GLOBAL))
+	if over then return max end
+	return move.default
+end
+
+-- { mode, custom (the Custom rows), left (the curve, nil at Game), right (the right dead zone, nil for the game's),
+-- auto (auto sprint: { stop }, nil when off) }.
+local function sticks(raw, warn)
+	local st = { mode = V.choice(raw, "LeftStick", M.LEFT, M.LEFT_DEFAULT, warn), custom = {} }
+	for _, entry in ipairs(M.STICK) do st.custom[entry.field] = V.ranged(raw, entry, entry.default, warn) end
+	local p = st.mode == "Smooth" and Curve.SMOOTH or st.custom
+	if st.mode ~= M.GAME then st.left = Curve.left(p.dead, p.run_point, p.slowest, p.curve) end
+	local right = raw[M.RIGHT.key:lower()]
+	local n = M.RIGHT.default
+	if right ~= nil then
+		n = V.in_range(right, M.RIGHT)   -- nil for Game too
+		if n == nil and V.word(right) ~= M.GAME:lower() then
+			warn(string.format("%s must be %s or %d to %d; using %d", M.RIGHT.key, M.GAME, M.RIGHT.min, M.RIGHT.max,
+				M.RIGHT.default))
+			n = M.RIGHT.default
+		end
+	end
+	if n ~= nil then st.right = n / 100 end
+	if V.switch(raw, M.AUTO.key:lower(), M.AUTO.key, M.AUTO.default, warn) then
+		st.auto = { stop = V.ranged(raw, M.AUTO_STOP, M.AUTO_STOP.default, warn) / 100 }
+	end
+	return st
+end
+
+local function all_at_one(rates, list)
+	for _, entry in ipairs(list) do
+		if rates[entry.key] ~= 1 then return false end
+	end
+	return true
+end
+
+-- raw: the file's keys, lowercased. rates: the speed of each gait, move and of the attacks, by key. ground_neutral,
+-- timeline_neutral: walking, running and sprinting, or the moves and attacks, are all at the game's speed, so that part
+-- of the mod has nothing to do.
+function M.resolve(raw, warn)
+	local s = {
+		enabled = V.switch(raw, "enabled", "Enabled", M.DEFAULTS.enabled, warn),
+		all = number(raw, "allmoves", "AllMoves", M.DEFAULTS.all, warn),
+		own = {},
+		rates = {},
+	}
+	for _, move in ipairs(Moves.SPEEDS) do
+		s.own[move.key] = move_speed(raw, move, warn)
+		s.rates[move.key] = math.min(s.own[move.key] or s.all, move.max or M.MAX)
+	end
+	s.rates[Moves.ATTACKS] = number(raw, "attacks", "Attacks", M.DEFAULTS.attacks, warn)
+	-- Not a speed: it does not follow Global.
+	s.jump_height = number(raw, "jumpheight", "JumpHeight", M.DEFAULTS.jump_height, warn)
+	s.ground_neutral = all_at_one(s.rates, Moves.GAITS)
+	s.timeline_neutral = all_at_one(s.rates, Moves.MOVES) and s.rates[Moves.ATTACKS] == 1
+	s.jump_neutral = s.jump_height == 1
+	s.stick = sticks(raw, warn)
+	s.stick_neutral = s.stick.left == nil and s.stick.right == nil and s.stick.auto == nil
+	return s
+end
+
+local function describe_sticks(st)
+	local left = st.mode
+	if st.left ~= nil then
+		left = string.format("%s (dead zone %.0f%%, run at %.0f%%, slowest walk %.0f%%, curve %s)", st.mode,
+			st.left.dead * 100, st.left.run_point * 100, st.left.slowest * 100, V.show(st.left.curve))
+	end
+	return string.format("left stick %s; right dead zone %s; auto sprint %s", left,
+		st.right and string.format("%.0f%%", st.right * 100) or "game",
+		st.auto and string.format("on, stops under %.0f%%", st.auto.stop * 100) or "off")
+end
+
+function M.describe(s)
+	local parts = {}
+	for _, move in ipairs(Moves.SPEEDS) do
+		parts[#parts + 1] = string.format("%s x%s%s", move.setting, V.show(s.rates[move.key]),
+			s.own[move.key] and "" or " (global)")
+	end
+	return string.format("mod %s, global x%s: %s; attacks x%s; jump height x%s; %s", s.enabled and "on" or "off",
+		V.show(s.all), table.concat(parts, ", "), V.show(s.rates[Moves.ATTACKS]), V.show(s.jump_height),
+		describe_sticks(s.stick))
+end
+
+-- The file's keys and their defaults, in the menu's order: the moves under the Jump heading (in_jump) come after Jump
+-- height.
+local function entries()
+	local function move_default(move)
+		return move.default and V.show(move.default) or M.GLOBAL   -- as the menu writes its choices
+	end
+	local list = { { "Enabled", M.DEFAULTS.enabled }, { "AllMoves", M.DEFAULTS.all } }
+	for _, move in ipairs(Moves.SPEEDS) do
+		if not move.in_jump then list[#list + 1] = { move.setting, move_default(move) } end
+	end
+	list[#list + 1] = { "Attacks", M.DEFAULTS.attacks }
+	list[#list + 1] = { "JumpHeight", M.DEFAULTS.jump_height }
+	for _, move in ipairs(Moves.SPEEDS) do
+		if move.in_jump then list[#list + 1] = { move.setting, move_default(move) } end
+	end
+	list[#list + 1] = { "LeftStick", M.LEFT_DEFAULT }
+	for _, entry in ipairs(M.STICK) do list[#list + 1] = { entry.key, entry.default } end
+	list[#list + 1] = { M.RIGHT.key, tostring(M.RIGHT.default) }
+	list[#list + 1] = { M.AUTO.key, M.AUTO.default }
+	list[#list + 1] = { M.AUTO_STOP.key, M.AUTO_STOP.default }
+	return list
+end
+
+function M.keys()
+	local keys = {}
+	for i, entry in ipairs(entries()) do keys[i] = entry[1] end
+	return keys
+end
+
+-- No format number in the file: Mods Menu shows every key of the config as a row. A future format will add one; a file
+-- without it is this format.
+function M.default_text()
+	return Json.encode(entries())
+end
+
+return M

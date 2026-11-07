@@ -1,0 +1,47 @@
+{
+  "title": { "en": "Jump Strafe", "zh-Hans": "空中转向" },
+  "description": {
+    "en": "Steer your character in the air during jumps and falls, with the movement keys or the left stick.",
+    "zh-Hans": "跳跃和下落时，可用移动键或左摇杆在空中操控角色方向。"
+  },
+  "version": "1.0.0",
+  "settings": [
+    {
+      "key": "Enabled",
+      "type": "toggle",
+      "label": { "en": "Enabled", "zh-Hans": "启用" },
+      "help": {
+        "en": "Off: the mod does nothing, and your jumps are the game's own again.",
+        "zh-Hans": "关闭：模组不起作用，跳跃恢复为游戏原本的样子。"
+      },
+      "default": true
+    },
+    {
+      "key": "Grip",
+      "type": "choice",
+      "label": { "en": "Air control", "zh-Hans": "空中操控" },
+      "help": {
+        "en": "How hard you can steer in the air. Light turns gently, Max turns almost on the spot.",
+        "zh-Hans": "空中转向的力度。弱：转向平缓。最强：几乎可原地转向。"
+      },
+      "default": "Medium",
+      "options": [
+        { "value": "Light", "label": { "en": "Light", "zh-Hans": "弱" } },
+        { "value": "Medium", "label": { "en": "Medium", "zh-Hans": "中" } },
+        { "value": "Strong", "label": { "en": "Strong", "zh-Hans": "强" } },
+        { "value": "Extreme", "label": { "en": "Extreme", "zh-Hans": "极强" } },
+        { "value": "Max", "label": { "en": "Max", "zh-Hans": "最强" } }
+      ]
+    },
+    {
+      "key": "KeepMomentum",
+      "type": "toggle",
+      "label": { "en": "Keep momentum", "zh-Hans": "保持惯性" },
+      "help": {
+        "en": "On: letting go of the movement keys or the stick in the air keeps your speed. Off: the game slows you down before you land.",
+        "zh-Hans": "开启：在空中松开移动键或摇杆时，保持当前速度。关闭：游戏会在落地前让你减速。"
+      },
+      "default": true
+    }
+  ]
+}

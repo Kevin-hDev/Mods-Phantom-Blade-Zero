@@ -1,0 +1,26 @@
+{
+  "title": {
+    "en": "Tap Strafe",
+    "zh-Hans": "镜头转向"
+  },
+  "description": {
+    "en": "Your jumps and falls turn as you turn the camera, with the mouse or the right stick. Letting go of the movement keys or the left stick never changes the jump's direction. Off while locked on to an enemy.",
+    "zh-Hans": "跳跃和下落时，用鼠标或右摇杆转动镜头，跳跃随之转向。松开移动键或左摇杆不会改变跳跃方向。锁定敌人时不生效。"
+  },
+  "version": "1.0.0",
+  "settings": [
+    {
+      "key": "Enabled",
+      "type": "toggle",
+      "label": {
+        "en": "Enabled",
+        "zh-Hans": "启用"
+      },
+      "help": {
+        "en": "Off: the mod does nothing, and your jumps no longer turn with the camera.",
+        "zh-Hans": "关闭：模组不起作用，跳跃不再随镜头转向。"
+      },
+      "default": true
+    }
+  ]
+}
