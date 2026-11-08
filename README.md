@@ -10,6 +10,7 @@ Movement and camera mods for Phantom Blade Zero, written in Lua for UE4SS.
 | [Dynamic FOV](dynamic_fov/) | A field of view that follows your movement, one per situation (walking, sprinting, crouching, combat), with an in-game panel | 1.0.6 |
 | [Movement Tuning](movement_tuning/) | The speed of each move and attack on its own or all at once, higher jumps, the stick's curve, automatic sprint, the sprint resumed after a move, faster dodge landings, and the sprint turned off if you want | 1.0.2 |
 | [Slide Anywhere](slide_anywhere/) | Slide anywhere, on flat ground, downhill and uphill, with the game's own slide animation | 1.0.0 |
+| [Vault & Climb Anywhere](vault_climb_anywhere/) | Vault over and climb onto the obstacles the game refuses, up to 5 m high, with the game's own animations (beta) | 1.0.0 |
 
 Each folder holds the mod exactly as it ships on Nexus Mods: its `platform` folder mirrors the game folder.
 

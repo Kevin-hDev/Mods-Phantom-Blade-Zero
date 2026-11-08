@@ -1,0 +1,365 @@
+{
+  "title": {
+    "en": "Vault & Climb Anywhere",
+    "zh-Hans": "随处翻越与攀爬"
+  },
+  "description": {
+    "en": "Jump in front of an obstacle the game will not let you pass, and you vault over it or climb onto it, up to 5 m high, with the game's own animations. The settings pick the lowest and highest obstacles, leaning faces, railings the game leaves out, and the drop allowed behind.",
+    "zh-Hans": "在游戏不允许通过的障碍物前跳跃，即可用游戏自带的动作翻越或攀上去，最高 5 米。可在设置中选择：最低和最高障碍、倾斜面、游戏忽略的栏杆，以及允许的后方落差。"
+  },
+  "version": "1.0.0",
+  "settings": [
+    {
+      "key": "Enabled",
+      "type": "toggle",
+      "label": {
+        "en": "Enabled",
+        "zh-Hans": "启用"
+      },
+      "help": {
+        "en": "Off: the mod does nothing and the game's own vaulting settings come back. An action under way ends normally.",
+        "zh-Hans": "关闭：模组不再生效，游戏自带的翻越设置恢复原样。正在进行的动作会正常结束。"
+      },
+      "default": true
+    },
+    {
+      "key": "MinHeight",
+      "type": "choice",
+      "slider": true,
+      "label": {
+        "en": "Lowest obstacle (cm)",
+        "zh-Hans": "最低障碍（厘米）"
+      },
+      "help": {
+        "en": "The lowest obstacle you vault over or climb onto, the game's own vaulting included. The base game starts at 75.",
+        "zh-Hans": "可翻越或攀上的最低障碍，包括游戏自带的翻越。原版从 75 厘米起。"
+      },
+      "default": "30",
+      "options": [
+        {
+          "value": "20",
+          "label": "20"
+        },
+        {
+          "value": "25",
+          "label": "25"
+        },
+        {
+          "value": "30",
+          "label": "30"
+        },
+        {
+          "value": "35",
+          "label": "35"
+        },
+        {
+          "value": "40",
+          "label": "40"
+        },
+        {
+          "value": "45",
+          "label": "45"
+        },
+        {
+          "value": "50",
+          "label": "50"
+        },
+        {
+          "value": "55",
+          "label": "55"
+        },
+        {
+          "value": "60",
+          "label": "60"
+        },
+        {
+          "value": "65",
+          "label": "65"
+        },
+        {
+          "value": "70",
+          "label": "70"
+        },
+        {
+          "value": "75",
+          "label": "75"
+        },
+        {
+          "value": "80",
+          "label": "80"
+        },
+        {
+          "value": "85",
+          "label": "85"
+        },
+        {
+          "value": "90",
+          "label": "90"
+        },
+        {
+          "value": "95",
+          "label": "95"
+        },
+        {
+          "value": "100",
+          "label": "100"
+        }
+      ]
+    },
+    {
+      "key": "MaxHeight",
+      "type": "choice",
+      "slider": true,
+      "label": {
+        "en": "Highest obstacle (m)",
+        "zh-Hans": "最高障碍（米）"
+      },
+      "help": {
+        "en": "The highest obstacle you vault over or climb onto. The game's own vaulting stops at 1.55 m: 1.5 stays close to it.",
+        "zh-Hans": "可翻越或攀上的最高障碍。游戏自带的翻越最高 1.55 米：设为 1.5 即接近原版。"
+      },
+      "default": "5.0",
+      "options": [
+        {
+          "value": "1.5",
+          "label": "1.5"
+        },
+        {
+          "value": "1.6",
+          "label": "1.6"
+        },
+        {
+          "value": "1.7",
+          "label": "1.7"
+        },
+        {
+          "value": "1.8",
+          "label": "1.8"
+        },
+        {
+          "value": "1.9",
+          "label": "1.9"
+        },
+        {
+          "value": "2.0",
+          "label": "2.0"
+        },
+        {
+          "value": "2.1",
+          "label": "2.1"
+        },
+        {
+          "value": "2.2",
+          "label": "2.2"
+        },
+        {
+          "value": "2.3",
+          "label": "2.3"
+        },
+        {
+          "value": "2.4",
+          "label": "2.4"
+        },
+        {
+          "value": "2.5",
+          "label": "2.5"
+        },
+        {
+          "value": "2.6",
+          "label": "2.6"
+        },
+        {
+          "value": "2.7",
+          "label": "2.7"
+        },
+        {
+          "value": "2.8",
+          "label": "2.8"
+        },
+        {
+          "value": "2.9",
+          "label": "2.9"
+        },
+        {
+          "value": "3.0",
+          "label": "3.0"
+        },
+        {
+          "value": "3.1",
+          "label": "3.1"
+        },
+        {
+          "value": "3.2",
+          "label": "3.2"
+        },
+        {
+          "value": "3.3",
+          "label": "3.3"
+        },
+        {
+          "value": "3.4",
+          "label": "3.4"
+        },
+        {
+          "value": "3.5",
+          "label": "3.5"
+        },
+        {
+          "value": "3.6",
+          "label": "3.6"
+        },
+        {
+          "value": "3.7",
+          "label": "3.7"
+        },
+        {
+          "value": "3.8",
+          "label": "3.8"
+        },
+        {
+          "value": "3.9",
+          "label": "3.9"
+        },
+        {
+          "value": "4.0",
+          "label": "4.0"
+        },
+        {
+          "value": "4.1",
+          "label": "4.1"
+        },
+        {
+          "value": "4.2",
+          "label": "4.2"
+        },
+        {
+          "value": "4.3",
+          "label": "4.3"
+        },
+        {
+          "value": "4.4",
+          "label": "4.4"
+        },
+        {
+          "value": "4.5",
+          "label": "4.5"
+        },
+        {
+          "value": "4.6",
+          "label": "4.6"
+        },
+        {
+          "value": "4.7",
+          "label": "4.7"
+        },
+        {
+          "value": "4.8",
+          "label": "4.8"
+        },
+        {
+          "value": "4.9",
+          "label": "4.9"
+        },
+        {
+          "value": "5.0",
+          "label": "5.0"
+        }
+      ]
+    },
+    {
+      "key": "ClimbLeaning",
+      "type": "toggle",
+      "label": {
+        "en": "Climb leaning faces",
+        "zh-Hans": "攀爬倾斜面"
+      },
+      "help": {
+        "en": "Rocks and walls that lean back, up to about 30° from upright, are climbed up to their real top. Off: upright faces only.",
+        "zh-Hans": "向后倾斜不超过约 30° 的岩石和墙面可一直攀到真正的顶部。关闭：只攀爬竖直面。"
+      },
+      "default": true
+    },
+    {
+      "key": "EyeObstacles",
+      "type": "toggle",
+      "label": {
+        "en": "Obstacles the game leaves out",
+        "zh-Hans": "游戏忽略的障碍"
+      },
+      "help": {
+        "en": "Also vault over and climb what the game's own vaulting ignores, such as railings and shelves. Off: only what the game marks as an obstacle.",
+        "zh-Hans": "还会翻越和攀爬游戏自带翻越所忽略的物体，例如栏杆和架子。关闭：只处理游戏标记为障碍的物体。"
+      },
+      "default": true
+    },
+    {
+      "key": "DropLimit",
+      "type": "toggle",
+      "label": {
+        "en": "Limit the drop behind",
+        "zh-Hans": "限制后方落差"
+      },
+      "help": {
+        "en": "On: the mod does not vault you over a railing with a drop behind deeper than the next setting; it climbs onto it when its top is wide enough. The game's own vaulting keeps its own rule. Off: the mod vaults whatever the drop. Fall damage stays the game's.",
+        "zh-Hans": "开启：模组不会翻越后方落差超过下一项设置的栏杆；若顶部足够宽，会攀上去。游戏自带的翻越保持其自身规则。关闭：模组无论落差多深都会翻越。坠落伤害仍由游戏决定。"
+      },
+      "default": true
+    },
+    {
+      "key": "MaxDropBehind",
+      "type": "choice",
+      "slider": true,
+      "label": {
+        "en": "Deepest drop behind (m)",
+        "zh-Hans": "最大后方落差（米）"
+      },
+      "help": {
+        "en": "With the limit on: the deepest drop behind an obstacle that you still vault over.",
+        "zh-Hans": "开启限制时：仍会翻越的障碍物后方的最大落差。"
+      },
+      "default": "8",
+      "options": [
+        {
+          "value": "1",
+          "label": "1"
+        },
+        {
+          "value": "2",
+          "label": "2"
+        },
+        {
+          "value": "3",
+          "label": "3"
+        },
+        {
+          "value": "4",
+          "label": "4"
+        },
+        {
+          "value": "5",
+          "label": "5"
+        },
+        {
+          "value": "6",
+          "label": "6"
+        },
+        {
+          "value": "7",
+          "label": "7"
+        },
+        {
+          "value": "8",
+          "label": "8"
+        },
+        {
+          "value": "9",
+          "label": "9"
+        },
+        {
+          "value": "10",
+          "label": "10"
+        }
+      ]
+    }
+  ]
+}
