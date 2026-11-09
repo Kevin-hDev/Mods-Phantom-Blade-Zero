@@ -1,0 +1,1258 @@
+{
+  "title": {
+    "en": "Mod Panel",
+    "de": "Mod-Panel",
+    "es-419": "Panel de mods",
+    "es-ES": "Panel de mods",
+    "fr": "Panneau des mods",
+    "it": "Pannello mod",
+    "ja": "MODパネル",
+    "ko": "모드 패널",
+    "pt-BR": "Painel de Mods",
+    "pt-PT": "Painel de Mods",
+    "ru": "Панель модов",
+    "th": "แผงม็อด",
+    "vi": "Bảng Mod",
+    "zh-Hans": "模组面板",
+    "zh-Hant": "模組面板"
+  },
+  "description": {
+    "en": "One panel in play for the settings of every UE4SS mod, read from the same files as Mods Menu. The panel key (F1 by default) or the controller's Create button opens it.",
+    "de": "Ein Panel im Spiel für die Einstellungen aller UE4SS-Mods, gelesen aus denselben Dateien wie das Mod-Menü. Die Panel-Taste (standardmäßig F1) oder die Create-Taste des Controllers öffnet es.",
+    "es-419": "Un panel dentro del juego para la configuración de todos los mods de UE4SS, leída de los mismos archivos que el Menú de mods. Lo abren la tecla del panel (F1 por defecto) o el botón Crear del control.",
+    "es-ES": "Un panel dentro del juego para los ajustes de todos los mods de UE4SS, leídos de los mismos archivos que el Menú de mods. Lo abren la tecla del panel (F1 de forma predeterminada) o el botón Crear del mando.",
+    "fr": "Un seul panneau, en jeu, pour les réglages de tous les mods UE4SS, lus dans les mêmes fichiers que le Menu des mods. La touche du panneau (F1 par défaut) ou le bouton Créer de la manette l'ouvre.",
+    "it": "Un unico pannello in gioco per le impostazioni di tutte le mod UE4SS, lette dagli stessi file del Menu mod. Lo apre il tasto del pannello (F1 per impostazione predefinita) o il pulsante Create del controller.",
+    "ja": "ゲーム中に、すべてのUE4SS MODの設定をまとめて変更できるパネルです。MODメニューと同じファイルを読み込みます。パネルキー（初期設定はF1）またはコントローラーのクリエイトボタンで開きます。",
+    "ko": "플레이 중 모든 UE4SS 모드의 설정을 한곳에서 다루는 패널로, 모드 메뉴와 같은 파일을 읽습니다. 패널 키(기본값 F1) 또는 컨트롤러의 크리에이트 버튼으로 엽니다.",
+    "pt-BR": "Um painel dentro do jogo para as configurações de todos os mods do UE4SS, lidas dos mesmos arquivos que o Menu de Mods. A tecla do painel (F1 por padrão) ou o botão Criar do controle o abre.",
+    "pt-PT": "Um painel dentro do jogo para as definições de todos os mods do UE4SS, lidas dos mesmos ficheiros que o Menu de Mods. A tecla do painel (F1 por predefinição) ou o botão Criar do comando abre-o.",
+    "ru": "Единая панель для настроек всех модов UE4SS прямо в игре; читает те же файлы, что и меню модов. Открывается клавишей панели (по умолчанию F1) или кнопкой «Создать» на геймпаде.",
+    "th": "แผงเดียวในเกมสำหรับการตั้งค่าของม็อด UE4SS ทุกตัว อ่านจากไฟล์เดียวกับเมนูม็อด เปิดได้ด้วยคีย์แผง (ค่าเริ่มต้นคือ F1) หรือปุ่ม Create ของคอนโทรลเลอร์",
+    "vi": "Một bảng trong trò chơi cho thiết lập của mọi mod UE4SS, đọc từ cùng các tệp với Menu Mod. Phím bảng (mặc định F1) hoặc nút Create của tay cầm sẽ mở bảng.",
+    "zh-Hans": "在游戏中统一调整所有 UE4SS 模组设置的面板，读取的文件与模组菜单相同。按面板按键（默认 F1）或控制器的创建键打开。",
+    "zh-Hant": "在遊戲中統一調整所有 UE4SS 模組設定的面板，讀取的檔案與模組選單相同。按下面板按鍵（預設為 F1）或控制器的建立按鈕即可開啟。"
+  },
+  "version": "1.0.0",
+  "settings": [
+    {
+      "key": "Enabled",
+      "type": "toggle",
+      "label": {
+        "en": "Enabled",
+        "de": "Aktiviert",
+        "es-419": "Activado",
+        "es-ES": "Activado",
+        "fr": "Activé",
+        "it": "Attiva",
+        "ja": "有効",
+        "ko": "사용",
+        "pt-BR": "Ativado",
+        "pt-PT": "Ativado",
+        "ru": "Включено",
+        "th": "เปิดใช้",
+        "vi": "Kích Hoạt",
+        "zh-Hans": "启用",
+        "zh-Hant": "啟用"
+      },
+      "help": {
+        "en": "Off: the panel key does nothing until you turn this back on.",
+        "de": "Aus: Die Panel-Taste tut nichts, bis du dies wieder einschaltest.",
+        "es-419": "Apagado: la tecla del panel no hace nada hasta que lo vuelvas a encender.",
+        "es-ES": "Desactivado: la tecla del panel no hace nada hasta que lo vuelvas a activar.",
+        "fr": "Désactivé : la touche du panneau ne fait rien tant que vous ne réactivez pas ce réglage.",
+        "it": "No: il tasto del pannello non fa nulla finché non lo riattivi.",
+        "ja": "オフ：再びオンにするまで、パネルキーは何も行いません。",
+        "ko": "끄기: 다시 켤 때까지 패널 키가 작동하지 않습니다.",
+        "pt-BR": "Desativado: a tecla do painel não faz nada até você ativá-lo de novo.",
+        "pt-PT": "Desligado: a tecla do painel não faz nada até voltares a ativá-lo.",
+        "ru": "Выкл.: клавиша панели ничего не делает, пока вы снова не включите этот параметр.",
+        "th": "ปิด: คีย์แผงจะไม่ทำอะไรจนกว่าจะเปิดกลับมา",
+        "vi": "Tắt: phím bảng không có tác dụng cho đến khi bạn bật lại.",
+        "zh-Hans": "关闭：在重新开启之前，面板按键不起作用。",
+        "zh-Hant": "關閉：在重新開啟之前，面板按鍵不會有任何作用。"
+      },
+      "default": true
+    },
+    {
+      "key": "Navigation",
+      "type": "choice",
+      "label": {
+        "en": "Navigation",
+        "de": "Navigation",
+        "es-419": "Navegación",
+        "es-ES": "Navegación",
+        "fr": "Navigation",
+        "it": "Navigazione",
+        "ja": "ナビゲーション",
+        "ko": "탐색 방식",
+        "pt-BR": "Navegação",
+        "pt-PT": "Navegação",
+        "ru": "Навигация",
+        "th": "การนำทาง",
+        "vi": "Điều Hướng",
+        "zh-Hans": "导航方式",
+        "zh-Hant": "導覽方式"
+      },
+      "help": {
+        "en": "Classic: Up and Down go through the mods, Cross opens the chosen mod's settings and Circle comes back to the list. Hybrid: Up and Down go through the chosen mod's settings, L1 and R1 change the mod.",
+        "de": "Klassisch: Hoch und Runter gehen durch die Mods, Kreuz öffnet die Einstellungen des gewählten Mods und Kreis führt zurück zur Liste. Hybrid: Hoch und Runter gehen durch die Einstellungen des gewählten Mods, L1 und R1 wechseln den Mod.",
+        "es-419": "Clásica: Arriba y Abajo recorren los mods, Cruz abre la configuración del mod elegido y Círculo vuelve a la lista. Híbrida: Arriba y Abajo recorren la configuración del mod elegido, L1 y R1 cambian de mod.",
+        "es-ES": "Clásica: Arriba y Abajo recorren los mods, Cruz abre los ajustes del mod elegido y Círculo vuelve a la lista. Híbrida: Arriba y Abajo recorren los ajustes del mod elegido, L1 y R1 cambian de mod.",
+        "fr": "Classique : Haut et Bas parcourent les mods, Croix ouvre les réglages du mod choisi et Rond revient à la liste. Hybride : Haut et Bas parcourent les réglages du mod choisi, L1 et R1 changent de mod.",
+        "it": "Classica: Su e Giù scorrono le mod, Croce apre le impostazioni della mod scelta e Cerchio torna alla lista. Ibrida: Su e Giù scorrono le impostazioni della mod scelta, L1 e R1 cambiano mod.",
+        "ja": "クラシック：上下でMODを移動し、×ボタンで選んだMODの設定を開き、○ボタンでリストに戻ります。ハイブリッド：上下で選んだMODの設定を移動し、L1とR1でMODを切り替えます。",
+        "ko": "클래식: 위/아래로 모드를 이동하고, × 버튼으로 선택한 모드의 설정을 열며, ○ 버튼으로 목록으로 돌아갑니다. 하이브리드: 위/아래로 선택한 모드의 설정을 이동하고, L1과 R1으로 모드를 바꿉니다.",
+        "pt-BR": "Clássica: Para cima e Para baixo percorrem os mods, Xis abre as configurações do mod escolhido e Círculo volta à lista. Híbrida: Para cima e Para baixo percorrem as configurações do mod escolhido, L1 e R1 trocam de mod.",
+        "pt-PT": "Clássica: Para cima e Para baixo percorrem os mods, Cruz abre as definições do mod escolhido e Círculo volta à lista. Híbrida: Para cima e Para baixo percorrem as definições do mod escolhido, L1 e R1 mudam de mod.",
+        "ru": "Классическая: вверх и вниз — перемещение по модам, Крест открывает настройки выбранного мода, Круг возвращает к списку. Гибридная: вверх и вниз — перемещение по настройкам выбранного мода, L1 и R1 переключают мод.",
+        "th": "คลาสสิก: ขึ้นและลงเลื่อนผ่านรายการม็อด กากบาทเปิดการตั้งค่าของม็อดที่เลือก และวงกลมกลับไปที่รายการ ไฮบริด: ขึ้นและลงเลื่อนผ่านการตั้งค่าของม็อดที่เลือก L1 และ R1 เปลี่ยนม็อด",
+        "vi": "Cổ điển: Lên và Xuống để duyệt các mod, nút × mở thiết lập của mod đã chọn và nút Tròn quay về danh sách. Kết hợp: Lên và Xuống để duyệt thiết lập của mod đã chọn, L1 và R1 đổi mod.",
+        "zh-Hans": "经典：上下键在模组之间移动，×键打开所选模组的设置，○键返回列表。混合：上下键在所选模组的设置之间移动，L1 和 R1 切换模组。",
+        "zh-Hant": "經典：上下鍵在模組之間移動，× 按鈕開啟所選模組的設定，○ 按鈕返回清單。混合：上下鍵在所選模組的設定之間移動，L1 和 R1 切換模組。"
+      },
+      "default": "Classic",
+      "options": [
+        {
+          "value": "Classic",
+          "label": {
+            "en": "Classic",
+            "de": "Klassisch",
+            "es-419": "Clásica",
+            "es-ES": "Clásica",
+            "fr": "Classique",
+            "it": "Classica",
+            "ja": "クラシック",
+            "ko": "클래식",
+            "pt-BR": "Clássica",
+            "pt-PT": "Clássica",
+            "ru": "Классическая",
+            "th": "คลาสสิก",
+            "vi": "Cổ Điển",
+            "zh-Hans": "经典",
+            "zh-Hant": "經典"
+          }
+        },
+        {
+          "value": "Hybrid",
+          "label": {
+            "en": "Hybrid",
+            "de": "Hybrid",
+            "es-419": "Híbrida",
+            "es-ES": "Híbrida",
+            "fr": "Hybride",
+            "it": "Ibrida",
+            "ja": "ハイブリッド",
+            "ko": "하이브리드",
+            "pt-BR": "Híbrida",
+            "pt-PT": "Híbrida",
+            "ru": "Гибридная",
+            "th": "ไฮบริด",
+            "vi": "Kết Hợp",
+            "zh-Hans": "混合",
+            "zh-Hant": "混合"
+          }
+        }
+      ]
+    },
+    {
+      "key": "PanelKey",
+      "type": "key",
+      "label": {
+        "en": "Panel key",
+        "de": "Panel-Taste",
+        "es-419": "Tecla del panel",
+        "es-ES": "Tecla del panel",
+        "fr": "Touche du panneau",
+        "it": "Tasto del pannello",
+        "ja": "パネルキー",
+        "ko": "패널 키",
+        "pt-BR": "Tecla do painel",
+        "pt-PT": "Tecla do painel",
+        "ru": "Клавиша панели",
+        "th": "คีย์แผง",
+        "vi": "Phím Bảng",
+        "zh-Hans": "面板按键",
+        "zh-Hant": "面板按鍵"
+      },
+      "help": {
+        "en": "The key that opens and closes the panel while you play. Escape closes it too. F9 opens Mods Menu by default: if you use both, pick another key. None: only the controller button opens the panel.",
+        "de": "Die Taste, die das Panel im Spiel öffnet und schließt. Esc schließt es ebenfalls. F9 öffnet standardmäßig das Mod-Menü: Wenn du beides nutzt, wähle eine andere Taste. Keine: Nur die Controller-Taste öffnet das Panel.",
+        "es-419": "La tecla que abre y cierra el panel mientras juegas. Escape también lo cierra. F9 abre el Menú de mods por defecto: si usas ambos, elige otra tecla. Ninguno: solo el botón del control abre el panel.",
+        "es-ES": "La tecla que abre y cierra el panel mientras juegas. Escape también lo cierra. F9 abre el Menú de mods de forma predeterminada: si usas ambos, elige otra tecla. Ninguno: solo el botón del mando abre el panel.",
+        "fr": "La touche qui ouvre et ferme le panneau en jeu. Échap le ferme aussi. F9 ouvre le Menu des mods par défaut : si vous utilisez les deux, choisissez une autre touche. Aucune : seul le bouton de la manette ouvre le panneau.",
+        "it": "Il tasto che apre e chiude il pannello durante il gioco. Anche Esc lo chiude. F9 apre il Menu mod per impostazione predefinita: se usi entrambi, scegli un altro tasto. Nessuno: solo il pulsante del controller apre il pannello.",
+        "ja": "ゲーム中にパネルを開閉するキーです。Escでも閉じられます。F9は初期設定でMODメニューを開くため、両方を使う場合は別のキーを選んでください。なし：コントローラーボタンでのみパネルを開けます。",
+        "ko": "플레이 중 패널을 열고 닫는 키입니다. Esc 키로도 닫을 수 있습니다. F9는 기본적으로 모드 메뉴를 여는 키이므로, 둘 다 사용한다면 다른 키를 고르세요. 없음: 컨트롤러 버튼으로만 패널을 엽니다.",
+        "pt-BR": "A tecla que abre e fecha o painel durante o jogo. Escape também o fecha. F9 abre o Menu de Mods por padrão: se você usa os dois, escolha outra tecla. Nenhum: só o botão do controle abre o painel.",
+        "pt-PT": "A tecla que abre e fecha o painel durante o jogo. Escape também o fecha. F9 abre o Menu de Mods por predefinição: se usares os dois, escolhe outra tecla. Nenhum: só o botão do comando abre o painel.",
+        "ru": "Клавиша, которая открывает и закрывает панель во время игры. Esc тоже закрывает её. По умолчанию F9 открывает меню модов: если вы используете оба, выберите другую клавишу. Нет: панель открывается только кнопкой геймпада.",
+        "th": "ปุ่มคีย์บอร์ดที่เปิดและปิดแผงระหว่างเล่น Esc ก็ปิดแผงได้เช่นกัน F9 เปิดเมนูม็อดโดยค่าเริ่มต้น หากใช้ทั้งสองอย่าง ให้เลือกปุ่มอื่น ไม่มี: เปิดแผงได้ด้วยปุ่มคอนโทรลเลอร์เท่านั้น",
+        "vi": "Phím mở và đóng bảng khi đang chơi. Esc cũng đóng bảng. F9 mặc định mở Menu Mod: nếu dùng cả hai, hãy chọn phím khác. Không: chỉ nút tay cầm mới mở được bảng.",
+        "zh-Hans": "在游戏中打开和关闭面板的按键。按 Esc 也可关闭。F9 默认用于打开模组菜单：两者都使用时，请选择其他按键。无：只能用控制器按键打开面板。",
+        "zh-Hant": "在遊戲中開啟和關閉面板的按鍵。按 Esc 也可關閉。F9 預設用於開啟模組選單：兩者都使用時，請選擇其他按鍵。無：只能用控制器按鈕開啟面板。"
+      },
+      "default": "F1"
+    },
+    {
+      "key": "PadButton",
+      "type": "choice",
+      "label": {
+        "en": "Controller button",
+        "de": "Controller-Taste",
+        "es-419": "Botón del control",
+        "es-ES": "Botón del mando",
+        "fr": "Bouton manette",
+        "it": "Pulsante controller",
+        "ja": "コントローラーボタン",
+        "ko": "컨트롤러 버튼",
+        "pt-BR": "Botão do controle",
+        "pt-PT": "Botão do comando",
+        "ru": "Кнопка геймпада",
+        "th": "ปุ่มคอนโทรลเลอร์",
+        "vi": "Nút Tay Cầm",
+        "zh-Hans": "控制器按键",
+        "zh-Hant": "控制器按鈕"
+      },
+      "help": {
+        "en": "The controller button that opens and closes the panel while you play. Circle closes it too. Create does nothing else in the game. None: only the panel key opens the panel.",
+        "de": "Die Controller-Taste, die das Panel im Spiel öffnet und schließt. Kreis schließt es ebenfalls. Create hat im Spiel keine andere Funktion. Keine: Nur die Panel-Taste öffnet das Panel.",
+        "es-419": "El botón del control que abre y cierra el panel mientras juegas. Círculo también lo cierra. Crear no hace nada más en el juego. Ninguno: solo la tecla del panel abre el panel.",
+        "es-ES": "El botón del mando que abre y cierra el panel mientras juegas. Círculo también lo cierra. Crear no hace nada más en el juego. Ninguno: solo la tecla del panel abre el panel.",
+        "fr": "Le bouton de la manette qui ouvre et ferme le panneau en jeu. Rond le ferme aussi. Créer ne sert à rien d'autre dans le jeu. Aucune : seule la touche du panneau ouvre le panneau.",
+        "it": "Il pulsante del controller che apre e chiude il pannello durante il gioco. Anche Cerchio lo chiude. Create non ha altre funzioni nel gioco. Nessuno: solo il tasto del pannello apre il pannello.",
+        "ja": "ゲーム中にパネルを開閉するコントローラーボタンです。○ボタンでも閉じられます。クリエイトボタンは、ゲーム内でほかの用途には使われません。なし：パネルキーでのみパネルを開けます。",
+        "ko": "플레이 중 패널을 열고 닫는 컨트롤러 버튼입니다. ○ 버튼으로도 닫을 수 있습니다. 크리에이트 버튼은 게임에서 다른 용도로 쓰이지 않습니다. 없음: 패널 키로만 패널을 엽니다.",
+        "pt-BR": "O botão do controle que abre e fecha o painel durante o jogo. Círculo também o fecha. Criar não faz mais nada no jogo. Nenhum: só a tecla do painel abre o painel.",
+        "pt-PT": "O botão do comando que abre e fecha o painel durante o jogo. Círculo também o fecha. Criar não faz mais nada no jogo. Nenhum: só a tecla do painel abre o painel.",
+        "ru": "Кнопка геймпада, которая открывает и закрывает панель во время игры. Круг тоже закрывает её. «Создать» больше ни для чего в игре не используется. Нет: панель открывается только клавишей панели.",
+        "th": "ปุ่มคอนโทรลเลอร์ที่เปิดและปิดแผงระหว่างเล่น วงกลมก็ปิดแผงได้เช่นกัน Create ไม่มีหน้าที่อื่นในเกม ไม่มี: เปิดแผงได้ด้วยคีย์แผงเท่านั้น",
+        "vi": "Nút tay cầm mở và đóng bảng khi đang chơi. Nút Tròn cũng đóng bảng. Create không có chức năng nào khác trong trò chơi. Không: chỉ phím bảng mới mở được bảng.",
+        "zh-Hans": "在游戏中打开和关闭面板的控制器按键。按○键也可关闭。创建键在游戏中没有其他用途。无：只能用面板按键打开面板。",
+        "zh-Hant": "在遊戲中開啟和關閉面板的控制器按鈕。按 ○ 按鈕也可關閉。建立按鈕在遊戲中沒有其他用途。無：只能用面板按鍵開啟面板。"
+      },
+      "default": "PBZ_Gamepad_Create",
+      "options": [
+        {
+          "value": "None",
+          "label": {
+            "en": "None",
+            "de": "Keine",
+            "es-419": "Ninguno",
+            "es-ES": "Ninguno",
+            "fr": "Aucune",
+            "it": "Nessuno",
+            "ja": "なし",
+            "ko": "없음",
+            "pt-BR": "Nenhum",
+            "pt-PT": "Nenhum",
+            "ru": "Нет",
+            "th": "ไม่มี",
+            "vi": "Không",
+            "zh-Hans": "无",
+            "zh-Hant": "無"
+          }
+        },
+        {
+          "value": "PBZ_Gamepad_Create",
+          "label": {
+            "en": "Create",
+            "de": "Create",
+            "es-419": "Crear",
+            "es-ES": "Crear",
+            "fr": "Créer",
+            "it": "Create",
+            "ja": "クリエイトボタン",
+            "ko": "크리에이트 버튼",
+            "pt-BR": "Criar",
+            "pt-PT": "Criar",
+            "ru": "Создать",
+            "th": "Create",
+            "vi": "Nút Create",
+            "zh-Hans": "创建键",
+            "zh-Hant": "建立按鈕"
+          }
+        },
+        {
+          "value": "Gamepad_FaceButton_Bottom",
+          "label": {
+            "en": "Cross / A",
+            "de": "Kreuz / A",
+            "es-419": "Cruz / A",
+            "es-ES": "Cruz / A",
+            "fr": "Croix / A",
+            "it": "Croce / A",
+            "ja": "×ボタン / A",
+            "ko": "× 버튼 / A",
+            "pt-BR": "Xis / A",
+            "pt-PT": "Cruz / A",
+            "ru": "Крест / A",
+            "th": "กากบาท / A",
+            "vi": "Nút × / A",
+            "zh-Hans": "×键 / A",
+            "zh-Hant": "×按鈕 / A"
+          }
+        },
+        {
+          "value": "Gamepad_FaceButton_Right",
+          "label": {
+            "en": "Circle / B",
+            "de": "Kreis / B",
+            "es-419": "Círculo / B",
+            "es-ES": "Círculo / B",
+            "fr": "Rond / B",
+            "it": "Cerchio / B",
+            "ja": "○ボタン / B",
+            "ko": "○ 버튼 / B",
+            "pt-BR": "Círculo / B",
+            "pt-PT": "Círculo / B",
+            "ru": "Круг / B",
+            "th": "วงกลม / B",
+            "vi": "Nút Tròn / B",
+            "zh-Hans": "○键 / B",
+            "zh-Hant": "○按鈕 / B"
+          }
+        },
+        {
+          "value": "Gamepad_FaceButton_Left",
+          "label": {
+            "en": "Square / X",
+            "de": "Quadrat / X",
+            "es-419": "Cuadrado / X",
+            "es-ES": "Cuadrado / X",
+            "fr": "Carré / X",
+            "it": "Quadrato / X",
+            "ja": "□ボタン / X",
+            "ko": "□ 버튼 / X",
+            "pt-BR": "Quadrado / X",
+            "pt-PT": "Quadrado / X",
+            "ru": "Квадрат / X",
+            "th": "สี่เหลี่ยม / X",
+            "vi": "Nút Vuông / X",
+            "zh-Hans": "□键 / X",
+            "zh-Hant": "□按鈕 / X"
+          }
+        },
+        {
+          "value": "Gamepad_FaceButton_Top",
+          "label": {
+            "en": "Triangle / Y",
+            "de": "Dreieck / Y",
+            "es-419": "Triángulo / Y",
+            "es-ES": "Triángulo / Y",
+            "fr": "Triangle / Y",
+            "it": "Triangolo / Y",
+            "ja": "△ボタン / Y",
+            "ko": "△ 버튼 / Y",
+            "pt-BR": "Triângulo / Y",
+            "pt-PT": "Triângulo / Y",
+            "ru": "Треугольник / Y",
+            "th": "สามเหลี่ยม / Y",
+            "vi": "Nút Tam Giác / Y",
+            "zh-Hans": "△键 / Y",
+            "zh-Hant": "△按鈕 / Y"
+          }
+        },
+        {
+          "value": "Gamepad_LeftShoulder",
+          "label": {
+            "en": "L1 / LB"
+          }
+        },
+        {
+          "value": "Gamepad_RightShoulder",
+          "label": {
+            "en": "R1 / RB"
+          }
+        },
+        {
+          "value": "Gamepad_LeftTrigger",
+          "label": {
+            "en": "L2 / LT"
+          }
+        },
+        {
+          "value": "Gamepad_RightTrigger",
+          "label": {
+            "en": "R2 / RT"
+          }
+        },
+        {
+          "value": "Gamepad_LeftThumbstick",
+          "label": {
+            "en": "L3 / LS"
+          }
+        },
+        {
+          "value": "Gamepad_RightThumbstick",
+          "label": {
+            "en": "R3 / RS"
+          }
+        },
+        {
+          "value": "Gamepad_DPad_Up",
+          "label": {
+            "en": "D-pad up",
+            "de": "Steuerkreuz oben",
+            "es-419": "Cruceta arriba",
+            "es-ES": "Cruceta arriba",
+            "fr": "Croix dir. haut",
+            "it": "Croce dir. su",
+            "ja": "方向キー上",
+            "ko": "방향 버튼 위",
+            "pt-BR": "Direcional para cima",
+            "pt-PT": "Direcional para cima",
+            "ru": "Крестовина вверх",
+            "th": "ปุ่มทิศทางขึ้น",
+            "vi": "D-pad Lên",
+            "zh-Hans": "方向键上",
+            "zh-Hant": "方向鍵上"
+          }
+        },
+        {
+          "value": "Gamepad_DPad_Down",
+          "label": {
+            "en": "D-pad down",
+            "de": "Steuerkreuz unten",
+            "es-419": "Cruceta abajo",
+            "es-ES": "Cruceta abajo",
+            "fr": "Croix dir. bas",
+            "it": "Croce dir. giù",
+            "ja": "方向キー下",
+            "ko": "방향 버튼 아래",
+            "pt-BR": "Direcional para baixo",
+            "pt-PT": "Direcional para baixo",
+            "ru": "Крестовина вниз",
+            "th": "ปุ่มทิศทางลง",
+            "vi": "D-pad Xuống",
+            "zh-Hans": "方向键下",
+            "zh-Hant": "方向鍵下"
+          }
+        },
+        {
+          "value": "Gamepad_DPad_Left",
+          "label": {
+            "en": "D-pad left",
+            "de": "Steuerkreuz links",
+            "es-419": "Cruceta izquierda",
+            "es-ES": "Cruceta izquierda",
+            "fr": "Croix dir. gauche",
+            "it": "Croce dir. sinistra",
+            "ja": "方向キー左",
+            "ko": "방향 버튼 왼쪽",
+            "pt-BR": "Direcional p/ esquerda",
+            "pt-PT": "Direcional p/ esquerda",
+            "ru": "Крестовина влево",
+            "th": "ปุ่มทิศทางซ้าย",
+            "vi": "D-pad Trái",
+            "zh-Hans": "方向键左",
+            "zh-Hant": "方向鍵左"
+          }
+        },
+        {
+          "value": "Gamepad_DPad_Right",
+          "label": {
+            "en": "D-pad right",
+            "de": "Steuerkreuz rechts",
+            "es-419": "Cruceta derecha",
+            "es-ES": "Cruceta derecha",
+            "fr": "Croix dir. droite",
+            "it": "Croce dir. destra",
+            "ja": "方向キー右",
+            "ko": "방향 버튼 오른쪽",
+            "pt-BR": "Direcional p/ direita",
+            "pt-PT": "Direcional p/ direita",
+            "ru": "Крестовина вправо",
+            "th": "ปุ่มทิศทางขวา",
+            "vi": "D-pad Phải",
+            "zh-Hans": "方向键右",
+            "zh-Hant": "方向鍵右"
+          }
+        }
+      ]
+    },
+    {
+      "key": "PadComboFirst",
+      "type": "choice",
+      "label": {
+        "en": "Combination: first button",
+        "de": "Kombination: erste Taste",
+        "es-419": "Combinación: primer botón",
+        "es-ES": "Combinación: primer botón",
+        "fr": "Combinaison : premier bouton",
+        "it": "Combinazione: primo pulsante",
+        "ja": "組み合わせ：1つ目のボタン",
+        "ko": "조합: 첫 번째 버튼",
+        "pt-BR": "Combinação: primeiro botão",
+        "pt-PT": "Combinação: primeiro botão",
+        "ru": "Комбинация: первая кнопка",
+        "th": "ชุดปุ่ม: ปุ่มแรก",
+        "vi": "Tổ Hợp: Nút Thứ Nhất",
+        "zh-Hans": "组合键：第一个按键",
+        "zh-Hant": "組合：第一個按鈕"
+      },
+      "help": {
+        "en": "With the other button of the combination, pressed together while you play: opens and closes the panel, as the controller button does. In Mod Panel you choose both at once by pressing them. None on either: no combination.",
+        "de": "Zusammen mit der anderen Taste der Kombination im Spiel gedrückt: öffnet und schließt das Panel, wie die Controller-Taste. Im Mod-Panel wählst du beide auf einmal, indem du sie drückst. Keine bei einer von beiden: keine Kombination.",
+        "es-419": "Con el otro botón de la combinación, presionados a la vez mientras juegas: abre y cierra el panel, igual que el botón del control. En el Panel de mods eliges ambos a la vez presionándolos. Ninguno en cualquiera de los dos: sin combinación.",
+        "es-ES": "Con el otro botón de la combinación, pulsados a la vez mientras juegas: abre y cierra el panel, igual que el botón del mando. En el Panel de mods eliges ambos a la vez pulsándolos. Ninguno en cualquiera de los dos: sin combinación.",
+        "fr": "Pressé en jeu avec l'autre bouton de la combinaison : ouvre et ferme le panneau, comme le bouton de la manette. Dans le Panneau des mods, vous choisissez les deux d'un coup en les pressant. Aucune pour l'un ou l'autre : pas de combinaison.",
+        "it": "Premuto insieme all'altro pulsante della combinazione durante il gioco: apre e chiude il pannello, come il pulsante del controller. Nel Pannello mod scegli entrambi in una volta premendoli. Nessuno su uno dei due: nessuna combinazione.",
+        "ja": "組み合わせのもう一方のボタンとゲーム中に同時に押すと、コントローラーボタンと同様にパネルを開閉します。MODパネルでは、2つのボタンを押すだけで両方を一度に設定できます。どちらかがなしの場合：組み合わせは使われません。",
+        "ko": "플레이 중 조합의 다른 버튼과 함께 누르면 컨트롤러 버튼처럼 패널이 열리고 닫힙니다. 모드 패널에서는 두 버튼을 직접 눌러 한 번에 지정합니다. 둘 중 하나라도 없음이면 조합을 사용하지 않습니다.",
+        "pt-BR": "Com o outro botão da combinação, apertados juntos durante o jogo: abre e fecha o painel, como o botão do controle. No Painel de Mods você escolhe os dois de uma vez apertando-os. Nenhum em qualquer um dos dois: sem combinação.",
+        "pt-PT": "Com o outro botão da combinação, premidos em simultâneo durante o jogo: abre e fecha o painel, tal como o botão do comando. No Painel de Mods escolhes os dois de uma só vez, premindo-os. Nenhum em qualquer um dos dois: sem combinação.",
+        "ru": "Вместе с другой кнопкой комбинации, при одновременном нажатии во время игры: открывает и закрывает панель, как кнопка геймпада. В панели модов обе кнопки выбираются сразу — нажатием на них. «Нет» у любой из них: комбинации нет.",
+        "th": "กดพร้อมกับอีกปุ่มของชุดปุ่มระหว่างเล่น: เปิดและปิดแผง เหมือนกับปุ่มคอนโทรลเลอร์ ในแผงม็อดเลือกทั้งสองปุ่มพร้อมกันได้โดยกดปุ่มเหล่านั้น ถ้าปุ่มใดปุ่มหนึ่งเป็น “ไม่มี”: ไม่ใช้ชุดปุ่ม",
+        "vi": "Nhấn cùng lúc với nút còn lại của tổ hợp khi đang chơi: mở và đóng bảng, giống như nút tay cầm. Trong Bảng Mod, bạn chọn cả hai cùng lúc bằng cách nhấn chúng. Một trong hai là Không: không có tổ hợp.",
+        "zh-Hans": "与组合键的另一个按键在游戏中同时按下：像控制器按键一样打开和关闭面板。在模组面板中按下这两个按键即可同时设定。任一为无：不使用组合键。",
+        "zh-Hant": "與組合中的另一個按鈕在遊戲中同時按下：像控制器按鈕一樣開啟和關閉面板。在模組面板中按下這兩個按鈕即可一次設定。任一為「無」：不使用組合。"
+      },
+      "default": "None",
+      "options": [
+        {
+          "value": "None",
+          "label": {
+            "en": "None",
+            "de": "Keine",
+            "es-419": "Ninguno",
+            "es-ES": "Ninguno",
+            "fr": "Aucune",
+            "it": "Nessuno",
+            "ja": "なし",
+            "ko": "없음",
+            "pt-BR": "Nenhum",
+            "pt-PT": "Nenhum",
+            "ru": "Нет",
+            "th": "ไม่มี",
+            "vi": "Không",
+            "zh-Hans": "无",
+            "zh-Hant": "無"
+          }
+        },
+        {
+          "value": "Gamepad_FaceButton_Bottom",
+          "label": {
+            "en": "Cross / A",
+            "de": "Kreuz / A",
+            "es-419": "Cruz / A",
+            "es-ES": "Cruz / A",
+            "fr": "Croix / A",
+            "it": "Croce / A",
+            "ja": "×ボタン / A",
+            "ko": "× 버튼 / A",
+            "pt-BR": "Xis / A",
+            "pt-PT": "Cruz / A",
+            "ru": "Крест / A",
+            "th": "กากบาท / A",
+            "vi": "Nút × / A",
+            "zh-Hans": "×键 / A",
+            "zh-Hant": "×按鈕 / A"
+          }
+        },
+        {
+          "value": "Gamepad_FaceButton_Right",
+          "label": {
+            "en": "Circle / B",
+            "de": "Kreis / B",
+            "es-419": "Círculo / B",
+            "es-ES": "Círculo / B",
+            "fr": "Rond / B",
+            "it": "Cerchio / B",
+            "ja": "○ボタン / B",
+            "ko": "○ 버튼 / B",
+            "pt-BR": "Círculo / B",
+            "pt-PT": "Círculo / B",
+            "ru": "Круг / B",
+            "th": "วงกลม / B",
+            "vi": "Nút Tròn / B",
+            "zh-Hans": "○键 / B",
+            "zh-Hant": "○按鈕 / B"
+          }
+        },
+        {
+          "value": "Gamepad_FaceButton_Left",
+          "label": {
+            "en": "Square / X",
+            "de": "Quadrat / X",
+            "es-419": "Cuadrado / X",
+            "es-ES": "Cuadrado / X",
+            "fr": "Carré / X",
+            "it": "Quadrato / X",
+            "ja": "□ボタン / X",
+            "ko": "□ 버튼 / X",
+            "pt-BR": "Quadrado / X",
+            "pt-PT": "Quadrado / X",
+            "ru": "Квадрат / X",
+            "th": "สี่เหลี่ยม / X",
+            "vi": "Nút Vuông / X",
+            "zh-Hans": "□键 / X",
+            "zh-Hant": "□按鈕 / X"
+          }
+        },
+        {
+          "value": "Gamepad_FaceButton_Top",
+          "label": {
+            "en": "Triangle / Y",
+            "de": "Dreieck / Y",
+            "es-419": "Triángulo / Y",
+            "es-ES": "Triángulo / Y",
+            "fr": "Triangle / Y",
+            "it": "Triangolo / Y",
+            "ja": "△ボタン / Y",
+            "ko": "△ 버튼 / Y",
+            "pt-BR": "Triângulo / Y",
+            "pt-PT": "Triângulo / Y",
+            "ru": "Треугольник / Y",
+            "th": "สามเหลี่ยม / Y",
+            "vi": "Nút Tam Giác / Y",
+            "zh-Hans": "△键 / Y",
+            "zh-Hant": "△按鈕 / Y"
+          }
+        },
+        {
+          "value": "Gamepad_LeftShoulder",
+          "label": {
+            "en": "L1 / LB"
+          }
+        },
+        {
+          "value": "Gamepad_RightShoulder",
+          "label": {
+            "en": "R1 / RB"
+          }
+        },
+        {
+          "value": "Gamepad_LeftTrigger",
+          "label": {
+            "en": "L2 / LT"
+          }
+        },
+        {
+          "value": "Gamepad_RightTrigger",
+          "label": {
+            "en": "R2 / RT"
+          }
+        },
+        {
+          "value": "Gamepad_LeftThumbstick",
+          "label": {
+            "en": "L3 / LS"
+          }
+        },
+        {
+          "value": "Gamepad_RightThumbstick",
+          "label": {
+            "en": "R3 / RS"
+          }
+        },
+        {
+          "value": "Gamepad_DPad_Up",
+          "label": {
+            "en": "D-pad up",
+            "de": "Steuerkreuz oben",
+            "es-419": "Cruceta arriba",
+            "es-ES": "Cruceta arriba",
+            "fr": "Croix dir. haut",
+            "it": "Croce dir. su",
+            "ja": "方向キー上",
+            "ko": "방향 버튼 위",
+            "pt-BR": "Direcional para cima",
+            "pt-PT": "Direcional para cima",
+            "ru": "Крестовина вверх",
+            "th": "ปุ่มทิศทางขึ้น",
+            "vi": "D-pad Lên",
+            "zh-Hans": "方向键上",
+            "zh-Hant": "方向鍵上"
+          }
+        },
+        {
+          "value": "Gamepad_DPad_Down",
+          "label": {
+            "en": "D-pad down",
+            "de": "Steuerkreuz unten",
+            "es-419": "Cruceta abajo",
+            "es-ES": "Cruceta abajo",
+            "fr": "Croix dir. bas",
+            "it": "Croce dir. giù",
+            "ja": "方向キー下",
+            "ko": "방향 버튼 아래",
+            "pt-BR": "Direcional para baixo",
+            "pt-PT": "Direcional para baixo",
+            "ru": "Крестовина вниз",
+            "th": "ปุ่มทิศทางลง",
+            "vi": "D-pad Xuống",
+            "zh-Hans": "方向键下",
+            "zh-Hant": "方向鍵下"
+          }
+        },
+        {
+          "value": "Gamepad_DPad_Left",
+          "label": {
+            "en": "D-pad left",
+            "de": "Steuerkreuz links",
+            "es-419": "Cruceta izquierda",
+            "es-ES": "Cruceta izquierda",
+            "fr": "Croix dir. gauche",
+            "it": "Croce dir. sinistra",
+            "ja": "方向キー左",
+            "ko": "방향 버튼 왼쪽",
+            "pt-BR": "Direcional p/ esquerda",
+            "pt-PT": "Direcional p/ esquerda",
+            "ru": "Крестовина влево",
+            "th": "ปุ่มทิศทางซ้าย",
+            "vi": "D-pad Trái",
+            "zh-Hans": "方向键左",
+            "zh-Hant": "方向鍵左"
+          }
+        },
+        {
+          "value": "Gamepad_DPad_Right",
+          "label": {
+            "en": "D-pad right",
+            "de": "Steuerkreuz rechts",
+            "es-419": "Cruceta derecha",
+            "es-ES": "Cruceta derecha",
+            "fr": "Croix dir. droite",
+            "it": "Croce dir. destra",
+            "ja": "方向キー右",
+            "ko": "방향 버튼 오른쪽",
+            "pt-BR": "Direcional p/ direita",
+            "pt-PT": "Direcional p/ direita",
+            "ru": "Крестовина вправо",
+            "th": "ปุ่มทิศทางขวา",
+            "vi": "D-pad Phải",
+            "zh-Hans": "方向键右",
+            "zh-Hant": "方向鍵右"
+          }
+        }
+      ]
+    },
+    {
+      "key": "PadComboSecond",
+      "type": "choice",
+      "label": {
+        "en": "Combination: second button",
+        "de": "Kombination: zweite Taste",
+        "es-419": "Combinación: segundo botón",
+        "es-ES": "Combinación: segundo botón",
+        "fr": "Combinaison : deuxième bouton",
+        "it": "Combinazione: secondo pulsante",
+        "ja": "組み合わせ：2つ目のボタン",
+        "ko": "조합: 두 번째 버튼",
+        "pt-BR": "Combinação: segundo botão",
+        "pt-PT": "Combinação: segundo botão",
+        "ru": "Комбинация: вторая кнопка",
+        "th": "ชุดปุ่ม: ปุ่มที่สอง",
+        "vi": "Tổ Hợp: Nút Thứ Hai",
+        "zh-Hans": "组合键：第二个按键",
+        "zh-Hant": "組合：第二個按鈕"
+      },
+      "help": {
+        "en": "With the other button of the combination, pressed together while you play: opens and closes the panel, as the controller button does. In Mod Panel you choose both at once by pressing them. None on either: no combination.",
+        "de": "Zusammen mit der anderen Taste der Kombination im Spiel gedrückt: öffnet und schließt das Panel, wie die Controller-Taste. Im Mod-Panel wählst du beide auf einmal, indem du sie drückst. Keine bei einer von beiden: keine Kombination.",
+        "es-419": "Con el otro botón de la combinación, presionados a la vez mientras juegas: abre y cierra el panel, igual que el botón del control. En el Panel de mods eliges ambos a la vez presionándolos. Ninguno en cualquiera de los dos: sin combinación.",
+        "es-ES": "Con el otro botón de la combinación, pulsados a la vez mientras juegas: abre y cierra el panel, igual que el botón del mando. En el Panel de mods eliges ambos a la vez pulsándolos. Ninguno en cualquiera de los dos: sin combinación.",
+        "fr": "Pressé en jeu avec l'autre bouton de la combinaison : ouvre et ferme le panneau, comme le bouton de la manette. Dans le Panneau des mods, vous choisissez les deux d'un coup en les pressant. Aucune pour l'un ou l'autre : pas de combinaison.",
+        "it": "Premuto insieme all'altro pulsante della combinazione durante il gioco: apre e chiude il pannello, come il pulsante del controller. Nel Pannello mod scegli entrambi in una volta premendoli. Nessuno su uno dei due: nessuna combinazione.",
+        "ja": "組み合わせのもう一方のボタンとゲーム中に同時に押すと、コントローラーボタンと同様にパネルを開閉します。MODパネルでは、2つのボタンを押すだけで両方を一度に設定できます。どちらかがなしの場合：組み合わせは使われません。",
+        "ko": "플레이 중 조합의 다른 버튼과 함께 누르면 컨트롤러 버튼처럼 패널이 열리고 닫힙니다. 모드 패널에서는 두 버튼을 직접 눌러 한 번에 지정합니다. 둘 중 하나라도 없음이면 조합을 사용하지 않습니다.",
+        "pt-BR": "Com o outro botão da combinação, apertados juntos durante o jogo: abre e fecha o painel, como o botão do controle. No Painel de Mods você escolhe os dois de uma vez apertando-os. Nenhum em qualquer um dos dois: sem combinação.",
+        "pt-PT": "Com o outro botão da combinação, premidos em simultâneo durante o jogo: abre e fecha o painel, tal como o botão do comando. No Painel de Mods escolhes os dois de uma só vez, premindo-os. Nenhum em qualquer um dos dois: sem combinação.",
+        "ru": "Вместе с другой кнопкой комбинации, при одновременном нажатии во время игры: открывает и закрывает панель, как кнопка геймпада. В панели модов обе кнопки выбираются сразу — нажатием на них. «Нет» у любой из них: комбинации нет.",
+        "th": "กดพร้อมกับอีกปุ่มของชุดปุ่มระหว่างเล่น: เปิดและปิดแผง เหมือนกับปุ่มคอนโทรลเลอร์ ในแผงม็อดเลือกทั้งสองปุ่มพร้อมกันได้โดยกดปุ่มเหล่านั้น ถ้าปุ่มใดปุ่มหนึ่งเป็น “ไม่มี”: ไม่ใช้ชุดปุ่ม",
+        "vi": "Nhấn cùng lúc với nút còn lại của tổ hợp khi đang chơi: mở và đóng bảng, giống như nút tay cầm. Trong Bảng Mod, bạn chọn cả hai cùng lúc bằng cách nhấn chúng. Một trong hai là Không: không có tổ hợp.",
+        "zh-Hans": "与组合键的另一个按键在游戏中同时按下：像控制器按键一样打开和关闭面板。在模组面板中按下这两个按键即可同时设定。任一为无：不使用组合键。",
+        "zh-Hant": "與組合中的另一個按鈕在遊戲中同時按下：像控制器按鈕一樣開啟和關閉面板。在模組面板中按下這兩個按鈕即可一次設定。任一為「無」：不使用組合。"
+      },
+      "default": "None",
+      "options": [
+        {
+          "value": "None",
+          "label": {
+            "en": "None",
+            "de": "Keine",
+            "es-419": "Ninguno",
+            "es-ES": "Ninguno",
+            "fr": "Aucune",
+            "it": "Nessuno",
+            "ja": "なし",
+            "ko": "없음",
+            "pt-BR": "Nenhum",
+            "pt-PT": "Nenhum",
+            "ru": "Нет",
+            "th": "ไม่มี",
+            "vi": "Không",
+            "zh-Hans": "无",
+            "zh-Hant": "無"
+          }
+        },
+        {
+          "value": "Gamepad_FaceButton_Bottom",
+          "label": {
+            "en": "Cross / A",
+            "de": "Kreuz / A",
+            "es-419": "Cruz / A",
+            "es-ES": "Cruz / A",
+            "fr": "Croix / A",
+            "it": "Croce / A",
+            "ja": "×ボタン / A",
+            "ko": "× 버튼 / A",
+            "pt-BR": "Xis / A",
+            "pt-PT": "Cruz / A",
+            "ru": "Крест / A",
+            "th": "กากบาท / A",
+            "vi": "Nút × / A",
+            "zh-Hans": "×键 / A",
+            "zh-Hant": "×按鈕 / A"
+          }
+        },
+        {
+          "value": "Gamepad_FaceButton_Right",
+          "label": {
+            "en": "Circle / B",
+            "de": "Kreis / B",
+            "es-419": "Círculo / B",
+            "es-ES": "Círculo / B",
+            "fr": "Rond / B",
+            "it": "Cerchio / B",
+            "ja": "○ボタン / B",
+            "ko": "○ 버튼 / B",
+            "pt-BR": "Círculo / B",
+            "pt-PT": "Círculo / B",
+            "ru": "Круг / B",
+            "th": "วงกลม / B",
+            "vi": "Nút Tròn / B",
+            "zh-Hans": "○键 / B",
+            "zh-Hant": "○按鈕 / B"
+          }
+        },
+        {
+          "value": "Gamepad_FaceButton_Left",
+          "label": {
+            "en": "Square / X",
+            "de": "Quadrat / X",
+            "es-419": "Cuadrado / X",
+            "es-ES": "Cuadrado / X",
+            "fr": "Carré / X",
+            "it": "Quadrato / X",
+            "ja": "□ボタン / X",
+            "ko": "□ 버튼 / X",
+            "pt-BR": "Quadrado / X",
+            "pt-PT": "Quadrado / X",
+            "ru": "Квадрат / X",
+            "th": "สี่เหลี่ยม / X",
+            "vi": "Nút Vuông / X",
+            "zh-Hans": "□键 / X",
+            "zh-Hant": "□按鈕 / X"
+          }
+        },
+        {
+          "value": "Gamepad_FaceButton_Top",
+          "label": {
+            "en": "Triangle / Y",
+            "de": "Dreieck / Y",
+            "es-419": "Triángulo / Y",
+            "es-ES": "Triángulo / Y",
+            "fr": "Triangle / Y",
+            "it": "Triangolo / Y",
+            "ja": "△ボタン / Y",
+            "ko": "△ 버튼 / Y",
+            "pt-BR": "Triângulo / Y",
+            "pt-PT": "Triângulo / Y",
+            "ru": "Треугольник / Y",
+            "th": "สามเหลี่ยม / Y",
+            "vi": "Nút Tam Giác / Y",
+            "zh-Hans": "△键 / Y",
+            "zh-Hant": "△按鈕 / Y"
+          }
+        },
+        {
+          "value": "Gamepad_LeftShoulder",
+          "label": {
+            "en": "L1 / LB"
+          }
+        },
+        {
+          "value": "Gamepad_RightShoulder",
+          "label": {
+            "en": "R1 / RB"
+          }
+        },
+        {
+          "value": "Gamepad_LeftTrigger",
+          "label": {
+            "en": "L2 / LT"
+          }
+        },
+        {
+          "value": "Gamepad_RightTrigger",
+          "label": {
+            "en": "R2 / RT"
+          }
+        },
+        {
+          "value": "Gamepad_LeftThumbstick",
+          "label": {
+            "en": "L3 / LS"
+          }
+        },
+        {
+          "value": "Gamepad_RightThumbstick",
+          "label": {
+            "en": "R3 / RS"
+          }
+        },
+        {
+          "value": "Gamepad_DPad_Up",
+          "label": {
+            "en": "D-pad up",
+            "de": "Steuerkreuz oben",
+            "es-419": "Cruceta arriba",
+            "es-ES": "Cruceta arriba",
+            "fr": "Croix dir. haut",
+            "it": "Croce dir. su",
+            "ja": "方向キー上",
+            "ko": "방향 버튼 위",
+            "pt-BR": "Direcional para cima",
+            "pt-PT": "Direcional para cima",
+            "ru": "Крестовина вверх",
+            "th": "ปุ่มทิศทางขึ้น",
+            "vi": "D-pad Lên",
+            "zh-Hans": "方向键上",
+            "zh-Hant": "方向鍵上"
+          }
+        },
+        {
+          "value": "Gamepad_DPad_Down",
+          "label": {
+            "en": "D-pad down",
+            "de": "Steuerkreuz unten",
+            "es-419": "Cruceta abajo",
+            "es-ES": "Cruceta abajo",
+            "fr": "Croix dir. bas",
+            "it": "Croce dir. giù",
+            "ja": "方向キー下",
+            "ko": "방향 버튼 아래",
+            "pt-BR": "Direcional para baixo",
+            "pt-PT": "Direcional para baixo",
+            "ru": "Крестовина вниз",
+            "th": "ปุ่มทิศทางลง",
+            "vi": "D-pad Xuống",
+            "zh-Hans": "方向键下",
+            "zh-Hant": "方向鍵下"
+          }
+        },
+        {
+          "value": "Gamepad_DPad_Left",
+          "label": {
+            "en": "D-pad left",
+            "de": "Steuerkreuz links",
+            "es-419": "Cruceta izquierda",
+            "es-ES": "Cruceta izquierda",
+            "fr": "Croix dir. gauche",
+            "it": "Croce dir. sinistra",
+            "ja": "方向キー左",
+            "ko": "방향 버튼 왼쪽",
+            "pt-BR": "Direcional p/ esquerda",
+            "pt-PT": "Direcional p/ esquerda",
+            "ru": "Крестовина влево",
+            "th": "ปุ่มทิศทางซ้าย",
+            "vi": "D-pad Trái",
+            "zh-Hans": "方向键左",
+            "zh-Hant": "方向鍵左"
+          }
+        },
+        {
+          "value": "Gamepad_DPad_Right",
+          "label": {
+            "en": "D-pad right",
+            "de": "Steuerkreuz rechts",
+            "es-419": "Cruceta derecha",
+            "es-ES": "Cruceta derecha",
+            "fr": "Croix dir. droite",
+            "it": "Croce dir. destra",
+            "ja": "方向キー右",
+            "ko": "방향 버튼 오른쪽",
+            "pt-BR": "Direcional p/ direita",
+            "pt-PT": "Direcional p/ direita",
+            "ru": "Крестовина вправо",
+            "th": "ปุ่มทิศทางขวา",
+            "vi": "D-pad Phải",
+            "zh-Hans": "方向键右",
+            "zh-Hant": "方向鍵右"
+          }
+        }
+      ]
+    },
+    {
+      "key": "ButtonIcons",
+      "type": "choice",
+      "label": {
+        "en": "Button icons",
+        "de": "Tastensymbole",
+        "es-419": "Íconos de botones",
+        "es-ES": "Iconos de botones",
+        "fr": "Icônes des boutons",
+        "it": "Icone pulsanti",
+        "ja": "ボタンアイコン",
+        "ko": "버튼 아이콘",
+        "pt-BR": "Ícones dos botões",
+        "pt-PT": "Ícones dos botões",
+        "ru": "Значки кнопок",
+        "th": "ไอคอนปุ่ม",
+        "vi": "Biểu Tượng Nút",
+        "zh-Hans": "按键图标",
+        "zh-Hant": "按鈕圖示"
+      },
+      "help": {
+        "en": "Whose controller buttons the panel shows. Auto: those of the controller the game says you use.",
+        "de": "Welche Controller-Tasten das Panel anzeigt. Auto: die des Controllers, den du laut Spiel benutzt.",
+        "es-419": "Los botones de qué control muestra el panel. Auto: los del control que, según el juego, usas.",
+        "es-ES": "Los botones de qué mando muestra el panel. Auto: los del mando que, según el juego, usas.",
+        "fr": "De quelle manette le panneau affiche les boutons. Auto : ceux de la manette que le jeu indique comme utilisée.",
+        "it": "Di quale controller il pannello mostra i pulsanti. Auto: quelli del controller che il gioco indica come in uso.",
+        "ja": "パネルに表示するコントローラーのボタンの種類です。自動：ゲームが認識している使用中のコントローラーのボタンを表示します。",
+        "ko": "패널에 표시할 컨트롤러의 버튼 종류입니다. 자동: 게임이 인식한 컨트롤러의 버튼을 표시합니다.",
+        "pt-BR": "De qual controle o painel mostra os botões. Auto: os do controle que, segundo o jogo, você usa.",
+        "pt-PT": "De que comando o painel mostra os botões. Auto: os do comando que, segundo o jogo, utilizas.",
+        "ru": "Кнопки какого геймпада показывает панель. Авто: кнопки геймпада, который, по данным игры, вы используете.",
+        "th": "ปุ่มของคอนโทรลเลอร์แบบใดที่แผงแสดง อัตโนมัติ: ใช้ปุ่มของคอนโทรลเลอร์ที่เกมระบุว่าคุณใช้อยู่",
+        "vi": "Bảng hiển thị nút của loại tay cầm nào. Tự Động: dùng nút của tay cầm mà trò chơi cho biết bạn đang dùng.",
+        "zh-Hans": "面板显示哪种控制器的按键。自动：显示游戏识别到的控制器的按键。",
+        "zh-Hant": "面板顯示哪種控制器的按鈕。自動：顯示遊戲偵測到的控制器的按鈕。"
+      },
+      "default": "Auto",
+      "options": [
+        {
+          "value": "Auto",
+          "label": {
+            "en": "Auto",
+            "de": "Auto",
+            "es-419": "Auto",
+            "es-ES": "Auto",
+            "fr": "Auto",
+            "it": "Auto",
+            "ja": "自動",
+            "ko": "자동",
+            "pt-BR": "Auto",
+            "pt-PT": "Auto",
+            "ru": "Авто",
+            "th": "อัตโนมัติ",
+            "vi": "Tự Động",
+            "zh-Hans": "自动",
+            "zh-Hant": "自動"
+          }
+        },
+        {
+          "value": "PlayStation"
+        },
+        {
+          "value": "Xbox"
+        }
+      ]
+    },
+    {
+      "key": "Language",
+      "type": "choice",
+      "label": {
+        "en": "Language",
+        "de": "Sprache",
+        "es-419": "Idioma",
+        "es-ES": "Idioma",
+        "fr": "Langue",
+        "it": "Lingua",
+        "ja": "言語",
+        "ko": "언어",
+        "pt-BR": "Idioma",
+        "pt-PT": "Idioma",
+        "ru": "Язык",
+        "th": "ภาษา",
+        "vi": "Ngôn Ngữ",
+        "zh-Hans": "语言",
+        "zh-Hant": "語言"
+      },
+      "help": {
+        "en": "The panel's language. Game: the game's language.",
+        "de": "Sprache des Panels. Spiel: Sprache des Spiels.",
+        "es-419": "Idioma del panel. Juego: el idioma del juego.",
+        "es-ES": "Idioma del panel. Juego: el idioma del juego.",
+        "fr": "Langue du panneau. Jeu : langue du jeu.",
+        "it": "Lingua del pannello. Gioco: la lingua del gioco.",
+        "ja": "パネルの言語です。ゲーム：ゲームの言語を使います。",
+        "ko": "패널의 언어입니다. 게임: 게임의 언어를 따릅니다.",
+        "pt-BR": "Idioma do painel. Jogo: o idioma do jogo.",
+        "pt-PT": "Idioma do painel. Jogo: o idioma do jogo.",
+        "ru": "Язык панели. Игра: язык игры.",
+        "th": "ภาษาของแผง เกม: ใช้ภาษาของเกม",
+        "vi": "Ngôn ngữ của bảng. Trò Chơi: ngôn ngữ của trò chơi.",
+        "zh-Hans": "面板的语言。游戏：游戏的语言。",
+        "zh-Hant": "面板的語言。遊戲：遊戲的語言。"
+      },
+      "default": "Game",
+      "options": [
+        {
+          "value": "Game",
+          "label": {
+            "en": "Game",
+            "de": "Spiel",
+            "es-419": "Juego",
+            "es-ES": "Juego",
+            "fr": "Jeu",
+            "it": "Gioco",
+            "ja": "ゲーム",
+            "ko": "게임",
+            "pt-BR": "Jogo",
+            "pt-PT": "Jogo",
+            "ru": "Игра",
+            "th": "เกม",
+            "vi": "Trò Chơi",
+            "zh-Hans": "游戏",
+            "zh-Hant": "遊戲"
+          }
+        },
+        {
+          "value": "en",
+          "label": "English"
+        },
+        {
+          "value": "de",
+          "label": "Deutsch"
+        },
+        {
+          "value": "es-419",
+          "label": "Español (Latinoamérica)"
+        },
+        {
+          "value": "es-ES",
+          "label": "Español (España)"
+        },
+        {
+          "value": "fr",
+          "label": "Français"
+        },
+        {
+          "value": "it",
+          "label": "Italiano"
+        },
+        {
+          "value": "ja",
+          "label": "日本語"
+        },
+        {
+          "value": "ko",
+          "label": "한국어"
+        },
+        {
+          "value": "pt-BR",
+          "label": "Português (Brasil)"
+        },
+        {
+          "value": "pt-PT",
+          "label": "Português (Portugal)"
+        },
+        {
+          "value": "ru",
+          "label": "Русский"
+        },
+        {
+          "value": "th",
+          "label": "ไทย"
+        },
+        {
+          "value": "vi",
+          "label": "Tiếng Việt"
+        },
+        {
+          "value": "zh-Hans",
+          "label": "简体中文"
+        },
+        {
+          "value": "zh-Hant",
+          "label": "繁體中文"
+        }
+      ]
+    },
+    {
+      "key": "PanelOpacity",
+      "type": "number",
+      "label": {
+        "en": "Background",
+        "de": "Panel-Hintergrund",
+        "es-419": "Fondo del panel",
+        "es-ES": "Fondo del panel",
+        "fr": "Fond du panneau",
+        "it": "Sfondo del pannello",
+        "ja": "パネルの背景",
+        "ko": "패널 배경",
+        "pt-BR": "Fundo do painel",
+        "pt-PT": "Fundo do painel",
+        "ru": "Фон панели",
+        "th": "พื้นหลังแผง",
+        "vi": "Nền Bảng",
+        "zh-Hans": "面板背景",
+        "zh-Hant": "面板背景"
+      },
+      "help": {
+        "en": "How dark the panel's background is, in %: higher hides more of the game behind the panel.",
+        "de": "Wie dunkel der Hintergrund des Panels ist, in %: Höher verdeckt mehr vom Spiel hinter dem Panel.",
+        "es-419": "Qué tan oscuro es el fondo del panel, en %: un valor más alto oculta más del juego que hay detrás del panel.",
+        "es-ES": "Lo oscuro que es el fondo del panel, en %: un valor más alto oculta más del juego que hay detrás del panel.",
+        "fr": "Degré d'obscurité du fond du panneau, en % : plus il est élevé, plus il masque le jeu derrière le panneau.",
+        "it": "Quanto è scuro lo sfondo del pannello, in %: più è alto, più nasconde il gioco dietro il pannello.",
+        "ja": "パネル背景の濃さ（%）です。値が大きいほど、パネルの後ろのゲーム画面が見えにくくなります。",
+        "ko": "패널 배경의 어둡기(%)입니다. 높을수록 패널 뒤의 게임 화면이 더 많이 가려집니다.",
+        "pt-BR": "Quão escuro é o fundo do painel, em %: um valor mais alto esconde mais do jogo que fica atrás do painel.",
+        "pt-PT": "Quão escuro é o fundo do painel, em %: um valor mais alto esconde mais do jogo que está atrás do painel.",
+        "ru": "Насколько тёмный фон панели, в %: чем выше значение, тем хуже видна игра за панелью.",
+        "th": "ความเข้มของพื้นหลังแผง เป็น %: ยิ่งสูง ยิ่งบังเกมที่อยู่หลังแผงมากขึ้น",
+        "vi": "Độ tối của nền bảng, tính bằng %: càng cao càng che nhiều phần trò chơi phía sau bảng.",
+        "zh-Hans": "面板背景的深浅（%）：数值越高，对面板后方游戏画面的遮挡越多。",
+        "zh-Hant": "面板背景的深淺（%）：數值越高，遮住面板後方的遊戲畫面越多。"
+      },
+      "min": 40,
+      "max": 90,
+      "step": 5,
+      "default": 65
+    },
+    {
+      "key": "FreezeGame",
+      "type": "toggle",
+      "label": {
+        "en": "Freeze game",
+        "de": "Spiel einfrieren",
+        "es-419": "Pausar el juego",
+        "es-ES": "Pausar el juego",
+        "fr": "Figer le jeu",
+        "it": "Blocca il gioco",
+        "ja": "ゲームの停止",
+        "ko": "게임 일시정지",
+        "pt-BR": "Pausar o jogo",
+        "pt-PT": "Pausar o jogo",
+        "ru": "Пауза игры",
+        "th": "หยุดเกม",
+        "vi": "Tạm Dừng Trò Chơi",
+        "zh-Hans": "暂停游戏",
+        "zh-Hant": "暫停遊戲"
+      },
+      "help": {
+        "en": "On: the game stops while the panel is open. Off: the game goes on behind the panel, so you see your changes as you make them.",
+        "de": "An: Das Spiel hält an, solange das Panel offen ist. Aus: Das Spiel läuft hinter dem Panel weiter, sodass du deine Änderungen sofort siehst.",
+        "es-419": "Encendido: el juego se detiene mientras el panel está abierto. Apagado: el juego sigue detrás del panel, así ves tus cambios mientras los haces.",
+        "es-ES": "Activado: el juego se detiene mientras el panel está abierto. Desactivado: el juego sigue detrás del panel, así ves tus cambios según los haces.",
+        "fr": "Activé : le jeu s'arrête tant que le panneau est ouvert. Désactivé : le jeu continue derrière le panneau, ce qui permet de voir les changements au fur et à mesure.",
+        "it": "Sì: il gioco si ferma finché il pannello è aperto. No: il gioco continua dietro il pannello, così vedi le modifiche mentre le fai.",
+        "ja": "オン：パネルを開いている間、ゲームが停止します。オフ：パネルの後ろでゲームが進行するため、変更をすぐに確認できます。",
+        "ko": "켜기: 패널이 열려 있는 동안 게임이 멈춥니다. 끄기: 패널 뒤에서 게임이 계속 진행되므로 바꾸는 즉시 변화를 확인할 수 있습니다.",
+        "pt-BR": "Ativado: o jogo para enquanto o painel está aberto. Desativado: o jogo continua atrás do painel, então você vê suas mudanças conforme as faz.",
+        "pt-PT": "Ligado: o jogo para enquanto o painel está aberto. Desligado: o jogo continua atrás do painel, por isso vês as alterações à medida que as fazes.",
+        "ru": "Вкл.: игра останавливается, пока панель открыта. Выкл.: игра продолжается за панелью, поэтому изменения видны сразу.",
+        "th": "เปิด: เกมหยุดขณะเปิดแผง ปิด: เกมดำเนินต่อไปหลังแผง จึงเห็นการเปลี่ยนแปลงทันทีที่ทำ",
+        "vi": "Bật: trò chơi dừng khi bảng đang mở. Tắt: trò chơi vẫn chạy phía sau bảng, nên bạn thấy thay đổi ngay khi chỉnh.",
+        "zh-Hans": "开启：面板打开时游戏暂停。关闭：游戏在面板后继续运行，调整时即可看到效果。",
+        "zh-Hant": "開啟：面板開啟時遊戲暫停。關閉：遊戲在面板後繼續進行，調整時即可看到效果。"
+      },
+      "default": false
+    }
+  ]
+}

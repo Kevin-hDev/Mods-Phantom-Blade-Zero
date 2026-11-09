@@ -1,0 +1,98 @@
+-- Every value of the panel's look, and nothing else holds one: places on the screen, sizes, colours, font sizes, and
+-- how fast an arrow held with the mouse steps. The three columns are the layout chosen among the mock-ups (A), the list
+-- and the settings widened after the 0.3.0 trial so that our mods' texts fit on one line (D87); the rows' height, the
+-- margins, the font sizes and the colours are those of Dynamic FOV 1.0.4's panel (dynamic_fov_panel_make.lua and
+-- dynamic_fov_panel_view.lua), whose look was tried in play.
+
+local M = {}
+
+M.VISIBLE, M.COLLAPSED, M.HIT_TEST_INVISIBLE, M.SELF_HIT_TEST_INVISIBLE = 0, 1, 3, 4   -- ESlateVisibility
+M.FILL, M.START, M.CENTRE, M.END = 0, 1, 2, 3   -- EHorizontalAlignment and EVerticalAlignment: left or top first
+-- ETextOverflowPolicy: a text too long for its room ends with "…". The engine cuts a text at its clipping area, not at
+-- its own room (TextBlock.h, "doesn't fit within the clip rect"; SlateTextLayout.cpp line 194): without ClipToBounds
+-- (EWidgetClipping) a label ran under its value and a mod's title under "Off" in 0.2.0 and 0.3.0 (captures of the
+-- trials).
+M.ELLIPSIS, M.CLIP_TO_BOUNDS = 1, 1
+M.FILL_SIZE = { SizeRule = 1, Value = 1.0 }   -- a box's child that takes the room left
+M.Z_ORDER = 80
+
+-- Places, in fractions of the screen. The columns stick to the right edge: the list, the settings, the descriptions.
+M.TOP, M.BOTTOM = 0.06, 0.95
+M.HEADER = 0.075                  -- a column's head: its title and a smaller text under it; its body starts below
+M.SIDE, M.GAP = 0.025, 0.02       -- the right margin; between two columns
+-- 12.5 and 25 % until 0.3.0. The list holds "Vault & Climb Anywhere" (244 units) and "Mod Panel 示例模组" with "已关闭" (209
+-- and 64); the settings, "Air jump: keyboard and mouse" (305) beside the arrows and "Middle mouse button" (216). Widths
+-- measured on a capture of 7 November 2026: the game's text is Segoe UI's at 22.45 points or less for a font size of
+-- 18; Chinese, one em (24) a sign. The list widened from 17.5 to 21 % in 0.7.0 (D156, D163), to the left, the settings
+-- kept: the head's names, beside their arrows, were cut (trial of 0.6.0), and the longest, "Sfondo del pannello" and
+-- "Tạm Dừng Trò Chơi", filled their room.
+local LIST_WIDTH, SETTINGS_WIDTH, DESCRIPTIONS_WIDTH = 0.21, 0.345, 0.165
+M.DESCRIPTIONS = { 1 - M.SIDE - DESCRIPTIONS_WIDTH, 1 - M.SIDE }
+M.SETTINGS = { M.DESCRIPTIONS[1] - M.GAP - SETTINGS_WIDTH, M.DESCRIPTIONS[1] - M.GAP }
+M.LIST = { M.SETTINGS[1] - M.GAP - LIST_WIDTH, M.SETTINGS[1] - M.GAP }
+M.STRIP = M.LIST[1] - M.SIDE      -- the backdrop is full from here to the right edge
+-- The descriptions hidden (D90): the list and the settings slid to the right edge, the backdrop narrowed with them.
+M.NARROW_SETTINGS = { 1 - M.SIDE - SETTINGS_WIDTH, 1 - M.SIDE }
+M.NARROW_LIST = { M.NARROW_SETTINGS[1] - M.GAP - LIST_WIDTH, M.NARROW_SETTINGS[1] - M.GAP }
+M.NARROW_STRIP = M.NARROW_LIST[1] - M.SIDE
+
+-- Sizes, in the screen's units (a 1080 screen is 1080 high). A row of the settings and an entry of the list are as high
+-- as the game's own settings rows. In a column of 34.5 % (662), two arrows and their value leave the label 320 after
+-- its gap, a bar and its value 344; the list's entry (21 %) leaves its title 359, 295 beside "已关闭". The value beside a
+-- bar holds "游戏原有" (96); between the arrows, "Middle mouse button".
+M.ROW_HEIGHT, M.ENTRY_HEIGHT, M.LINE_HEIGHT = 44, 40, 2
+M.SLIDER_WIDTH, M.VALUE_WIDTH, M.CHOICE_WIDTH, M.ARROW_SIZE = 150, 104, 230, 24
+M.TITLE_SIZE, M.TEXT_SIZE, M.SMALL_SIZE = 24, 18, 16
+M.NO_PADDING = { Left = 0, Top = 0, Right = 0, Bottom = 0 }
+M.ROW_PADDING = { Left = 24, Top = 0, Right = 24, Bottom = 0 }
+M.ENTRY_PADDING = { Left = 16, Top = 0, Right = 12, Bottom = 0 }
+M.EMPTY_PADDING = { Left = 16, Top = 12, Right = 12, Bottom = 0 }   -- the phrase of an empty list, under the line
+M.LABEL_PADDING = { Left = 0, Top = 0, Right = 16, Bottom = 0 }   -- after a label or a title cut: never touching
+M.TITLE_PADDING = { Left = 0, Top = 0, Right = 0, Bottom = 2 }
+M.TEXT_PADDING = { Left = 0, Top = 12, Right = 0, Bottom = 0 }   -- the descriptions, and Close under the rows
+M.FOOTER_GAP = "   "              -- between Close and its keys
+-- The help under Close: two lines high whichever device's line shows, so the rows above never move (a line of the
+-- small font is about 21 high); its commands apart by HINT_GAP.
+M.HINTS_HEIGHT, M.HINT_GAP = 44, "   "
+-- Between a command's keys and its word: a space no line breaks at (U+00A0), so a key never ends a line apart from
+-- its word, as "X" did before "설명" in Korean (trial of 0.6.0).
+M.HINT_JOIN = "\194\160"
+M.HINTS_PADDING = { Left = 0, Top = 8, Right = 0, Bottom = 0 }
+-- A controller button's icon: in the help, about the small font's height; as a row's value, a little above the text's.
+M.HINT_ICON_SIZE, M.ICON_SIZE = 22, 28
+-- The head of the list (D92), its items as high as a mod of the list. Between its arrows, a value of 52 holds "90 %"
+-- (49) and "开启" (48), with the model of D87. "Panel background", measured to fit, was cut in the game at 0.7.0: the
+-- item is named "Background" since 0.7.1. A box CHECK_SIZE wide, pale, its mark CHECK_INSET inside when checked.
+M.HEAD_VALUE_WIDTH, M.CHECK_SIZE = 52, 18
+M.CHECK_INSET = { Left = 4, Top = 4, Right = 4, Bottom = 4 }
+M.CHECK_EDGE = { R = 1, G = 1, B = 1, A = 0.35 }
+M.CHECK_EDGE_DARK = { R = 0.0212, G = 0.0212, B = 0.0212, A = 0.35 }   -- on the chosen band
+-- The bar runs from 0 to 1: a value's place on it (Values.fraction), whatever the row.
+M.SLIDER_STEP = 0.01
+-- An arrow held with the mouse on a number: a step at the press, then one every HOLD_EVERY seconds from HOLD_DELAY on,
+-- of 1 step, then 2 after a second held, then 5 after two.
+M.HOLD_DELAY, M.HOLD_EVERY = 0.4, 0.1
+M.HOLD_STEPS = { { 0, 1 }, { 1, 2 }, { 2, 5 } }   -- { seconds held, steps each time }
+-- The controller's combination: its two buttons pressed at most this far apart open or close the panel (D136).
+M.COMBO_WINDOW = 0.25
+-- After the panel lets go of the keys held, a button read let go is still held for this long: longer than the
+-- engine's first repeat, 0.2 s (mod_panel_flush.lua, D142).
+M.FLUSH_QUIET = 0.3
+
+-- Interface colours are linear, not sRGB. The menu's row text is white, dark on the selected band (PanelProbe pass 2).
+M.WHITE = { R = 1, G = 1, B = 1, A = 1 }
+M.DARK = { R = 0.0212, G = 0.0212, B = 0.0212, A = 1 }
+M.GREY = { R = 1, G = 1, B = 1, A = 0.4 }
+M.DARK_GREY = { R = 0.0212, G = 0.0212, B = 0.0212, A = 0.45 }
+M.SOFT = { R = 1, G = 1, B = 1, A = 0.65 }
+M.CLEAR = { R = 0, G = 0, B = 0, A = 0 }
+M.LIGHT = { R = 0.8, G = 0.8, B = 0.8, A = 0.9 }   -- the selected band when the menu's is not in memory
+M.BAND = { R = 1, G = 1, B = 1, A = 1 }       -- a row's band as the game draws it; CLEAR hides it, under a title
+-- The chosen band, faint, on the list's entry under the pointer: lit enough to follow the mouse, never mistaken for the
+-- chosen mod, whose band is whole (D55).
+M.HOVER_OPACITY = 0.3
+M.SHADE = { R = 0.01, G = 0.011, B = 0.014 }   -- the backdrop
+-- The backdrop's fade: look C of Dynamic FOV, 55 % dark over 6 % of the width, in 96 bands (8 showed as columns).
+M.FADE_ALPHA, M.FADE_WIDTH, M.FADE_STEPS = 0.55, 0.06, 96
+
+return M

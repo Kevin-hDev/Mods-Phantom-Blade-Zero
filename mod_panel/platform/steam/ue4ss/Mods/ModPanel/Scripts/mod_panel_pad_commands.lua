@@ -1,0 +1,102 @@
+-- The controller's commands in the open panel, made from the buttons mod_panel_pad.lua read: the same counts as the
+-- keyboard's (mod_panel_keys.lua), so a button does in the panel what its key does. The D-pad and the left stick move
+-- the chosen row (up, down) and change its value (left, right); L1 and R1 go to the mod before or after; L2 and R2 go
+-- to the first and the last row of the page (D99); Cross chooses (enter), Triangle restores the defaults, Square hides
+-- or shows the descriptions (D91), Circle is escape: it closes, or comes back to the list in a mod's page of the
+-- Classic navigation (D130). Up, down, L1 and R1 held go on: a step at the press, one at HOLD_DELAY, then one every
+-- HOLD_EVERY (D59's delays). Left and right are not counted: held, they are the arrow held of mod_panel_changes.lua,
+-- which steps a number faster and faster and a switch or a choice once, as the mouse's arrow does. A direction of the
+-- D-pad and the same of the stick held together count once; two opposite ones, none. What is held when the panel opens
+-- does nothing until let go.
+
+local L = require("mod_panel_layout")
+local Keys = require("mod_panel_keys")
+
+local M = {}
+
+-- The buttons of each command that acts while held.
+local HELD = {
+	up = { "Gamepad_DPad_Up", "Gamepad_LeftStick_Up" },
+	down = { "Gamepad_DPad_Down", "Gamepad_LeftStick_Down" },
+	left = { "Gamepad_DPad_Left", "Gamepad_LeftStick_Left" },
+	right = { "Gamepad_DPad_Right", "Gamepad_LeftStick_Right" },
+	prev = { "Gamepad_LeftShoulder" },
+	next = { "Gamepad_RightShoulder" },
+}
+local OPPOSITE = { up = "down", down = "up", left = "right", right = "left", prev = "next", next = "prev" }
+local SIDES = { left = -1, right = 1 }
+-- The command a press makes, by button.
+local PRESSED = { Gamepad_FaceButton_Bottom = "enter", Gamepad_FaceButton_Top = "restore",
+	Gamepad_FaceButton_Right = "escape", Gamepad_FaceButton_Left = "descriptions", Gamepad_LeftTrigger = "top",
+	Gamepad_RightTrigger = "bottom" }
+local WAIT = math.huge            -- a due time: held at the opening, nothing until let go
+
+-- due[c]: while command c is held, when it steps next (WAIT: never); nil while it is not. out: the counts, a table
+-- used again. side: -1 or 1 while left or right is held, else nil.
+local S = { due = {}, out = {}, side = nil }
+
+local function held(down, c)
+	for _, name in ipairs(HELD[c]) do
+		if down[name] then return true end
+	end
+	return false
+end
+
+-- At the panel's opening, down the buttons held then (mod_panel_pad.lua).
+function M.start(down)
+	S.side = nil
+	for c in pairs(HELD) do S.due[c] = held(down, c) and WAIT or nil end
+end
+
+-- Whether held command c steps now: at its press, then on its due times.
+local function steps(c, now)
+	local due = S.due[c]
+	if due == nil then
+		S.due[c] = now + L.HOLD_DELAY
+		return true
+	end
+	if now < due then return false end
+	S.due[c] = now + L.HOLD_EVERY
+	return true
+end
+
+-- At each frame of the open panel: down, the buttons held; pressed, those pressed since the last read, by their
+-- engine names; now, the clock. Returns the counts as Keys.take() gives them, or nil when there are none.
+function M.take(down, pressed, now)
+	local out, any = S.out, false
+	for _, c in ipairs(Keys.COUNTS) do out[c] = 0 end
+	S.side = nil
+	for c in pairs(HELD) do
+		if not held(down, c) then
+			S.due[c] = nil
+		elseif not held(down, OPPOSITE[c]) then
+			local side = SIDES[c]
+			if side ~= nil then
+				if S.due[c] ~= WAIT then S.side, S.due[c] = side, now end
+			elseif steps(c, now) then
+				out[c], any = out[c] + 1, true
+			end
+		end
+	end
+	for _, name in ipairs(pressed) do
+		local c = PRESSED[name]
+		if c ~= nil then out[c], any = out[c] + 1, true end
+	end
+	return any and out or nil
+end
+
+-- -1 or 1 while left or right is held alone, else nil.
+function M.side() return S.side end
+
+local COMMANDS = {}
+for _, names in pairs(HELD) do
+	for _, name in ipairs(names) do COMMANDS[name] = true end
+end
+for name in pairs(PRESSED) do COMMANDS[name] = true end
+
+-- Whether the button called name makes a command of the panel.
+function M.commands(name)
+	return COMMANDS[name] == true
+end
+
+return M
