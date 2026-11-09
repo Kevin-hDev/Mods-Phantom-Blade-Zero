@@ -16,6 +16,7 @@
 -- taken more than the dodge's TAKEN_WITHIN later had been let go, the character had stopped, and the game starts it
 -- from a standstill as it should (a mantle's end in the trial of 1.0.6: stick let go, 1 raised to 348 0.55 s later).
 
+local U = require("movement_unreal")
 local Tags = require("movement_tags")
 local Dodge = require("movement_dodge")
 
@@ -51,12 +52,7 @@ local function special(mode)
 	return mode ~= nil and mode ~= NONE and mode ~= WALKING and mode ~= FALLING
 end
 
-local function flat(v)
-	local x, y = nil, nil
-	pcall(function() x, y = tonumber(v.X), tonumber(v.Y) end)
-	if x == nil or y == nil or x ~= x or y ~= y then return nil end
-	return x, y, math.sqrt(x * x + y * y)
-end
+local flat = U.flat
 
 -- The game's speed to lift to (the long sprint's), nil when none is held: movement_ground.lua's floor.
 function M.floor(now)

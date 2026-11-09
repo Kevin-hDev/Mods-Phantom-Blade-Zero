@@ -1,13 +1,16 @@
--- Auto sprint: the left stick pushed all the way starts the sprint, back under the stop point
--- stops it. The mod presses the game's sprint action (SprintInput of the locomotion ability, IA_Sprint, the action of
--- the sprint button) each frame, as a held button (movement_press.lua): the sprint starts in 0.15 s and ends 0.08 s
--- after the last frame (verified in game, 5 November 2026). A frame without the press is the button let go.
+-- The sprint the mod presses, for auto sprint and toggle sprint (Sprint mode Auto or Toggle). Auto: the left stick
+-- pushed all the way starts the sprint, back under the stop point stops it. Toggle: wanted while movement_toggle.lua
+-- says so and the stick moves. The mod presses the game's sprint action (SprintInput of the locomotion ability,
+-- IA_Sprint, the action of the sprint button) each frame, as a held button (movement_press.lua): the sprint starts in
+-- 0.15 s and ends 0.08 s after the last frame (verified in game, 5 November 2026). A frame without the press is the
+-- button let go.
 
 local Press = require("movement_press")
 
 local M = {}
 
 local START = 0.99   -- the stick's travel that is all the way: a stick whose reading tops out early still gets there
+local MOVING = 0.1   -- the stick's travel from which toggle sprint presses: never the sprint of a player standing still
 local FIRST_RETRY = 0.25 -- seconds between two tries in the first SAY_AFTER seconds: a load lacks them a moment
 local RETRY = 2      -- seconds between two tries after that (no input subsystem or action)
 local SAY_AFTER = 3  -- seconds of such tries before the log says so: a load can lack them a moment
@@ -37,13 +40,13 @@ local function press(ability, now, say)
 		G.missing = nil
 	elseif err ~= nil then
 		G.failed = true
-		say("auto sprint cannot press the sprint (%s): it stays off for this character", tostring(err))
+		say("the mod cannot press the sprint (%s): auto and toggle sprint stay off for this character", tostring(err))
 	else
 		G.missing = G.missing or now
 		G.next_try = now + (now - G.missing < SAY_AFTER and FIRST_RETRY or RETRY)
 		if not G.said and now - G.missing >= SAY_AFTER then
 			G.said = true
-			say("auto sprint cannot find the game's sprint to press: it keeps trying")
+			say("the mod cannot find the game's sprint to press: it keeps trying")
 		end
 	end
 	return ok
@@ -53,15 +56,20 @@ function M.active()
 	return G.active
 end
 
--- ability: the locomotion ability (nil until found). travel: the left stick's travel, nil when unread. auto: the
--- settings ({ stop }), nil when auto sprint is off. walking: the game walks, or a walk is asked (movement_walk.lua): no
--- sprint, and a sprint going on stops.
-function M.frame(ability, travel, auto, walking, now, say)
-	if auto == nil or travel == nil or ability == nil or G.failed or walking then
+-- ability: the locomotion ability (nil until found). travel: the left stick's travel, nil when unread. auto: auto
+-- sprint's settings ({ stop }), nil when off. toggled: toggle sprint wants the sprint. walking: the game walks, or a
+-- walk is asked (movement_walk.lua): no sprint, and a sprint going on stops.
+function M.frame(ability, travel, auto, toggled, walking, now, say)
+	if (auto == nil and not toggled) or travel == nil or ability == nil or G.failed or walking then
 		G.active, G.missing = false, nil
 		return
 	end
-	local wanted = travel >= START or (G.active and travel >= auto.stop)
+	local wanted
+	if toggled then
+		wanted = travel >= MOVING
+	else
+		wanted = travel >= START or (G.active and travel >= auto.stop)
+	end
 	-- Counted while the sprint is wanted only: a stick let go is not a sprint missing.
 	if not wanted then G.missing = nil end
 	if wanted and press(ability, now, say) then
@@ -72,10 +80,11 @@ function M.frame(ability, travel, auto, walking, now, say)
 	end
 end
 
-function M.report()
+-- toggled: the times toggle sprint was turned on since the last line (movement_toggle.lua).
+function M.report(toggled)
 	local n = G.starts
 	G.starts = 0
-	return string.format("%d auto sprints", n)
+	return string.format("%d sprints started by the mod, toggle sprint turned on %d times", n, toggled)
 end
 
 return M

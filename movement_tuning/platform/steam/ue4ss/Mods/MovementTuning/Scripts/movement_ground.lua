@@ -31,7 +31,7 @@ local gait_lines = 0
 -- reached ("walk", "run"), for the log.
 function M.forget()
 	G = { gaits = nil, next_read = 0, said = false, written = nil, game = nil, writes = 0, rewrites = 0, top = 0,
-		ratio = nil, gait = nil, slowed = 0, lifted = false }
+		ratio = nil, gait = nil, slowed = 0, lifted = false, factor = nil }
 end
 M.forget()
 
@@ -81,7 +81,7 @@ function M.release(cmc)
 			pcall(function() cmc.MaxWalkSpeed = G.game end)
 		end
 	end
-	G.written, G.game, G.ratio, G.lifted = nil, nil, nil, false
+	G.written, G.game, G.ratio, G.lifted, G.factor = nil, nil, nil, false, nil
 end
 
 -- The stick curve's part of the speed (movement_curve.lua): on the ground from the push; in the air the share of the
@@ -109,6 +109,12 @@ end
 -- The game's own speed at the last frame (before the long sprint's hold), nil when the mod left the speed to the game.
 function M.game_speed()
 	return G.game
+end
+
+-- How many times the game's speed the gait settings give at the last frame (the stick's curve aside), nil when the
+-- mod leaves the speed to the game: the braking's factor (movement_brake.lua).
+function M.factor_now()
+	return G.factor
 end
 
 -- { walk, run, sprint }: the gait speeds, nil when unread.
@@ -151,7 +157,8 @@ function M.frame(pawn, cmc, mode, now, rates, say, push, left, floor)
 	local game = base
 	G.lifted = floor ~= nil and base < floor
 	if G.lifted then base = floor end
-	local want = curved(base, mode, push, left, say) * M.factor(base, G.gaits, rates)
+	G.factor = M.factor(base, G.gaits, rates)
+	local want = curved(base, mode, push, left, say) * G.factor
 	if math.abs(cur - want) > SAME then
 		if not pcall(function() cmc.MaxWalkSpeed = want end) then return end
 		G.writes = G.writes + 1

@@ -150,9 +150,9 @@ local function cuts(left, say)
 	end
 end
 
--- stick: the stick settings ({ left, right, auto }) when the mod is on, nil to give the game's values back. Returns,
--- when the curve or auto sprint is on and the stick could be read, the push of the left stick (after the dead zone, as
--- the ability reads it) and its travel (before it, as the player pushes it); else nil.
+-- stick: the stick settings ({ left, right, sprint }) when the mod is on, nil to give the game's values back. Returns,
+-- when the curve or auto or toggle sprint (sprint) is on and the stick could be read, the push of the left stick (after
+-- the dead zone, as the ability reads it) and its travel (before it, as the player pushes it); else nil.
 function M.frame(controller, pawn, now, stick, say)
 	local left = stick and stick.left
 	if stick ~= G.applied or now >= G.next_check then
@@ -191,7 +191,7 @@ function M.frame(controller, pawn, now, stick, say)
 		G.applied, G.ready = stick, U.is_valid(G.ability)
 	end
 	-- Checked each frame: UE4SS calls a function on an object by its address, gone or not.
-	if (left == nil and not (stick and stick.auto)) or not G.component or not U.is_valid(G.component) then return nil end
+	if (left == nil and not (stick and stick.sprint)) or not G.component or not U.is_valid(G.component) then return nil end
 	local x, y = nil, nil
 	pcall(function()
 		local v = G.component:GetCurrentMoveInputRaw()
@@ -199,7 +199,8 @@ function M.frame(controller, pawn, now, stick, say)
 	end)
 	if x == nil or y == nil then
 		G.component = false
-		say("the left stick cannot be read: walking and running keep the game's speeds, and auto sprint is off")
+		say("the left stick cannot be read: walking and running keep the game's speeds, and auto and toggle "
+			.. "sprint are off")
 		return nil
 	end
 	local push = math.sqrt(x * x + y * y)

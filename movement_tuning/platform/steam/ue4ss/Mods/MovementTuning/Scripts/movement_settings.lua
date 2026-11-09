@@ -6,6 +6,7 @@ local Json = require("movement_json")
 local Moves = require("movement_moves")
 local Curve = require("movement_curve")
 local V = require("movement_values")
+local Sprint = require("movement_sprint_settings")
 
 local M = {}
 
@@ -32,20 +33,10 @@ M.STICK = {
 	{ key = "StickCurve", field = "curve", min = 0.5, max = 3, step = 0.05, default = 0.5 },
 }
 M.RIGHT = { key = "RightDeadZone", min = 0, max = 25, step = 1, default = 3 }
--- Turn off sprint (movement_sprint_off.lua), in the order Kevin gave (7 November 2026): Sprint turns off both sprints,
--- HighSpeedSprint only the faster one after 2 s of sprint, None leaves both as in the game.
-M.SPRINT_OFF = { key = "TurnOffSprint", options = { "Sprint", "HighSpeedSprint", "None" }, default = "None" }
--- Auto sprint: the left stick pushed all the way starts the sprint, back under the stop point
--- (a percent of the stick's travel, 50 by default) stops it; on by default.
-M.AUTO = { key = "AutoSprint", default = true }
-M.AUTO_STOP = { key = "AutoSprintStop", min = 20, max = 90, step = 5, default = 50 }
--- Sprint resume (movement_resume.lua): full speed as soon as the game gives the stick back after a special move; on by
--- default, as the halt it removes is what players asked about.
-M.RESUME = { key = "SprintResume", default = true }
--- Faster dodge landing (movement_landing.lua): the end of a dodge on the ground paced to hold the run's speed. A row of
--- its own, on by default, apart from the resume so that each row does what it says (Kevin, 7 November 2026, once the
--- trial of 1.0.9 passed).
-M.LANDING = { key = "DodgeLanding", default = true }
+-- The Sprint rows, defined in movement_sprint_settings.lua; here too for make_menu.py, which reads this table.
+M.SPRINT_OFF, M.HIGH_DELAY, M.MODE, M.AUTO_STOP = Sprint.SPRINT_OFF, Sprint.HIGH_DELAY, Sprint.MODE, Sprint.AUTO_STOP
+M.TOGGLE_PAD, M.TOGGLE_KEY, M.RESUME, M.LANDING = Sprint.TOGGLE_PAD, Sprint.TOGGLE_KEY, Sprint.RESUME, Sprint.LANDING
+M.OLD_AUTO = Sprint.OLD_AUTO
 
 -- On the menu's grid: rounded to its step, so 1.35 written by hand and the menu's 1.35 are the same speed.
 -- Divided rather than multiplied by the step: 27 / 20 is the 1.35 written in the file, 27 x 0.05 is not.
@@ -87,8 +78,8 @@ local function move_speed(raw, move, warn)
 	return move.default
 end
 
--- { mode, custom (the Custom rows), left (the curve, nil at Game), right (the right dead zone, nil for the game's),
--- auto (auto sprint: { stop }, nil when off) }.
+-- { mode, custom (the Custom rows), left (the curve, nil at Game), right (the right dead zone, nil for the game's) };
+-- resolve adds sprint: auto or toggle sprint needs the stick's travel.
 local function sticks(raw, warn)
 	local st = { mode = V.choice(raw, "LeftStick", M.LEFT, M.LEFT_DEFAULT, warn), custom = {} }
 	for _, entry in ipairs(M.STICK) do st.custom[entry.field] = V.ranged(raw, entry, entry.default, warn) end
@@ -105,9 +96,6 @@ local function sticks(raw, warn)
 		end
 	end
 	if n ~= nil then st.right = n / 100 end
-	if V.switch(raw, M.AUTO.key:lower(), M.AUTO.key, M.AUTO.default, warn) then
-		st.auto = { stop = V.ranged(raw, M.AUTO_STOP, M.AUTO_STOP.default, warn) / 100 }
-	end
 	return st
 end
 
@@ -139,23 +127,22 @@ function M.resolve(raw, warn)
 	s.timeline_neutral = all_at_one(s.rates, Moves.MOVES) and s.rates[Moves.ATTACKS] == 1
 	s.jump_neutral = s.jump_height == 1
 	s.stick = sticks(raw, warn)
-	s.stick_neutral = s.stick.left == nil and s.stick.right == nil and s.stick.auto == nil
-	s.resume = V.switch(raw, M.RESUME.key:lower(), M.RESUME.key, M.RESUME.default, warn)
-	s.landing = V.switch(raw, M.LANDING.key:lower(), M.LANDING.key, M.LANDING.default, warn)
-	s.turn_off = V.choice(raw, M.SPRINT_OFF.key, M.SPRINT_OFF.options, M.SPRINT_OFF.default, warn)
-	s.sprint_off, s.high_off = s.turn_off == "Sprint", s.turn_off ~= "None"
+	Sprint.resolve(raw, warn, s)
+	s.stick.sprint = s.auto ~= nil or s.toggle ~= nil
+	-- Auto and toggle sprint read the stick (movement_stick.lua): with either on, the stick part has work to do.
+	s.stick_neutral = s.stick.left == nil and s.stick.right == nil and s.auto == nil and s.toggle == nil
 	return s
 end
 
-local function describe_sticks(st)
+local function describe_sticks(s)
+	local st = s.stick
 	local left = st.mode
 	if st.left ~= nil then
 		left = string.format("%s (dead zone %.0f%%, run at %.0f%%, slowest walk %.0f%%, curve %s)", st.mode,
 			st.left.dead * 100, st.left.run_point * 100, st.left.slowest * 100, V.show(st.left.curve))
 	end
-	return string.format("left stick %s; right dead zone %s; auto sprint %s", left,
-		st.right and string.format("%.0f%%", st.right * 100) or "game",
-		st.auto and string.format("on, stops under %.0f%%", st.auto.stop * 100) or "off")
+	return string.format("left stick %s; right dead zone %s; %s", left,
+		st.right and string.format("%.0f%%", st.right * 100) or "game", Sprint.describe_mode(s))
 end
 
 function M.describe(s)
@@ -164,10 +151,9 @@ function M.describe(s)
 		parts[#parts + 1] = string.format("%s x%s%s", move.setting, V.show(s.rates[move.key]),
 			s.own[move.key] and "" or " (global)")
 	end
-	return string.format("mod %s, global x%s: %s; attacks x%s; jump height x%s; %s; sprint resume %s; dodge landing %s; "
-		.. "turn off sprint %s", s.enabled and "on" or "off", V.show(s.all), table.concat(parts, ", "),
-		V.show(s.rates[Moves.ATTACKS]), V.show(s.jump_height), describe_sticks(s.stick), s.resume and "on" or "off",
-		s.landing and "on" or "off", s.turn_off)
+	return string.format("mod %s, global x%s: %s; attacks x%s; jump height x%s; %s; %s", s.enabled and "on" or "off",
+		V.show(s.all), table.concat(parts, ", "), V.show(s.rates[Moves.ATTACKS]), V.show(s.jump_height),
+		describe_sticks(s), Sprint.describe(s))
 end
 
 -- The file's keys and their defaults, in the menu's order: the moves under the Jump heading (in_jump) come after Jump
@@ -188,11 +174,7 @@ local function entries()
 	list[#list + 1] = { "LeftStick", M.LEFT_DEFAULT }
 	for _, entry in ipairs(M.STICK) do list[#list + 1] = { entry.key, entry.default } end
 	list[#list + 1] = { M.RIGHT.key, tostring(M.RIGHT.default) }
-	list[#list + 1] = { M.SPRINT_OFF.key, M.SPRINT_OFF.default }
-	list[#list + 1] = { M.AUTO.key, M.AUTO.default }
-	list[#list + 1] = { M.AUTO_STOP.key, M.AUTO_STOP.default }
-	list[#list + 1] = { M.RESUME.key, M.RESUME.default }
-	list[#list + 1] = { M.LANDING.key, M.LANDING.default }
+	Sprint.entries(list)
 	return list
 end
 

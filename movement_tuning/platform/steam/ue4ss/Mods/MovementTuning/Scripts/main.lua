@@ -1,8 +1,8 @@
 -- Movement Tuning for Phantom Blade Zero: faster walking, running, sprinting, moves (dodges, jump recovery, wall runs,
 -- ladders, ropes and slides, weapon draw, stance) and attacks, each at its own speed or all at the Global one, higher
--- jumps, a left stick curve that lets the player walk, the sticks' dead zones, auto sprint (which gives way to the
--- game's walk), the sprint or only the high-speed sprint turned off, and full speed again at the end of a special move
--- or of a dodge, whose landing goes faster. Settings in MovementTuning.config.json in the mod's folder, changed in Mods
+-- jumps, a left stick curve that lets the player walk, the sticks' dead zones, auto or toggle sprint (which give way
+-- to the game's walk), the sprint or only the high-speed sprint turned off or its wait changed, stops without a slide
+-- when sped up, and full speed again at the end of a special move or of a dodge, whose landing goes faster. Settings in MovementTuning.config.json in the mod's folder, changed in Mods
 -- Menu (Nexus 149) or by hand (movement_watch.lua).
 --
 -- The work happens in the player controller's ReceiveTick.
@@ -17,15 +17,15 @@ local Timeline = require("movement_timeline")
 local Ground = require("movement_ground")
 local Jump = require("movement_jump")
 local Stick = require("movement_stick")
-local Sprint = require("movement_sprint")
-local Walk = require("movement_walk")
+local Sprints = require("movement_sprints")
 local Tags = require("movement_tags")
 local Resume = require("movement_resume")
 local Dodge = require("movement_dodge")
 local Press = require("movement_press")
 local SprintOff = require("movement_sprint_off")
+local Brake = require("movement_brake")
 
-local VERSION = "1.0.2"
+local VERSION = "1.0.3"
 local CONTROLLER_TICK = "/Game/PBZContent/Blueprint/Character/Player/BP_PlayerController.BP_PlayerController_C:ReceiveTick"
 local CLIENT_RESTART = "/Script/Engine.PlayerController:ClientRestart"
 local STATUS_EVERY = 600          -- seconds between two status lines
@@ -58,8 +58,7 @@ local function status(now)
 	local parts = {}
 	for key, n in pairs(S.pushes) do parts[#parts + 1] = string.format("%s %d", key, n) end
 	table.sort(parts)
-	local moving = Ground.report() .. "; " .. Sprint.report() .. ", " .. Walk.report() .. "; " .. Resume.report() .. "; "
-		.. SprintOff.report()
+	local moving = Ground.report() .. "; " .. Sprints.report() .. "; " .. Resume.report() .. "; " .. SprintOff.report()
 	log("status: in the last %d minutes, frames sped up: %s; %s; %d calls (%.0f a second), %d tasks looked at, "
 		.. "%d known, %d timelines unreadable, %.1f microseconds a call on average, longest %.0f ms (1 ms clock), %d "
 		.. "over %.0f ms%s",
@@ -82,12 +81,11 @@ local function new_pawn(pawn, addr, now)
 		Jump.forget()
 		Stick.forget()
 	end
-	Sprint.forget()
-	Walk.forget()
+	Sprints.forget()
 	Tags.forget()
 	Resume.forget()
 	Press.forget()
-	SprintOff.forget()
+	Brake.forget()
 	S.pawn, S.restarted, S.asc, S.asc_addr = addr, false, nil, nil
 	Speed.forget()
 	-- A load can unload a class or a timeline and put another at its address: both are read anew, one at a time.
@@ -101,12 +99,12 @@ end
 local function on_tick(hooked)
 	local now = os.clock()
 	local s = Watch.settings()
-	local busy = s.enabled and (s.resume or s.landing or s.high_off
+	local busy = s.enabled and (s.resume or s.landing or s.high_off or s.high_delay ~= nil
 		or not (s.ground_neutral and s.jump_neutral and s.timeline_neutral and s.stick_neutral))
 	-- Off, or every setting at the game's own, with nothing of the mod's left on the character: nothing is read from
 	-- the game, not even the pawn. A new pawn still reads the settings: ClientRestart sets restarted.
 	if not busy and not S.restarted and not Ground.holding() and not Jump.holding(now) and not Stick.holding()
-		and not SprintOff.holding() then
+		and not SprintOff.holding() and not Brake.holding() then
 		Watch.check(now)
 		return
 	end
@@ -135,21 +133,15 @@ local function on_tick(hooked)
 	if ground_on or jump_on or landing_on or Ground.holding() or Jump.holding(now) then
 		cmc, mode = U.movement(pawn)
 	end
-	-- With the sprint off, auto sprint stays off: it presses the sprint action itself, past the keys turned off.
-	local high_off, sprint_off = s.enabled and s.high_off, s.enabled and s.sprint_off
-	local auto = stick_on and not sprint_off and s.stick.auto or nil
-	local ability = Stick.ability()
-	if high_off or SprintOff.holding() then
-		SprintOff.frame(controller, pawn, ability, high_off, sprint_off, now, log)
-	end
-	local walking = Walk.frame(controller, pawn, ability, now, auto ~= nil, Sprint.active(), log)
-	Sprint.frame(ability, travel, auto, walking, now, log)
+	Sprints.frame(controller, pawn, s, stick_on, travel, now, log)
 	if ground_on then
 		-- The long sprint held by the resume, never while it is turned off (chosen during one, it would come back).
 		local floor = resume_on and Resume.floor(now) or nil
-		Ground.frame(pawn, cmc, mode, now, s.rates, log, push, left, not high_off and floor or nil)
+		Ground.frame(pawn, cmc, mode, now, s.rates, log, push, left, not (s.enabled and s.high_off) and floor or nil)
+		Brake.frame(cmc, mode, Ground.factor_now(), push, now, log)
 	else
 		Ground.release(cmc)
+		Brake.release(cmc)
 	end
 	-- The dodge's watch, run by the resume (movement_resume.lua), serves both the resume and the faster landing.
 	if resume_on or landing_on then

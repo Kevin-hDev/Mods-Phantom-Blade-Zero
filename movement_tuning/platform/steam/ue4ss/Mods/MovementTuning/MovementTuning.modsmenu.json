@@ -7,7 +7,7 @@
     "en": "Faster walking, running, sprinting, dodges, jumps, wall runs, ladders and attacks: one speed for every move, or a speed for each. Higher jumps. A left stick curve that lets you walk, stick dead zones, auto sprint, or no sprint at all.",
     "zh-Hans": "更快的行走、奔行、快速奔行、闪避、跳跃、跑墙、爬梯和攻击：所有动作使用同一速度，或为每个动作单独设置速度。跳得更高。左摇杆曲线让行走更容易，可调整摇杆死区，并支持自动快速奔行，也可关闭快速奔行。"
   },
-  "version": "1.0.2",
+  "version": "1.0.3",
   "settings": [
     {
       "key": "Enabled",
@@ -2357,8 +2357,8 @@
         "zh-Hans": "关闭快速奔行"
       },
       "help": {
-        "en": "Sprint: no sprint at all, so no high-speed sprint either. High-speed sprint: you still sprint, but the high-speed sprint that follows 2 seconds of sprint (Thousand-Mile Stride skill) never starts. None: both as in the game. Auto sprint does nothing while the sprint is off.",
-        "zh-Hans": "快速奔行：完全无法快速奔行，因此也不会进入疾速奔行。疾速奔行：仍可快速奔行，但 2 秒后不会进入疾速奔行（技能“日行千里”）。无：两者均保持游戏原有设定。关闭快速奔行时，自动快速奔行不起作用。"
+        "en": "Sprint: no sprint at all, so no high-speed sprint either. High-speed sprint: you still sprint, but the high-speed sprint that follows 2 seconds of sprint (Thousand-Mile Stride skill) never starts. None: both as in the game. Auto and toggle sprint do nothing while the sprint is off.",
+        "zh-Hans": "快速奔行：完全无法快速奔行，因此也不会进入疾速奔行。疾速奔行：仍可快速奔行，但 2 秒后不会进入疾速奔行（技能“日行千里”）。无：两者均保持游戏原有设定。关闭快速奔行时，自动和切换快速奔行不起作用。"
       },
       "default": "None",
       "options": [
@@ -2386,17 +2386,56 @@
       ]
     },
     {
-      "key": "AutoSprint",
-      "type": "toggle",
+      "key": "HighSpeedSprintDelay",
+      "type": "number",
+      "min": 1,
+      "max": 8,
+      "step": 0.5,
+      "default": 2,
       "label": {
-        "en": "Auto sprint",
-        "zh-Hans": "自动快速奔行"
+        "en": "High-speed sprint delay",
+        "zh-Hans": "疾速奔行等待时间"
       },
       "help": {
-        "en": "Push the left stick all the way to sprint, without holding the dodge button. On the keyboard, the move keys count as the stick all the way: you sprint whenever you move. Holding the button still works. The game's walk key (Left Alt by default) stops it.",
-        "zh-Hans": "将左摇杆推到底即可快速奔行，无需长按闪避键。使用键盘时，移动键等同于摇杆推到底：只要移动就会快速奔行。长按闪避键仍然可用。游戏自带的“慢速移动”键（默认左 Alt）会停止自动快速奔行。"
+        "en": "Seconds of sprint before the high-speed sprint starts (Thousand-Mile Stride skill). The game's is 2. Does nothing while Turn off sprint turns the high-speed sprint off.",
+        "zh-Hans": "快速奔行多少秒后进入疾速奔行（技能“日行千里”）。游戏原有为 2 秒。“关闭快速奔行”关闭疾速奔行时不起作用。"
+      }
+    },
+    {
+      "key": "SprintMode",
+      "type": "choice",
+      "label": {
+        "en": "Sprint mode",
+        "zh-Hans": "快速奔行方式"
       },
-      "default": true
+      "help": {
+        "en": "Game: hold the dodge button, as in the game. Auto: tilt the left stick all the way (tilted, not pressed in) to sprint; on the keyboard, you sprint whenever you move. Toggle: press the button picked below to start sprinting, press it again to stop; letting go of the stick stops it too. The game's walk key (Left Alt by default) stops auto and toggle sprint, and holding the dodge button still works.",
+        "zh-Hans": "游戏原有：与游戏相同，长按闪避键。自动：将左摇杆倾斜到底即可快速奔行（只需倾斜，无需按下）；使用键盘时，只要移动就会快速奔行。切换：按下方选择的按键开始快速奔行，再按一次停止；松开摇杆也会停止。游戏自带的“慢速移动”键（默认左 Alt）会停止自动和切换快速奔行，长按闪避键仍然可用。"
+      },
+      "default": "Auto",
+      "options": [
+        {
+          "value": "Game",
+          "label": {
+            "en": "Game",
+            "zh-Hans": "游戏原有"
+          }
+        },
+        {
+          "value": "Auto",
+          "label": {
+            "en": "Auto",
+            "zh-Hans": "自动"
+          }
+        },
+        {
+          "value": "Toggle",
+          "label": {
+            "en": "Toggle",
+            "zh-Hans": "切换"
+          }
+        }
+      ]
     },
     {
       "key": "AutoSprintStop",
@@ -2410,9 +2449,431 @@
         "zh-Hans": "自动快速奔行停止点"
       },
       "help": {
-        "en": "Auto sprint stops when the left stick goes back under this percent of its travel.",
-        "zh-Hans": "左摇杆回到行程的此百分比以下时，自动快速奔行停止。"
+        "en": "Auto only. Auto sprint stops when the left stick goes back under this percent of its travel.",
+        "zh-Hans": "仅在“自动”模式下有效。左摇杆回到行程的此百分比以下时，自动快速奔行停止。"
       }
+    },
+    {
+      "key": "ToggleSprintButton",
+      "type": "choice",
+      "label": {
+        "en": "Toggle sprint button",
+        "zh-Hans": "切换快速奔行按键（手柄）"
+      },
+      "help": {
+        "en": "Toggle only. The controller button that starts and stops the sprint. Its own action in the game happens too: pick one you do not use, or move that action elsewhere with a remapping tool. None: no button.",
+        "zh-Hans": "仅在“切换”模式下有效。用于开始和停止快速奔行的手柄按键。该按键在游戏中原有的功能也会同时触发：请选择不常用的按键，或用改键模组把该功能移到其他按键上。无：不使用手柄按键。"
+      },
+      "default": "None",
+      "options": [
+        {
+          "value": "None",
+          "label": {
+            "en": "None",
+            "zh-Hans": "无"
+          }
+        },
+        {
+          "value": "Gamepad_FaceButton_Bottom",
+          "label": {
+            "en": "Cross / A",
+            "zh-Hans": "叉键 / A"
+          }
+        },
+        {
+          "value": "Gamepad_FaceButton_Right",
+          "label": {
+            "en": "Circle / B",
+            "zh-Hans": "圆圈键 / B"
+          }
+        },
+        {
+          "value": "Gamepad_FaceButton_Left",
+          "label": {
+            "en": "Square / X",
+            "zh-Hans": "方块键 / X"
+          }
+        },
+        {
+          "value": "Gamepad_FaceButton_Top",
+          "label": {
+            "en": "Triangle / Y",
+            "zh-Hans": "三角键 / Y"
+          }
+        },
+        {
+          "value": "Gamepad_LeftShoulder",
+          "label": {
+            "en": "L1 / LB",
+            "zh-Hans": "L1 / LB"
+          }
+        },
+        {
+          "value": "Gamepad_RightShoulder",
+          "label": {
+            "en": "R1 / RB",
+            "zh-Hans": "R1 / RB"
+          }
+        },
+        {
+          "value": "Gamepad_LeftTrigger",
+          "label": {
+            "en": "L2 / LT",
+            "zh-Hans": "L2 / LT"
+          }
+        },
+        {
+          "value": "Gamepad_RightTrigger",
+          "label": {
+            "en": "R2 / RT",
+            "zh-Hans": "R2 / RT"
+          }
+        },
+        {
+          "value": "Gamepad_LeftThumbstick",
+          "label": {
+            "en": "L3 / LS",
+            "zh-Hans": "L3 / LS"
+          }
+        },
+        {
+          "value": "Gamepad_RightThumbstick",
+          "label": {
+            "en": "R3 / RS",
+            "zh-Hans": "R3 / RS"
+          }
+        },
+        {
+          "value": "Gamepad_DPad_Up",
+          "label": {
+            "en": "D-pad Up",
+            "zh-Hans": "方向键上"
+          }
+        },
+        {
+          "value": "Gamepad_DPad_Down",
+          "label": {
+            "en": "D-pad Down",
+            "zh-Hans": "方向键下"
+          }
+        },
+        {
+          "value": "Gamepad_DPad_Left",
+          "label": {
+            "en": "D-pad Left",
+            "zh-Hans": "方向键左"
+          }
+        },
+        {
+          "value": "Gamepad_DPad_Right",
+          "label": {
+            "en": "D-pad Right",
+            "zh-Hans": "方向键右"
+          }
+        }
+      ]
+    },
+    {
+      "key": "ToggleSprintKey",
+      "type": "choice",
+      "label": {
+        "en": "Toggle sprint key",
+        "zh-Hans": "切换快速奔行按键（键盘）"
+      },
+      "help": {
+        "en": "Toggle only. The key or mouse button that starts and stops the sprint. Its own action in the game happens too: pick one you do not use, or move that action elsewhere with a remapping tool. None: no key.",
+        "zh-Hans": "仅在“切换”模式下有效。用于开始和停止快速奔行的键盘按键或鼠标按键。该按键在游戏中原有的功能也会同时触发：请选择不常用的按键，或用改键模组把该功能移到其他按键上。无：不使用键盘按键。"
+      },
+      "default": "None",
+      "options": [
+        {
+          "value": "None",
+          "label": {
+            "en": "None",
+            "zh-Hans": "无"
+          }
+        },
+        {
+          "value": "LeftShift",
+          "label": {
+            "en": "Left Shift",
+            "zh-Hans": "左Shift"
+          }
+        },
+        {
+          "value": "SpaceBar",
+          "label": {
+            "en": "Space",
+            "zh-Hans": "空格键"
+          }
+        },
+        {
+          "value": "LeftControl",
+          "label": {
+            "en": "Left Ctrl",
+            "zh-Hans": "左Ctrl"
+          }
+        },
+        {
+          "value": "LeftAlt",
+          "label": {
+            "en": "Left Alt",
+            "zh-Hans": "左Alt"
+          }
+        },
+        {
+          "value": "Tab",
+          "label": {
+            "en": "Tab",
+            "zh-Hans": "Tab键"
+          }
+        },
+        {
+          "value": "CapsLock",
+          "label": {
+            "en": "Caps Lock",
+            "zh-Hans": "大写锁定键"
+          }
+        },
+        {
+          "value": "RightShift",
+          "label": {
+            "en": "Right Shift",
+            "zh-Hans": "右Shift"
+          }
+        },
+        {
+          "value": "RightControl",
+          "label": {
+            "en": "Right Ctrl",
+            "zh-Hans": "右Ctrl"
+          }
+        },
+        {
+          "value": "RightAlt",
+          "label": {
+            "en": "Right Alt",
+            "zh-Hans": "右Alt"
+          }
+        },
+        {
+          "value": "LeftMouseButton",
+          "label": {
+            "en": "Left mouse button",
+            "zh-Hans": "鼠标左键"
+          }
+        },
+        {
+          "value": "RightMouseButton",
+          "label": {
+            "en": "Right mouse button",
+            "zh-Hans": "鼠标右键"
+          }
+        },
+        {
+          "value": "MiddleMouseButton",
+          "label": {
+            "en": "Middle mouse button",
+            "zh-Hans": "鼠标中键"
+          }
+        },
+        {
+          "value": "ThumbMouseButton",
+          "label": {
+            "en": "Mouse button 4",
+            "zh-Hans": "鼠标按键 4"
+          }
+        },
+        {
+          "value": "ThumbMouseButton2",
+          "label": {
+            "en": "Mouse button 5",
+            "zh-Hans": "鼠标按键 5"
+          }
+        },
+        {
+          "value": "A",
+          "label": {
+            "en": "A",
+            "zh-Hans": "A"
+          }
+        },
+        {
+          "value": "B",
+          "label": {
+            "en": "B",
+            "zh-Hans": "B"
+          }
+        },
+        {
+          "value": "C",
+          "label": {
+            "en": "C",
+            "zh-Hans": "C"
+          }
+        },
+        {
+          "value": "D",
+          "label": {
+            "en": "D",
+            "zh-Hans": "D"
+          }
+        },
+        {
+          "value": "E",
+          "label": {
+            "en": "E",
+            "zh-Hans": "E"
+          }
+        },
+        {
+          "value": "F",
+          "label": {
+            "en": "F",
+            "zh-Hans": "F"
+          }
+        },
+        {
+          "value": "G",
+          "label": {
+            "en": "G",
+            "zh-Hans": "G"
+          }
+        },
+        {
+          "value": "H",
+          "label": {
+            "en": "H",
+            "zh-Hans": "H"
+          }
+        },
+        {
+          "value": "I",
+          "label": {
+            "en": "I",
+            "zh-Hans": "I"
+          }
+        },
+        {
+          "value": "J",
+          "label": {
+            "en": "J",
+            "zh-Hans": "J"
+          }
+        },
+        {
+          "value": "K",
+          "label": {
+            "en": "K",
+            "zh-Hans": "K"
+          }
+        },
+        {
+          "value": "L",
+          "label": {
+            "en": "L",
+            "zh-Hans": "L"
+          }
+        },
+        {
+          "value": "M",
+          "label": {
+            "en": "M",
+            "zh-Hans": "M"
+          }
+        },
+        {
+          "value": "N",
+          "label": {
+            "en": "N",
+            "zh-Hans": "N"
+          }
+        },
+        {
+          "value": "O",
+          "label": {
+            "en": "O",
+            "zh-Hans": "O"
+          }
+        },
+        {
+          "value": "P",
+          "label": {
+            "en": "P",
+            "zh-Hans": "P"
+          }
+        },
+        {
+          "value": "Q",
+          "label": {
+            "en": "Q",
+            "zh-Hans": "Q"
+          }
+        },
+        {
+          "value": "R",
+          "label": {
+            "en": "R",
+            "zh-Hans": "R"
+          }
+        },
+        {
+          "value": "S",
+          "label": {
+            "en": "S",
+            "zh-Hans": "S"
+          }
+        },
+        {
+          "value": "T",
+          "label": {
+            "en": "T",
+            "zh-Hans": "T"
+          }
+        },
+        {
+          "value": "U",
+          "label": {
+            "en": "U",
+            "zh-Hans": "U"
+          }
+        },
+        {
+          "value": "V",
+          "label": {
+            "en": "V",
+            "zh-Hans": "V"
+          }
+        },
+        {
+          "value": "W",
+          "label": {
+            "en": "W",
+            "zh-Hans": "W"
+          }
+        },
+        {
+          "value": "X",
+          "label": {
+            "en": "X",
+            "zh-Hans": "X"
+          }
+        },
+        {
+          "value": "Y",
+          "label": {
+            "en": "Y",
+            "zh-Hans": "Y"
+          }
+        },
+        {
+          "value": "Z",
+          "label": {
+            "en": "Z",
+            "zh-Hans": "Z"
+          }
+        }
+      ]
     },
     {
       "key": "SprintResume",

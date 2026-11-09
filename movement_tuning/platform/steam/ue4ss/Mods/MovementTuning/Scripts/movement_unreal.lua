@@ -71,6 +71,14 @@ function M.items(array, max)
 	return ok and list or nil
 end
 
+-- A vector's flat part (a velocity or an acceleration): x, y and its size; nil when unreadable.
+function M.flat(v)
+	local x, y = nil, nil
+	pcall(function() x, y = tonumber(v.X), tonumber(v.Y) end)
+	if x == nil or y == nil or x ~= x or y ~= y then return nil end
+	return x, y, math.sqrt(x * x + y * y)
+end
+
 -- Whether the player holds the key (key: an FKey table { KeyName = FName }); false when it cannot be read.
 function M.key_down(controller, key)
 	local ok, v = pcall(function() return controller:IsInputKeyDown(key) end)
