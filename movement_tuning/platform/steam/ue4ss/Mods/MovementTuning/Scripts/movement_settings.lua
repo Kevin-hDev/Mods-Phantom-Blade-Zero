@@ -10,11 +10,11 @@ local Sprint = require("movement_sprint_settings")
 
 local M = {}
 
--- Speeds and jump height from the game's own (1) to three times. Slower is not offered: the mod pushes a timeline's
--- time forward, and pushing it back has never been tried. A move can have its own max (movement_moves.lua), higher or
--- lower: a lower one caps Global for that move too. Steps of 0.05, asked by a player for finer settings: 0.01 (1 % of
--- speed) cannot be felt and would give each move's list 201 choices.
-M.MIN, M.MAX, M.STEP = 1.0, 3.0, 0.05
+-- Speeds from half the game's (Kevin, 10 November 2026: slower moves for a calmer game, without dragging) to three
+-- times. A move can have its own min and max (movement_moves.lua): they bound Global for that move too. Steps of 0.05,
+-- asked by a player for finer settings: 0.01 (1 % of speed) cannot be felt and would give each move's list 201 choices.
+M.MIN, M.MAX, M.STEP = 0.5, 3.0, 0.05
+M.JUMP_MIN = Moves.JUMP_MIN
 M.GLOBAL = "Global"               -- a move that follows the Global speed (key AllMoves: its first name, kept for older files)
 -- The defaults, for a new settings file and a key missing from one; Jump recovery's is in movement_moves.lua.
 M.DEFAULTS = { enabled = true, all = 1.3, attacks = 1.0, jump_height = 1.5 }
@@ -48,21 +48,28 @@ local function on_grid(n, step)
 	return math.floor(n / step + 0.5) / (1 / step)
 end
 
--- A number or a number in text, from MIN to max (MAX when not given), on step (STEP when not given); nil for anything
--- else.
-local function speed(value, max, step)
-	max = max or M.MAX
+-- A number, or a number in text; nil for anything else.
+local function plain(value)
 	if type(value) == "string" then value = tonumber(V.trim(value)) end
-	if type(value) ~= "number" or value ~= value or value < M.MIN or value > max then return nil end
+	if type(value) ~= "number" or value ~= value then return nil end
+	return value
+end
+
+-- A number or a number in text, from min to max (MIN and MAX when not given), on step (STEP when not given); nil for
+-- anything else.
+local function speed(value, max, step, min)
+	max, min = max or M.MAX, min or M.MIN
+	value = plain(value)
+	if value == nil or value < min or value > max then return nil end
 	return on_grid(value, step or M.STEP)
 end
 
-local function number(raw, key, name, default, warn)
+local function number(raw, key, name, default, warn, min)
 	local value = raw[key]
 	if value == nil then return default end
-	local n = speed(value)
+	local n = speed(value, nil, nil, min)
 	if n ~= nil then return n end
-	warn(string.format("%s must be %s to %s; using %s", name, V.show(M.MIN), V.show(M.MAX), V.show(default)))
+	warn(string.format("%s must be %s to %s; using %s", name, V.show(min or M.MIN), V.show(M.MAX), V.show(default)))
 	return default
 end
 
@@ -71,12 +78,13 @@ local function move_speed(raw, move, warn)
 	local value = raw[move.setting:lower()]
 	if value == nil then return move.default end
 	if V.word(value) == M.GLOBAL:lower() then return nil end
-	local max = move.max or M.MAX
-	local n = speed(value, max, move.step)
+	local max, min = move.max or M.MAX, move.min or M.MIN
+	local n = speed(value, max, move.step, min)
 	if n ~= nil then return n end
 	-- Over a cap lower than Global's (dodges): the cap, as a file written before the cap was asked for the fastest.
-	local over = max < M.MAX and speed(value) ~= nil
-	warn(string.format("%s must be %s or %s to %s; using %s", move.setting, M.GLOBAL, V.show(M.MIN), V.show(max),
+	local raw = plain(value)
+	local over = raw ~= nil and raw > max and raw <= M.MAX
+	warn(string.format("%s must be %s or %s to %s; using %s", move.setting, M.GLOBAL, V.show(min), V.show(max),
 		over and V.show(max) or move.default and V.show(move.default) or M.GLOBAL))
 	if over then return max end
 	return move.default
@@ -122,11 +130,11 @@ function M.resolve(raw, warn)
 	}
 	for _, move in ipairs(Moves.SPEEDS) do
 		s.own[move.key] = move_speed(raw, move, warn)
-		s.rates[move.key] = math.min(s.own[move.key] or s.all, move.max or M.MAX)
+		s.rates[move.key] = math.max(move.min or M.MIN, math.min(s.own[move.key] or s.all, move.max or M.MAX))
 	end
 	s.rates[Moves.ATTACKS] = number(raw, "attacks", "Attacks", M.DEFAULTS.attacks, warn)
 	-- Not a speed: it does not follow Global.
-	s.jump_height = number(raw, "jumpheight", "JumpHeight", M.DEFAULTS.jump_height, warn)
+	s.jump_height = number(raw, "jumpheight", "JumpHeight", M.DEFAULTS.jump_height, warn, M.JUMP_MIN)
 	s.ground_neutral = all_at_one(s.rates, Moves.GAITS)
 	s.timeline_neutral = all_at_one(s.rates, Moves.MOVES) and s.rates[Moves.ATTACKS] == 1
 	s.jump_neutral = s.jump_height == 1

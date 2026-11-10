@@ -23,6 +23,12 @@ local function class_address_of(obj) return obj:GetClass():GetAddress() end
 local function velocity_of(cmc) return cmc.Velocity end
 local function acceleration_of(cmc) return cmc:GetCurrentAcceleration() end
 local function yaw_of(actor) return actor:K2_GetActorRotation().Yaw end
+local function anim_of(mesh) return mesh:GetAnimInstance() end
+local function montage_of(anim) return anim:GetCurrentActiveMontage() end
+
+-- The acceleration of the frame read last: the legs, the sprint resume and the eased slowdown each ask for it in the
+-- same frame, told by its clock (os.clock moves by whole milliseconds, a frame lasts several).
+local A = { at = nil, x = nil, y = nil, size = nil }
 
 function M.is_valid(obj)
 	if obj == nil then return false end
@@ -96,11 +102,24 @@ function M.velocity(cmc)
 	return M.flat(v)
 end
 
--- The acceleration the game gives from the stick, flat: x, y and its size; nil when unreadable.
-function M.acceleration(cmc)
+-- The acceleration the game gives from the stick, flat: x, y and its size; nil when unreadable. now: the frame's clock,
+-- read once for the frame when given.
+function M.acceleration(cmc, now)
+	if now ~= nil and A.at == now then return A.x, A.y, A.size end
+	local x, y, size = nil, nil, nil
 	local ok, a = pcall(acceleration_of, cmc)
-	if not ok then return nil end
-	return M.flat(a)
+	if ok then x, y, size = M.flat(a) end
+	if now ~= nil then A.at, A.x, A.y, A.size = now, x, y, size end
+	return x, y, size
+end
+
+-- Whether a montage (an attack, a dodge) plays on the mesh; nil when that cannot be read.
+function M.montage_plays(mesh)
+	local ok, anim = pcall(anim_of, mesh)
+	if not ok or not M.is_valid(anim) then return nil end
+	local read, m = pcall(montage_of, anim)
+	if not read then return nil end
+	return M.is_valid(m)
 end
 
 -- The actor's facing, in degrees from -180 to 180; nil when unreadable.

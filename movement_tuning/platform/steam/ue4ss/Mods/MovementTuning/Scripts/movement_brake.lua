@@ -7,7 +7,9 @@
 -- in 1/k of the game's time (v = k u, t = s / k gives the game's equation back). The game's stop animations are fitted
 -- to its own distance (single source: another mod's notes). Only braking reads these two values; GroundFriction, which
 -- only turning reads, is the grip's (movement_grip.lua). The first stops are measured in UE4SS.log. The game's own
--- values are built on, never the mod's (movement_held.lua).
+-- values are built on, never the mod's (movement_held.lua). Slower than the game (under 1), the game's braking stays: a
+-- slower character stops sooner, as the game's own walk does, while a braking x k^2 would make it slide over the
+-- distance of a stop at the game's speed.
 
 local U = require("movement_unreal")
 local Held = require("movement_held")

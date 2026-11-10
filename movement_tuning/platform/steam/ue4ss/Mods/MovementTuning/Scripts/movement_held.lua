@@ -16,7 +16,8 @@ local function same(a, b)
 	return math.abs(a - b) <= SAME + SAME_PART * math.abs(b)
 end
 
--- A number field of the movement component. A field inside a structure brings its own access, the same two functions.
+-- A number field of the object (the movement component; the mesh for movement_legs.lua). A field inside a structure
+-- brings its own access, the same two functions.
 local FIELD = {
 	get = function(cmc, name) return cmc[name] end,
 	set = function(cmc, name, v) cmc[name] = v end,

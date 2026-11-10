@@ -12,7 +12,8 @@
 --   moves toward that by LOSS in RECOVER s, both ways: a lost speed comes back in RECOVER s, wherever the character
 --   goes next (the air, a fight), since the speed itself was lost on the ground. The ground speeds take the share kept
 --   (movement_ground.lua). A body turned faster than SNAP times its top rate was turned by the game at once (over 2,000
---   deg/s after a dodge, verified in game), not by the player.
+--   deg/s after a dodge, verified in game), not by the player. Under the game's speeds, MOVING goes down with them
+--   (Kevin, 10 November 2026): a run at 0.5 tops at 300 cm/s and would almost never lose speed.
 -- Both values held on the game's own (movement_held.lua), on the ground only.
 
 local U = require("movement_unreal")
@@ -139,7 +140,7 @@ end
 
 local function share(free, last, dt, f)
 	local target = 0
-	if free and last ~= nil and f.yaw ~= nil and f.speed ~= nil and f.speed >= MOVING then
+	if free and last ~= nil and f.yaw ~= nil and f.speed ~= nil and f.speed >= MOVING * math.min(f.factor or 1, 1) then
 		local top = H.held.written.RotationRate or GAME_TURN
 		local rate = math.abs(U.angle(f.yaw, last)) / dt
 		-- A body held at GENTLE or under turns no faster than a wide curve: no turn is sharp enough to lose speed.
@@ -152,8 +153,8 @@ local function share(free, last, dt, f)
 	return 1 - H.loss
 end
 
--- on, free: HyperRealistic chosen, running freely (M.hold). f: this frame's body facing and speed
--- (movement_realism.lua). Returns the share of the speed kept, 1 when none is lost.
+-- on, free: HyperRealistic chosen, running freely (M.hold). f: this frame's body facing and speed, and the ground
+-- speeds' factor (movement_realism.lua). Returns the share of the speed kept, 1 when none is lost.
 function M.keep(on, free, now, say, f)
 	if not on and H.loss == 0 then
 		H.at, H.yaw, H.start, H.still = nil, nil, nil, false

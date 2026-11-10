@@ -9,10 +9,12 @@
 -- (verified in game). Should the game leave the mod's speed in place, the mod builds on the game's last own speed,
 -- never on its own. With Realism on, a drop of that speed is eased (movement_downshift.lua), even at the game's speeds,
 -- and HyperRealistic lowers it in sharp turns (movement_hyper.lua): this module is the one writer of MaxWalkSpeed.
+-- Under the game's speed, the legs' cadence follows (movement_legs.lua).
 
 local U = require("movement_unreal")
 local Curve = require("movement_curve")
 local Downshift = require("movement_downshift")
+local Legs = require("movement_legs")
 
 local M = {}
 
@@ -35,6 +37,7 @@ function M.forget()
 	G = { gaits = nil, next_read = 0, said = false, written = nil, game = nil, writes = 0, rewrites = 0, top = 0,
 		ratio = nil, gait = nil, slowed = 0, lifted = false, factor = nil }
 	Downshift.forget()
+	Legs.forget()
 end
 M.forget()
 
@@ -70,7 +73,7 @@ function M.factor(speed, gaits, rates)
 end
 
 function M.holding()
-	return G.written ~= nil
+	return G.written ~= nil or Legs.holding()
 end
 
 -- Gives the game its own speed back, when the speed in place is still the one the mod wrote. cmc: the movement
@@ -86,6 +89,7 @@ function M.release(cmc)
 	end
 	G.written, G.game, G.ratio, G.lifted, G.factor = nil, nil, nil, false, nil
 	Downshift.forget()
+	Legs.release()
 end
 
 -- The stick curve's part of the speed (movement_curve.lua): on the ground from the push; in the air the share of the
@@ -175,12 +179,13 @@ function M.frame(pawn, cmc, mode, now, rates, say, push, left, floor, realism)
 	end
 	-- The game's own, not the lifted one: built on when the game leaves the mod's speed in place.
 	G.written, G.game = want, game
+	Legs.frame(pawn, cmc, mode, G.factor, now, say)
 end
 
 -- For the status line, then the counts start over.
 function M.report()
 	local text = string.format("ground speed written %d times, rewritten by the game %d times, top game speed %.0f, "
-		.. "slowed by the stick %d times", G.writes, G.rewrites, G.top, G.slowed)
+		.. "slowed by the stick %d times, legs slowed %d frames", G.writes, G.rewrites, G.top, G.slowed, Legs.report())
 	G.writes, G.rewrites, G.top, G.slowed = 0, 0, 0, 0
 	return text
 end

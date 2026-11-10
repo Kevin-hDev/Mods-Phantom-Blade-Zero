@@ -120,7 +120,7 @@ function M.frame(pawn, cmc, mode, now, game, gaits, rates, resume, landing, say)
 	G.stopped = false
 	-- Read once a frame on the ground, for the dodge's watch, the end of a special move and the raise.
 	local ax, ay, acc = nil, nil, nil
-	if mode == WALKING then ax, ay, acc = U.acceleration(cmc) end
+	if mode == WALKING then ax, ay, acc = U.acceleration(cmc, now) end
 	local takes = acc ~= nil and acc > MOVING
 	local dodged = Dodge.frame(pawn, cmc, mode, takes, now, rates, landing, say)
 	if not resume then

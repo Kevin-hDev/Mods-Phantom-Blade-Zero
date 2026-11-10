@@ -29,8 +29,8 @@ function M.forget()
 end
 M.forget()
 
-local function pushed(cmc)
-	local _, _, size = U.acceleration(cmc)
+local function pushed(cmc, now)
+	local _, _, size = U.acceleration(cmc, now)
 	return size ~= nil and size > U.PUSHED
 end
 
@@ -50,7 +50,7 @@ function M.soften(want, cmc, mode, now, say)
 	local last, at = D.last, D.at
 	D.last, D.at = want, now
 	local dt = at and now - at or 0
-	if last == nil or want >= last - SAME or mode ~= WALKING or dt <= 0 or dt > U.PAUSE or not pushed(cmc) then
+	if last == nil or want >= last - SAME or mode ~= WALKING or dt <= 0 or dt > U.PAUSE or not pushed(cmc, now) then
 		stop_easing()
 		return want
 	end

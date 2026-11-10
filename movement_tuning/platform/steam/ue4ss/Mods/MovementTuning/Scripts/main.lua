@@ -27,7 +27,7 @@ local SprintOff = require("movement_sprint_off")
 local Brake = require("movement_brake")
 local Realism = require("movement_realism")
 
-local VERSION = "1.0.4"
+local VERSION = "1.0.5"
 local CONTROLLER_TICK = "/Game/PBZContent/Blueprint/Character/Player/BP_PlayerController.BP_PlayerController_C:ReceiveTick"
 local CLIENT_RESTART = "/Script/Engine.PlayerController:ClientRestart"
 local STATUS_EVERY = 600          -- seconds between two status lines
@@ -61,7 +61,7 @@ local function status(now)
 	for key, n in pairs(S.pushes) do parts[#parts + 1] = string.format("%s %d", key, n) end
 	table.sort(parts)
 	local moving = Ground.report() .. "; " .. Sprints.report() .. "; " .. Resume.report() .. "; " .. SprintOff.report()
-	log("status: in the last %d minutes, frames sped up: %s; %s; %d calls (%.0f a second), %d tasks looked at, "
+	log("status: in the last %d minutes, frames paced: %s; %s; %d calls (%.0f a second), %d tasks looked at, "
 		.. "%d known, %d timelines unreadable, %.1f microseconds a call on average, longest %.0f ms (1 ms clock), %d "
 		.. "over %.0f ms%s",
 		STATUS_EVERY // 60,
@@ -138,7 +138,8 @@ local function on_tick(hooked)
 	if ground_on or jump_on or landing_on or Ground.holding() or Jump.holding(now) or Realism.holding() then
 		cmc, mode = U.movement(pawn)
 	end
-	local real = Realism.frame(pawn, cmc, mode, realistic and s.realism or nil, realistic and s.hyper, now, log)
+	local real = Realism.frame(pawn, cmc, mode, realistic and s.realism or nil, realistic and s.hyper, now, log,
+		Ground.factor_now())
 	Sprints.frame(controller, pawn, s, stick_on, travel, now, log)
 	if ground_on then
 		-- The long sprint held by the resume, never while it is turned off (chosen during one, it would come back).

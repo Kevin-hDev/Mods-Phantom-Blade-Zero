@@ -2,7 +2,8 @@
 -- game itself moved it since the last frame. Verified in game: the game plays dodges, jumps, ladders and wall
 -- runs as timelines whose task (LGATask_PlayTimeline) sets where the animation is; neither the montage's play rate nor
 -- the player's own clock changed how long they took, while pushing the task's CurrentTime made them 1.5 times as fast
--- over the same ground. A plain dodge keeps its length and goes further instead.
+-- over the same ground. A plain dodge keeps its length and goes further instead. A slower move (0.5 to 1, Kevin, 10
+-- November 2026) has its time pulled back by (1 - speed) x that step instead (tried in game the same day).
 -- The push follows the game's own step, not the frame's length: the player controller still ticks
 -- while the game is paused (UE 5.7 PlayerController.cpp, bTickEvenWhenPaused) and its timelines stand still, and a
 -- timeline that loops back or that the game slows with its time-stretch curve moves less than the frame.
@@ -148,8 +149,8 @@ local function push(task, entry, now, last, fresh, rate, counts)
 	if last == nil or entry.times == nil then return end
 	local step = math.min(now - last, MAX_PUSH_TIME)
 	if not (step > 0) then return end
-	local target = Timeline.limit(entry.times, now, now + step * (rate - 1))
-	if target <= now then return end
+	local target = Timeline.target(entry.times, last, now, step, rate)
+	if target == nil then return end
 	if pcall(function() task.CurrentTime = target end) then
 		entry.last = target
 		counts[entry.key] = (counts[entry.key] or 0) + 1
@@ -195,7 +196,7 @@ local function look(addr, entry, clock, rates, counts)
 	push(task, entry, now, last, fresh, rate, counts)
 end
 
--- Pushes the time of each of the player's timelines whose move is faster than the game's. asc_addr: the address of the
+-- Pushes the time of each of the player's timelines whose move is faster or slower than the game's. asc_addr: the address of the
 -- player's ability system. counts: pushes made, by move key. say: the log. Returns the number of tasks looked at.
 function M.frame(asc_addr, clock, rates, counts, say)
 	-- Not looked at for a while (every speed at the game's, no pawn, a long hitch): the time the tasks moved since is

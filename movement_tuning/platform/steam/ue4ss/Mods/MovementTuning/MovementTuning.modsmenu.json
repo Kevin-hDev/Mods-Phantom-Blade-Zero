@@ -4,10 +4,10 @@
     "zh-Hans": "动作速度调整"
   },
   "description": {
-    "en": "Faster walking, running, sprinting, dodges, jumps, wall runs, ladders and attacks: one speed for every move, or a speed for each. Higher jumps. A left stick curve that lets you walk, stick dead zones, auto sprint, or no sprint at all. Realism: no sideways glide, smooth slowdowns, heavier starts.",
-    "zh-Hans": "更快的行走、奔行、快速奔行、闪避、跳跃、跑墙、爬梯和攻击：所有动作使用同一速度，或为每个动作单独设置速度。跳得更高。左摇杆曲线让行走更容易，可调整摇杆死区，并支持自动快速奔行，也可关闭快速奔行。真实感：转弯不再侧滑，平稳减速，起步更沉稳。"
+    "en": "Faster or slower walking, running, sprinting, dodges, wall runs, ladders and attacks: one speed for every move, or a speed for each. Higher jumps. A left stick curve that lets you walk, stick dead zones, auto sprint, or no sprint at all. Realism: no sideways glide, smooth slowdowns, heavier starts.",
+    "zh-Hans": "更快或更慢的行走、奔行、快速奔行、闪避、跑墙、爬梯和攻击：所有动作使用同一速度，或为每个动作单独设置速度。跳得更高。左摇杆曲线让行走更容易，可调整摇杆死区，并支持自动快速奔行，也可关闭快速奔行。真实感：转弯不再侧滑，平稳减速，起步更沉稳。"
   },
-  "version": "1.0.4",
+  "version": "1.0.5",
   "settings": [
     {
       "key": "Enabled",
@@ -32,7 +32,7 @@
     {
       "key": "AllMoves",
       "type": "number",
-      "min": 1,
+      "min": 0.5,
       "max": 3,
       "step": 0.05,
       "default": 1.3,
@@ -41,8 +41,8 @@
         "zh-Hans": "全局"
       },
       "help": {
-        "en": "The speed of every move set to Global below. 1 is the game's own speed, 3 three times as fast. Dodges stop at 2.5.",
-        "zh-Hans": "下方设为“全局”的所有动作的速度。1 为游戏原有速度，3 为三倍速度。闪避最高为 2.5。"
+        "en": "The speed of every move set to Global below. 1 is the game's own speed, 0.5 half as fast, 3 three times as fast. Dodges stop at 2.5, and Jump recovery never goes under 1.",
+        "zh-Hans": "下方设为“全局”的所有动作的速度。1 为游戏原有速度，0.5 为一半速度，3 为三倍速度。闪避最高为 2.5，跳跃衔接不低于 1。"
       }
     },
     {
@@ -54,8 +54,8 @@
         "zh-Hans": "行走"
       },
       "help": {
-        "en": "Global: same speed as the Global row. 1.0 is the game's own speed, 3.0 three times as fast. Walking, with the stick pushed a little.",
-        "zh-Hans": "全局：与“全局”行的速度相同。1.0 为游戏原有速度，3.0 为三倍速度。行走（轻推摇杆）。"
+        "en": "Global: same speed as the Global row. 1.0 is the game's own speed, 0.5 half as fast, 3.0 three times as fast. Walking, with the stick pushed a little.",
+        "zh-Hans": "全局：与“全局”行的速度相同。1.0 为游戏原有速度，0.5 为一半速度，3.0 为三倍速度。行走（轻推摇杆）。"
       },
       "default": "Global",
       "options": [
@@ -65,6 +65,46 @@
             "en": "Global",
             "zh-Hans": "全局"
           }
+        },
+        {
+          "value": "0.5",
+          "label": "0.5"
+        },
+        {
+          "value": "0.55",
+          "label": "0.55"
+        },
+        {
+          "value": "0.6",
+          "label": "0.6"
+        },
+        {
+          "value": "0.65",
+          "label": "0.65"
+        },
+        {
+          "value": "0.7",
+          "label": "0.7"
+        },
+        {
+          "value": "0.75",
+          "label": "0.75"
+        },
+        {
+          "value": "0.8",
+          "label": "0.8"
+        },
+        {
+          "value": "0.85",
+          "label": "0.85"
+        },
+        {
+          "value": "0.9",
+          "label": "0.9"
+        },
+        {
+          "value": "0.95",
+          "label": "0.95"
         },
         {
           "value": "1.0",
@@ -241,8 +281,8 @@
         "zh-Hans": "奔行"
       },
       "help": {
-        "en": "Global: same speed as the Global row. 1.0 is the game's own speed, 3.0 three times as fast. Running, the usual pace.",
-        "zh-Hans": "全局：与“全局”行的速度相同。1.0 为游戏原有速度，3.0 为三倍速度。奔行，平时的移动速度。"
+        "en": "Global: same speed as the Global row. 1.0 is the game's own speed, 0.5 half as fast, 3.0 three times as fast. Running, the usual pace.",
+        "zh-Hans": "全局：与“全局”行的速度相同。1.0 为游戏原有速度，0.5 为一半速度，3.0 为三倍速度。奔行，平时的移动速度。"
       },
       "default": "Global",
       "options": [
@@ -252,6 +292,46 @@
             "en": "Global",
             "zh-Hans": "全局"
           }
+        },
+        {
+          "value": "0.5",
+          "label": "0.5"
+        },
+        {
+          "value": "0.55",
+          "label": "0.55"
+        },
+        {
+          "value": "0.6",
+          "label": "0.6"
+        },
+        {
+          "value": "0.65",
+          "label": "0.65"
+        },
+        {
+          "value": "0.7",
+          "label": "0.7"
+        },
+        {
+          "value": "0.75",
+          "label": "0.75"
+        },
+        {
+          "value": "0.8",
+          "label": "0.8"
+        },
+        {
+          "value": "0.85",
+          "label": "0.85"
+        },
+        {
+          "value": "0.9",
+          "label": "0.9"
+        },
+        {
+          "value": "0.95",
+          "label": "0.95"
         },
         {
           "value": "1.0",
@@ -428,8 +508,8 @@
         "zh-Hans": "快速奔行"
       },
       "help": {
-        "en": "Global: same speed as the Global row. 1.0 is the game's own speed, 3.0 three times as fast. Sprinting, and the high-speed sprint that follows after about 2 seconds.",
-        "zh-Hans": "全局：与“全局”行的速度相同。1.0 为游戏原有速度，3.0 为三倍速度。快速奔行，以及约 2 秒后进入的疾速奔行。"
+        "en": "Global: same speed as the Global row. 1.0 is the game's own speed, 0.5 half as fast, 3.0 three times as fast. Sprinting, and the high-speed sprint that follows after about 2 seconds.",
+        "zh-Hans": "全局：与“全局”行的速度相同。1.0 为游戏原有速度，0.5 为一半速度，3.0 为三倍速度。快速奔行，以及约 2 秒后进入的疾速奔行。"
       },
       "default": "Global",
       "options": [
@@ -439,6 +519,46 @@
             "en": "Global",
             "zh-Hans": "全局"
           }
+        },
+        {
+          "value": "0.5",
+          "label": "0.5"
+        },
+        {
+          "value": "0.55",
+          "label": "0.55"
+        },
+        {
+          "value": "0.6",
+          "label": "0.6"
+        },
+        {
+          "value": "0.65",
+          "label": "0.65"
+        },
+        {
+          "value": "0.7",
+          "label": "0.7"
+        },
+        {
+          "value": "0.75",
+          "label": "0.75"
+        },
+        {
+          "value": "0.8",
+          "label": "0.8"
+        },
+        {
+          "value": "0.85",
+          "label": "0.85"
+        },
+        {
+          "value": "0.9",
+          "label": "0.9"
+        },
+        {
+          "value": "0.95",
+          "label": "0.95"
         },
         {
           "value": "1.0",
@@ -615,8 +735,8 @@
         "zh-Hans": "闪避"
       },
       "help": {
-        "en": "Global: same speed as the Global row. 1.0 is the game's own speed, 2.5 two and a half times as fast. Chained dodges play faster. A single dodge lasts as long as before and covers more ground. Global stops at 2.5 here too: any faster and the next dodge can't be chained in time.",
-        "zh-Hans": "全局：与“全局”行的速度相同。1.0 为游戏原有速度，2.5 为 2.5 倍速度。连续闪避会更快。单次闪避持续时间不变，但移动距离更远。设为“全局”时同样最高 2.5：再快就来不及接上下一次闪避。"
+        "en": "Global: same speed as the Global row. 1.0 is the game's own speed, 0.5 half as fast, 2.5 two and a half times as fast. Chained dodges play faster. A single dodge lasts as long as before and covers more ground. Global stops at 2.5 here too: any faster and the next dodge can't be chained in time.",
+        "zh-Hans": "全局：与“全局”行的速度相同。1.0 为游戏原有速度，0.5 为一半速度，2.5 为 2.5 倍速度。连续闪避会更快。单次闪避持续时间不变，但移动距离更远。设为“全局”时同样最高 2.5：再快就来不及接上下一次闪避。"
       },
       "default": "Global",
       "options": [
@@ -626,6 +746,46 @@
             "en": "Global",
             "zh-Hans": "全局"
           }
+        },
+        {
+          "value": "0.5",
+          "label": "0.5"
+        },
+        {
+          "value": "0.55",
+          "label": "0.55"
+        },
+        {
+          "value": "0.6",
+          "label": "0.6"
+        },
+        {
+          "value": "0.65",
+          "label": "0.65"
+        },
+        {
+          "value": "0.7",
+          "label": "0.7"
+        },
+        {
+          "value": "0.75",
+          "label": "0.75"
+        },
+        {
+          "value": "0.8",
+          "label": "0.8"
+        },
+        {
+          "value": "0.85",
+          "label": "0.85"
+        },
+        {
+          "value": "0.9",
+          "label": "0.9"
+        },
+        {
+          "value": "0.95",
+          "label": "0.95"
         },
         {
           "value": "1.0",
@@ -762,8 +922,8 @@
         "zh-Hans": "向上跑墙"
       },
       "help": {
-        "en": "Global: same speed as the Global row. 1.0 is the game's own speed, 3.0 three times as fast. Running up a wall, a pole or a column.",
-        "zh-Hans": "全局：与“全局”行的速度相同。1.0 为游戏原有速度，3.0 为三倍速度。沿墙壁、杆子或柱子向上奔跑。"
+        "en": "Global: same speed as the Global row. 1.0 is the game's own speed, 0.5 half as fast, 3.0 three times as fast. Running up a wall, a pole or a column.",
+        "zh-Hans": "全局：与“全局”行的速度相同。1.0 为游戏原有速度，0.5 为一半速度，3.0 为三倍速度。沿墙壁、杆子或柱子向上奔跑。"
       },
       "default": "Global",
       "options": [
@@ -773,6 +933,46 @@
             "en": "Global",
             "zh-Hans": "全局"
           }
+        },
+        {
+          "value": "0.5",
+          "label": "0.5"
+        },
+        {
+          "value": "0.55",
+          "label": "0.55"
+        },
+        {
+          "value": "0.6",
+          "label": "0.6"
+        },
+        {
+          "value": "0.65",
+          "label": "0.65"
+        },
+        {
+          "value": "0.7",
+          "label": "0.7"
+        },
+        {
+          "value": "0.75",
+          "label": "0.75"
+        },
+        {
+          "value": "0.8",
+          "label": "0.8"
+        },
+        {
+          "value": "0.85",
+          "label": "0.85"
+        },
+        {
+          "value": "0.9",
+          "label": "0.9"
+        },
+        {
+          "value": "0.95",
+          "label": "0.95"
         },
         {
           "value": "1.0",
@@ -949,8 +1149,8 @@
         "zh-Hans": "横向跑墙"
       },
       "help": {
-        "en": "Global: same speed as the Global row. 1.0 is the game's own speed, 3.0 three times as fast. Running along a wall and the jump off at its end.",
-        "zh-Hans": "全局：与“全局”行的速度相同。1.0 为游戏原有速度，3.0 为三倍速度。沿墙壁横向奔跑，以及在尽头跃离墙面。"
+        "en": "Global: same speed as the Global row. 1.0 is the game's own speed, 0.5 half as fast, 3.0 three times as fast. Running along a wall and the jump off at its end.",
+        "zh-Hans": "全局：与“全局”行的速度相同。1.0 为游戏原有速度，0.5 为一半速度，3.0 为三倍速度。沿墙壁横向奔跑，以及在尽头跃离墙面。"
       },
       "default": "Global",
       "options": [
@@ -960,6 +1160,46 @@
             "en": "Global",
             "zh-Hans": "全局"
           }
+        },
+        {
+          "value": "0.5",
+          "label": "0.5"
+        },
+        {
+          "value": "0.55",
+          "label": "0.55"
+        },
+        {
+          "value": "0.6",
+          "label": "0.6"
+        },
+        {
+          "value": "0.65",
+          "label": "0.65"
+        },
+        {
+          "value": "0.7",
+          "label": "0.7"
+        },
+        {
+          "value": "0.75",
+          "label": "0.75"
+        },
+        {
+          "value": "0.8",
+          "label": "0.8"
+        },
+        {
+          "value": "0.85",
+          "label": "0.85"
+        },
+        {
+          "value": "0.9",
+          "label": "0.9"
+        },
+        {
+          "value": "0.95",
+          "label": "0.95"
         },
         {
           "value": "1.0",
@@ -1136,8 +1376,8 @@
         "zh-Hans": "梯子"
       },
       "help": {
-        "en": "Global: same speed as the Global row. 1.0 is the game's own speed, 3.0 three times as fast. Climbing up and down ladders.",
-        "zh-Hans": "全局：与“全局”行的速度相同。1.0 为游戏原有速度，3.0 为三倍速度。上下攀爬梯子。"
+        "en": "Global: same speed as the Global row. 1.0 is the game's own speed, 0.5 half as fast, 3.0 three times as fast. Climbing up and down ladders.",
+        "zh-Hans": "全局：与“全局”行的速度相同。1.0 为游戏原有速度，0.5 为一半速度，3.0 为三倍速度。上下攀爬梯子。"
       },
       "default": "Global",
       "options": [
@@ -1147,6 +1387,46 @@
             "en": "Global",
             "zh-Hans": "全局"
           }
+        },
+        {
+          "value": "0.5",
+          "label": "0.5"
+        },
+        {
+          "value": "0.55",
+          "label": "0.55"
+        },
+        {
+          "value": "0.6",
+          "label": "0.6"
+        },
+        {
+          "value": "0.65",
+          "label": "0.65"
+        },
+        {
+          "value": "0.7",
+          "label": "0.7"
+        },
+        {
+          "value": "0.75",
+          "label": "0.75"
+        },
+        {
+          "value": "0.8",
+          "label": "0.8"
+        },
+        {
+          "value": "0.85",
+          "label": "0.85"
+        },
+        {
+          "value": "0.9",
+          "label": "0.9"
+        },
+        {
+          "value": "0.95",
+          "label": "0.95"
         },
         {
           "value": "1.0",
@@ -1323,8 +1603,8 @@
         "zh-Hans": "绳索、滑行和攀越"
       },
       "help": {
-        "en": "Global: same speed as the Global row. 1.0 is the game's own speed, 3.0 three times as fast. Ropes, slides, ledges, obstacles and gaps you squeeze through. The swing on a rope keeps the game's own pace.",
-        "zh-Hans": "全局：与“全局”行的速度相同。1.0 为游戏原有速度，3.0 为三倍速度。绳索、滑行、攀越、翻越障碍和钻过缝隙。绳索摆荡保持游戏原有速度。"
+        "en": "Global: same speed as the Global row. 1.0 is the game's own speed, 0.5 half as fast, 3.0 three times as fast. Ropes, slides, ledges, obstacles and gaps you squeeze through. The swing on a rope keeps the game's own pace.",
+        "zh-Hans": "全局：与“全局”行的速度相同。1.0 为游戏原有速度，0.5 为一半速度，3.0 为三倍速度。绳索、滑行、攀越、翻越障碍和钻过缝隙。绳索摆荡保持游戏原有速度。"
       },
       "default": "Global",
       "options": [
@@ -1334,6 +1614,46 @@
             "en": "Global",
             "zh-Hans": "全局"
           }
+        },
+        {
+          "value": "0.5",
+          "label": "0.5"
+        },
+        {
+          "value": "0.55",
+          "label": "0.55"
+        },
+        {
+          "value": "0.6",
+          "label": "0.6"
+        },
+        {
+          "value": "0.65",
+          "label": "0.65"
+        },
+        {
+          "value": "0.7",
+          "label": "0.7"
+        },
+        {
+          "value": "0.75",
+          "label": "0.75"
+        },
+        {
+          "value": "0.8",
+          "label": "0.8"
+        },
+        {
+          "value": "0.85",
+          "label": "0.85"
+        },
+        {
+          "value": "0.9",
+          "label": "0.9"
+        },
+        {
+          "value": "0.95",
+          "label": "0.95"
         },
         {
           "value": "1.0",
@@ -1510,8 +1830,8 @@
         "zh-Hans": "收/拔武器"
       },
       "help": {
-        "en": "Global: same speed as the Global row. 1.0 is the game's own speed, 3.0 three times as fast. Drawing and putting away your weapon.",
-        "zh-Hans": "全局：与“全局”行的速度相同。1.0 为游戏原有速度，3.0 为三倍速度。拔出和收起武器。"
+        "en": "Global: same speed as the Global row. 1.0 is the game's own speed, 0.5 half as fast, 3.0 three times as fast. Drawing and putting away your weapon.",
+        "zh-Hans": "全局：与“全局”行的速度相同。1.0 为游戏原有速度，0.5 为一半速度，3.0 为三倍速度。拔出和收起武器。"
       },
       "default": "Global",
       "options": [
@@ -1521,6 +1841,46 @@
             "en": "Global",
             "zh-Hans": "全局"
           }
+        },
+        {
+          "value": "0.5",
+          "label": "0.5"
+        },
+        {
+          "value": "0.55",
+          "label": "0.55"
+        },
+        {
+          "value": "0.6",
+          "label": "0.6"
+        },
+        {
+          "value": "0.65",
+          "label": "0.65"
+        },
+        {
+          "value": "0.7",
+          "label": "0.7"
+        },
+        {
+          "value": "0.75",
+          "label": "0.75"
+        },
+        {
+          "value": "0.8",
+          "label": "0.8"
+        },
+        {
+          "value": "0.85",
+          "label": "0.85"
+        },
+        {
+          "value": "0.9",
+          "label": "0.9"
+        },
+        {
+          "value": "0.95",
+          "label": "0.95"
         },
         {
           "value": "1.0",
@@ -1697,8 +2057,8 @@
         "zh-Hans": "架势"
       },
       "help": {
-        "en": "Global: same speed as the Global row. 1.0 is the game's own speed, 3.0 three times as fast. Going into and out of the stance.",
-        "zh-Hans": "全局：与“全局”行的速度相同。1.0 为游戏原有速度，3.0 为三倍速度。进入和退出架势。"
+        "en": "Global: same speed as the Global row. 1.0 is the game's own speed, 0.5 half as fast, 3.0 three times as fast. Going into and out of the stance.",
+        "zh-Hans": "全局：与“全局”行的速度相同。1.0 为游戏原有速度，0.5 为一半速度，3.0 为三倍速度。进入和退出架势。"
       },
       "default": "Global",
       "options": [
@@ -1708,6 +2068,46 @@
             "en": "Global",
             "zh-Hans": "全局"
           }
+        },
+        {
+          "value": "0.5",
+          "label": "0.5"
+        },
+        {
+          "value": "0.55",
+          "label": "0.55"
+        },
+        {
+          "value": "0.6",
+          "label": "0.6"
+        },
+        {
+          "value": "0.65",
+          "label": "0.65"
+        },
+        {
+          "value": "0.7",
+          "label": "0.7"
+        },
+        {
+          "value": "0.75",
+          "label": "0.75"
+        },
+        {
+          "value": "0.8",
+          "label": "0.8"
+        },
+        {
+          "value": "0.85",
+          "label": "0.85"
+        },
+        {
+          "value": "0.9",
+          "label": "0.9"
+        },
+        {
+          "value": "0.95",
+          "label": "0.95"
         },
         {
           "value": "1.0",
@@ -1885,7 +2285,7 @@
     {
       "key": "Attacks",
       "type": "number",
-      "min": 1,
+      "min": 0.5,
       "max": 3,
       "step": 0.05,
       "default": 1,
@@ -1894,8 +2294,8 @@
         "zh-Hans": "攻击"
       },
       "help": {
-        "en": "How fast your attacks play. 1 is the game's own speed, 3 three times as fast. Parries, perfect dodges and executions keep the game's own speed.",
-        "zh-Hans": "攻击动作的速度。1 为游戏原有速度，3 为三倍速度。完美格挡、完美闪避和处决保持游戏原有速度。"
+        "en": "How fast your attacks play. 1 is the game's own speed, 0.5 half as fast, 3 three times as fast. Parries, perfect dodges and executions keep the game's own speed.",
+        "zh-Hans": "攻击动作的速度。1 为游戏原有速度，0.5 为一半速度，3 为三倍速度。完美格挡、完美闪避和处决保持游戏原有速度。"
       }
     },
     {

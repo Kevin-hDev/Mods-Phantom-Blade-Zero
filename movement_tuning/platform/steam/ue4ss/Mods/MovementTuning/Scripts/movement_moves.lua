@@ -12,6 +12,9 @@ local GAME_PACE = { "GA_ExecutionAbilityBase_C", "GA_ExecutedAbilityBase_C", "GA
 
 -- The dodges' key, read by movement_dodge.lua for their landing.
 M.DODGES = "dodges"
+-- The jump rows start at the game's own (Kevin, 10 November 2026: they stay as they were), Jump recovery on Global
+-- under 1 included; Jump height's row reads it too (movement_settings.lua).
+M.JUMP_MIN = 1
 
 -- In order: the first move whose family holds the ability, or whose pattern is in its class name, wins. Patterns stand
 -- in for families where the game has none, and keep jumps, weapon draws and stances apart should the families be
@@ -27,9 +30,9 @@ M.MOVES = {
 	-- in_jump: shown under the menu's Jump heading, after Jump height, not with the other moves. max: its own speed goes
 	-- up to 5: the jump step lasts 0.27 s, 0.09 s at 3, 0.05 s at 5. default: its speed in a new settings file instead
 	-- of Global. step: tenths, not the other moves' 0.05: from 1 to 5 that would be 81 choices, for a step a few
-	-- hundredths of a second long.
+	-- hundredths of a second long. min: JUMP_MIN.
 	{ key = "jump", setting = "Jump", families = { "BP_Jump_Base_C" }, patterns = { "GA_Hun_Jump", "Young_Jump" },
-		in_jump = true, max = 5, default = 5.0, step = 0.1 },
+		in_jump = true, min = M.JUMP_MIN, max = 5, default = 5.0, step = 0.1 },
 	{ key = "wall_up", setting = "WallRunUp", patterns = { "UpRunning", "UpRunExecution", "UpRunPole" } },
 	{ key = "wall_side", setting = "WallRunSide", patterns = { "SideRunning" } },
 	{ key = "ladders", setting = "Ladders", patterns = { "ClimLadder" } },

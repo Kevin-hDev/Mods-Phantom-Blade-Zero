@@ -62,11 +62,9 @@ end
 
 -- Whether a montage plays on the character; nil when that cannot be read.
 function M.montage_plays(pawn)
-	local anim = anim_of(pawn)
-	if anim == nil then return nil end
-	local m = nil
-	pcall(function() m = anim:GetCurrentActiveMontage() end)
-	return U.is_valid(m)
+	local mesh = nil
+	pcall(function() mesh = pawn.Mesh end)
+	return U.montage_plays(mesh)
 end
 
 -- The dodge's montage playing and its address, with its name when it is not the one followed; nil when none plays.

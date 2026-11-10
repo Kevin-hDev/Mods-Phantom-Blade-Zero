@@ -4,7 +4,7 @@
 -- timeline) fell in the part jumped over, and the weapon was put away and drawn again (verified in game). So a push
 -- stops just before the next action's start or end, and the game's own time goes over it. Also stops: the actions of
 -- the scene's other actors (RoleLayers, an execution's victim), and the timeline's end, where a looping timeline starts
--- over with its first actions.
+-- over with its first actions. A slower move pulls the time back instead, never before an action just gone over.
 
 local U = require("movement_unreal")
 
@@ -82,6 +82,29 @@ function M.limit(times, now, wanted)
 		end
 	end
 	return wanted
+end
+
+-- The time to pull back to, from now toward wanted (a slower move), never before an action time the game's step from
+-- last to now just went over: pulled back before it, the game's next step would go over it again and play it twice.
+function M.floor(times, last, now, wanted)
+	local passed = nil
+	for _, t in ipairs(times) do
+		if t > now then break end
+		if t > last then passed = t end
+	end
+	if passed == nil then return wanted end
+	return math.max(wanted, math.min(now, passed + NEAR))
+end
+
+-- Where to move a timeline's time for rate times the game's pace, after the game's step of step s took it from last to
+-- now; nil when it stays where the game put it.
+function M.target(times, last, now, step, rate)
+	if rate > 1 then
+		local target = M.limit(times, now, now + step * (rate - 1))
+		return target > now and target or nil
+	end
+	local target = M.floor(times, last, now, now - step * (1 - rate))
+	return target < now and target or nil
 end
 
 -- True once, the first time a timeline's actions cannot be read: said in the log at once, not 10 minutes later.
