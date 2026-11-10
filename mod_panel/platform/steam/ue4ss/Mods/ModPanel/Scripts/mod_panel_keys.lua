@@ -17,7 +17,7 @@ local MAX_PENDING = 8             -- presses kept between two frames, for each c
 -- The commands a press counts for; the controller's are the same (mod_panel_pad_commands.lua).
 -- top and bottom come only from the controller (L2, R2, D99): no key is bound to them.
 M.COUNTS = { "toggle", "escape", "up", "down", "left", "right", "enter", "prev", "next", "restore", "descriptions",
-	"top", "bottom" }
+	"top", "bottom", "favorite" }
 local COUNTS = M.COUNTS
 
 -- current: the panel key (Mods Menu's spelling), nil for None. bound[name]: whether that key's bind was made; tried

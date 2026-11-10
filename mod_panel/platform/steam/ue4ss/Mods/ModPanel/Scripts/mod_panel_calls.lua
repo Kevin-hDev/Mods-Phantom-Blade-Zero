@@ -160,7 +160,7 @@ M.MOUSE = { UMG .. "WidgetLayoutLibrary", "GetMousePositionOnPlatform", {} }
 local AHEAD = { M.GAMEPAD_NAME, M.INPUT_TYPE }
 local checked = {}                -- by "class:function": true when as here, else the kinds found for the log
 local next_check = 1              -- the place in REQUIRED of the next function to check
-local slices = { longest = 0 }
+local slices = {}
 
 -- The name is made once and kept in f: M.ok runs at each frame, and a name made each time was garbage (audit of 0.4.3).
 local function check(f)

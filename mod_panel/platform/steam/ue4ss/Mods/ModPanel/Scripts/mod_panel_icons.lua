@@ -5,13 +5,14 @@
 -- until the next opening, and said once in the game: the button's name shows in its place.
 
 local U = require("mod_panel_unreal")
+local L = require("mod_panel_layout")
 local Names = require("mod_panel_pad_names")
 local Device = require("mod_panel_device")
 
 local M = {}
 
 -- gamepad: the controller's name read at the last opening, nil when not read. brand: whose icons now. said: the paths
--- not in memory already said in the game, at most one per path of mod_panel_pad_names.lua.
+-- not in memory already said in the game, at most one per path of mod_panel_pad_names.lua and the favourites' one.
 local S = { gamepad = nil, brand = Names.XBOX, said = {}, report = nil }
 local found = U.finder()
 
@@ -57,6 +58,17 @@ function M.texture(name)
 		if S.report then S.report("panel: icon not in memory, the button's name in its place: %s", path) end
 	end
 	return nil
+end
+
+-- The favourites' diamond (D178), looked for now, or nil when the game does not hold it: it was seen leaving memory
+-- for a while in play (discovery 28). The list then shows no diamond, the favourites still first.
+function M.favorite()
+	local t = found.find(L.FAVORITE_ICON)
+	if t == nil and not S.said[L.FAVORITE_ICON] then
+		S.said[L.FAVORITE_ICON] = true
+		if S.report then S.report("panel: the favourites' icon not in memory, the list shows none: %s", L.FAVORITE_ICON) end
+	end
+	return t
 end
 
 return M

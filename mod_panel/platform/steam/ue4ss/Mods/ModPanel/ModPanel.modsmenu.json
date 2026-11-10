@@ -33,7 +33,7 @@
     "zh-Hans": "在游戏中统一调整所有 UE4SS 模组设置的面板，读取的文件与模组菜单相同。按面板按键（默认 F1）或控制器的创建键打开。",
     "zh-Hant": "在遊戲中統一調整所有 UE4SS 模組設定的面板，讀取的檔案與模組選單相同。按下面板按鍵（預設為 F1）或控制器的建立按鈕即可開啟。"
   },
-  "version": "1.0.1",
+  "version": "1.0.2",
   "settings": [
     {
       "key": "Enabled",
@@ -1170,6 +1170,247 @@
         {
           "value": "zh-Hant",
           "label": "繁體中文"
+        }
+      ]
+    },
+    {
+      "key": "PanelColor",
+      "type": "choice",
+      "label": {
+        "en": "Background color",
+        "de": "Hintergrundfarbe",
+        "es-419": "Color de fondo",
+        "es-ES": "Color de fondo",
+        "fr": "Couleur du fond",
+        "it": "Colore dello sfondo",
+        "ja": "背景の色",
+        "ko": "배경 색상",
+        "pt-BR": "Cor do fundo",
+        "pt-PT": "Cor do fundo",
+        "ru": "Цвет фона",
+        "th": "สีพื้นหลัง",
+        "vi": "Màu Nền",
+        "zh-Hans": "背景颜色",
+        "zh-Hant": "背景顏色"
+      },
+      "help": {
+        "en": "The color of the panel's background. How much of the game it hides is set by \"Background\", at the top of the list.",
+        "de": "Die Farbe des Panel-Hintergrunds. Wie viel er vom Spiel verdeckt, stellst du oben in der Liste unter „Panel-Hintergrund“ ein.",
+        "es-419": "El color del fondo del panel. Cuánto del juego oculta se ajusta en “Fondo del panel”, arriba en la lista.",
+        "es-ES": "El color del fondo del panel. Cuánto oculta del juego se ajusta en «Fondo del panel», arriba de la lista.",
+        "fr": "La couleur du fond du panneau. Ce qu'il masque du jeu se règle avec « Fond du panneau », en haut de la liste.",
+        "it": "Il colore dello sfondo del pannello. Quanto nasconde del gioco si regola con «Sfondo del pannello», in cima all'elenco.",
+        "ja": "パネルの背景の色です。ゲーム画面をどれだけ隠すかは、リスト上部の「パネルの背景」で設定します。",
+        "ko": "패널 배경의 색상입니다. 게임 화면을 얼마나 가릴지는 목록 위쪽의 '패널 배경'에서 설정합니다.",
+        "pt-BR": "A cor do fundo do painel. Quanto ele esconde do jogo se ajusta em “Fundo do painel”, no topo da lista.",
+        "pt-PT": "A cor do fundo do painel. Quanto esconde do jogo ajusta-se em «Fundo do painel», no topo da lista.",
+        "ru": "Цвет фона панели. Насколько он закрывает игру, задаётся параметром «Фон панели» вверху списка.",
+        "th": "สีของพื้นหลังแผง ส่วนการบังหน้าจอเกมมากน้อยเพียงใด ตั้งได้ที่ “พื้นหลังแผง” ด้านบนของรายการ",
+        "vi": "Màu nền của bảng. Mức che khuất trò chơi được chỉnh ở “Nền Bảng” phía trên danh sách.",
+        "zh-Hans": "面板背景的颜色。遮挡游戏画面的程度在列表顶部的“面板背景”中设置。",
+        "zh-Hant": "面板背景的顏色。遮住遊戲畫面的程度在清單頂部的「面板背景」中設定。"
+      },
+      "default": "DarkGrey",
+      "options": [
+        {
+          "value": "DarkGrey",
+          "label": {
+            "en": "Dark grey",
+            "de": "Dunkelgrau",
+            "es-419": "Gris oscuro",
+            "es-ES": "Gris oscuro",
+            "fr": "Gris foncé",
+            "it": "Grigio scuro",
+            "ja": "ダークグレー",
+            "ko": "짙은 회색",
+            "pt-BR": "Cinza-escuro",
+            "pt-PT": "Cinzento-escuro",
+            "ru": "Тёмно-серый",
+            "th": "เทาเข้ม",
+            "vi": "Xám Đậm",
+            "zh-Hans": "深灰",
+            "zh-Hant": "深灰"
+          }
+        },
+        {
+          "value": "Black",
+          "label": {
+            "en": "Black",
+            "de": "Schwarz",
+            "es-419": "Negro",
+            "es-ES": "Negro",
+            "fr": "Noir",
+            "it": "Nero",
+            "ja": "ブラック",
+            "ko": "검정",
+            "pt-BR": "Preto",
+            "pt-PT": "Preto",
+            "ru": "Чёрный",
+            "th": "ดำ",
+            "vi": "Đen",
+            "zh-Hans": "黑色",
+            "zh-Hant": "黑色"
+          }
+        },
+        {
+          "value": "Navy",
+          "label": {
+            "en": "Navy",
+            "de": "Marineblau",
+            "es-419": "Azul marino",
+            "es-ES": "Azul marino",
+            "fr": "Bleu marine",
+            "it": "Blu navy",
+            "ja": "ネイビー",
+            "ko": "남색",
+            "pt-BR": "Azul-marinho",
+            "pt-PT": "Azul-marinho",
+            "ru": "Тёмно-синий",
+            "th": "กรมท่า",
+            "vi": "Xanh Hải Quân",
+            "zh-Hans": "藏青",
+            "zh-Hant": "藏青"
+          }
+        },
+        {
+          "value": "Crimson",
+          "label": {
+            "en": "Crimson",
+            "de": "Karminrot",
+            "es-419": "Carmesí",
+            "es-ES": "Carmesí",
+            "fr": "Cramoisi",
+            "it": "Cremisi",
+            "ja": "クリムゾン",
+            "ko": "진홍",
+            "pt-BR": "Carmesim",
+            "pt-PT": "Carmesim",
+            "ru": "Багровый",
+            "th": "แดงเข้ม",
+            "vi": "Đỏ Thẫm",
+            "zh-Hans": "深红",
+            "zh-Hant": "深紅"
+          }
+        },
+        {
+          "value": "Forest",
+          "label": {
+            "en": "Forest",
+            "de": "Waldgrün",
+            "es-419": "Verde bosque",
+            "es-ES": "Verde bosque",
+            "fr": "Vert forêt",
+            "it": "Verde foresta",
+            "ja": "フォレストグリーン",
+            "ko": "포레스트 그린",
+            "pt-BR": "Verde-floresta",
+            "pt-PT": "Verde-floresta",
+            "ru": "Тёмно-зелёный",
+            "th": "เขียวป่า",
+            "vi": "Xanh Rừng",
+            "zh-Hans": "森林绿",
+            "zh-Hant": "森林綠"
+          }
+        },
+        {
+          "value": "Plum",
+          "label": {
+            "en": "Plum",
+            "de": "Pflaume",
+            "es-419": "Ciruela",
+            "es-ES": "Ciruela",
+            "fr": "Prune",
+            "it": "Prugna",
+            "ja": "プラム",
+            "ko": "자두색",
+            "pt-BR": "Ameixa",
+            "pt-PT": "Ameixa",
+            "ru": "Сливовый",
+            "th": "ม่วงพลัม",
+            "vi": "Mận",
+            "zh-Hans": "梅紫",
+            "zh-Hant": "梅紫"
+          }
+        },
+        {
+          "value": "Slate",
+          "label": {
+            "en": "Slate",
+            "de": "Schiefer",
+            "es-419": "Pizarra",
+            "es-ES": "Pizarra",
+            "fr": "Ardoise",
+            "it": "Ardesia",
+            "ja": "スレート",
+            "ko": "슬레이트",
+            "pt-BR": "Ardósia",
+            "pt-PT": "Ardósia",
+            "ru": "Грифельный",
+            "th": "เทาหินชนวน",
+            "vi": "Xám Đá Phiến",
+            "zh-Hans": "石板灰",
+            "zh-Hant": "石板灰"
+          }
+        },
+        {
+          "value": "Sepia",
+          "label": {
+            "en": "Sepia",
+            "de": "Sepia",
+            "es-419": "Sepia",
+            "es-ES": "Sepia",
+            "fr": "Sépia",
+            "it": "Seppia",
+            "ja": "セピア",
+            "ko": "세피아",
+            "pt-BR": "Sépia",
+            "pt-PT": "Sépia",
+            "ru": "Сепия",
+            "th": "ซีเปีย",
+            "vi": "Nâu Sepia",
+            "zh-Hans": "棕褐",
+            "zh-Hant": "棕褐"
+          }
+        },
+        {
+          "value": "Beige",
+          "label": {
+            "en": "Beige",
+            "de": "Beige",
+            "es-419": "Beige",
+            "es-ES": "Beige",
+            "fr": "Beige",
+            "it": "Beige",
+            "ja": "ベージュ",
+            "ko": "베이지",
+            "pt-BR": "Bege",
+            "pt-PT": "Bege",
+            "ru": "Бежевый",
+            "th": "สีเบจ",
+            "vi": "Màu Be",
+            "zh-Hans": "米色",
+            "zh-Hant": "米色"
+          }
+        },
+        {
+          "value": "DarkGold",
+          "label": {
+            "en": "Dark gold",
+            "de": "Dunkelgold",
+            "es-419": "Oro oscuro",
+            "es-ES": "Oro oscuro",
+            "fr": "Or sombre",
+            "it": "Oro scuro",
+            "ja": "ダークゴールド",
+            "ko": "다크 골드",
+            "pt-BR": "Dourado-escuro",
+            "pt-PT": "Dourado-escuro",
+            "ru": "Тёмное золото",
+            "th": "ทองเข้ม",
+            "vi": "Vàng Sẫm",
+            "zh-Hans": "暗金",
+            "zh-Hant": "暗金"
+          }
         }
       ]
     },

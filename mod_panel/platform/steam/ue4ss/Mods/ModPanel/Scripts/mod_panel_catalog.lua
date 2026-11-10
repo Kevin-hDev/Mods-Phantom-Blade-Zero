@@ -35,7 +35,7 @@ function M.new(d)
 	local entries = {}            -- by name: the mod as last read, nil when not shown
 	local sorted, counted = {}, false
 	local next_name = nil         -- in a refresh, the place in d.names of the next mod to read
-	local slices = { longest = 0 }
+	local slices = {}
 	local said, said_count = {}, 0  -- the lines said, MAX_SAID at most kept (audit of 0.4.3); the log bounds the rest
 	local js = {}                 -- by name: a JavaScript mod of the list last read (mod_panel_js_mods.lua)
 	local names = d.names         -- the UE4SS mods, then the JavaScript mods

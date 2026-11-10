@@ -1,6 +1,8 @@
 -- What the presses and the pointer do on the open panel: the keys' and the controller's moves, then the pointer's, then
 -- the commands on the chosen row or head's item (mod_panel_head.lua). Taken out of mod_panel_panel.lua as it was in
--- 0.2.0; the controller's commands come as the keys'. X, Square, Hide and Show hide or show the descriptions (D91).
+-- 0.2.0; the controller's commands come as the keys'. X, Square, Hide and Show hide or show the descriptions (D91). F,
+-- R3 and a click on a mod's diamond make it a favourite or undo it, and so do Right and Left on the chosen mod in
+-- Classic's list (D178).
 -- While a key or a button is awaited (mod_panel_capture.lua), the presses go to the wait, and only a click on another
 -- mod, which ends it, acts (D83).
 
@@ -10,11 +12,12 @@ local FrameHead = require("mod_panel_frame_head")
 local M = {}
 
 -- The keyboard's commands that move or change in the panel: their keys are no keys to choose.
-local MOVING = { "up", "down", "left", "right", "enter", "prev", "next", "restore", "descriptions" }
+local MOVING = { "up", "down", "left", "right", "enter", "prev", "next", "restore", "descriptions", "favorite" }
 
 -- d: nav (mod_panel_nav.lua), changes (mod_panel_changes.lua), capture (mod_panel_capture.lua), controls
 -- (mod_panel_controls.lua), edits (mod_panel_edits.lua), catalog, head (mod_panel_head.lua), state
--- (mod_panel_state.lua).
+-- (mod_panel_state.lua), listing (mod_panel_listing.lua), favorites (mod_panel_favorites.lua), classic() (whether the
+-- navigation is Classic now).
 function M.new(d)
 	local nav, changes, capture, controls, head = d.nav, d.changes, d.capture, d.controls, d.head
 	-- over, over_head: the row and the frame's head item under the pointer at the last frame. stale: the mod changed
@@ -30,6 +33,16 @@ function M.new(d)
 
 	-- The place among the head's items shown of the frame's head item j, or nil.
 	local function item(j) return j and head.place(FrameHead.ITEMS[j]) end
+
+	-- The mod called name made a favourite (yes) or no longer one, yes nil for the other way; the list sorted again
+	-- keeps the chosen mod in view.
+	local function favorite(name, yes)
+		if yes == nil then yes = not d.favorites.is(name) end
+		if d.favorites.set_to(name, yes) then nav.follow() end
+	end
+
+	-- Classic, the chosen mod's entry chosen in the list: Right and Left make it a favourite or undo it.
+	local function on_entry() return d.classic() and nav.list and nav.head == nil end
 
 	-- The moves of k, the presses; then the pointer's, a row or a head's item chosen only when the pointer comes onto
 	-- it, so that a still pointer never takes back a move of the keys (D50). Only a move of the mouse brings it onto
@@ -87,6 +100,7 @@ function M.new(d)
 		head.release()
 		local f = nav.focus()
 		if side ~= nil and entry ~= nil and f ~= nil then return changes.hold(entry, rows[f], f, side, now) end
+		if side ~= nil and on_entry() then favorite(nav.mod, side > 0) end
 		changes.hold(nil, nil, nil, nil, now)
 	end
 
@@ -105,8 +119,10 @@ function M.new(d)
 			if k.enter > 0 then
 				enter(entry, row, k.enter, now)
 			end
-		elseif k.enter > 0 then
-			nav.enter()
+		else
+			if k.left > 0 and on_entry() then favorite(nav.mod, false) end
+			if k.right > 0 and on_entry() then favorite(nav.mod, true) end
+			if k.enter > 0 then nav.enter() end
 		end
 	end
 
@@ -121,6 +137,9 @@ function M.new(d)
 		local row = f and rows[f] or nil
 		local flips = (k and k.descriptions or 0) + ((R.hide or R.show) and 1 or 0)
 		if flips % 2 == 1 then d.state.set("descriptions", not d.state.get("descriptions")) end
+		if (k and k.favorite or 0) % 2 == 1 then favorite(nav.mod) end
+		local clicked = R.fav and d.listing.list(nav.mod)[R.fav]
+		if clicked then favorite(clicked.name) end
 		if k ~= nil then keyed(k, entry, row, now) end
 		local i = item(R.head)
 		if R.head_click and i ~= nil then filtered(head.enter(i, 1, now), now) end

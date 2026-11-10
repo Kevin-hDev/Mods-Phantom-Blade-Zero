@@ -178,6 +178,9 @@ function M.new(d)
 		return true
 	end
 
+	-- The list's order changed (a favourite, D178): the chosen mod's entry brought into view where it now is.
+	function N.follow() N.list_scroll = N.mod and place(d.listing.list(N.mod), N.mod) end
+
 	-- The place of the row the commands act on: the chosen row, but none while a head's item or the list is chosen.
 	function N.focus()
 		if N.head ~= nil or in_list() then return nil end

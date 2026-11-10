@@ -20,6 +20,7 @@ return {
 		descriptions = "说明",
 		empty = "勾选“模组已开启”或“模组已关闭”以列出模组。",
 		escape = "Esc",
+		favorite = "收藏",
 		filter_off = "模组已关闭",
 		filter_off_help = "勾选：列表显示已关闭的模组。",
 		filter_on = "模组已开启",

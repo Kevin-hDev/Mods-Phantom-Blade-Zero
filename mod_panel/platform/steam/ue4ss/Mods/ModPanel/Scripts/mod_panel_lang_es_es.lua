@@ -20,6 +20,7 @@ return {
 		descriptions = "Descripciones",
 		empty = "Marca Mod activado o Mod desactivado para listar los mods.",
 		escape = "Esc",
+		favorite = "Favorito",
 		filter_off = "Mod desactivado",
 		filter_off_help = "Marcada: la lista muestra los mods desactivados.",
 		filter_on = "Mod activado",

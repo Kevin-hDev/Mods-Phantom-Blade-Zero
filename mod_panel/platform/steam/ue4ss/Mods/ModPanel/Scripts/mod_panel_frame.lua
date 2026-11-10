@@ -135,7 +135,7 @@ function M.start(gi, max, report)
 	local suffix = tostring(os.time()) .. "_" .. begun
 	-- columns: whether the places are those of the three columns (D90), as the frame is built.
 	local F = { max = max, bands = {}, slots = {}, shown = {}, next = 1, done = false, visible = false,
-		slices = { longest = 0 }, columns = true }
+		slices = {}, columns = true }
 	F.name = "ModPanel_Panel_" .. suffix
 	local ok, err = pcall(function()
 		local function named(class, outer, name)

@@ -16,9 +16,11 @@ M.NONE = "None"
 -- Mod Panel does not read: one press would open both, and Dynamic FOV refuses it for its own panel key.
 M.RESERVED = { F9 = true }
 -- The keys that move in the open panel, by UE4SS's name, and the count each one adds to (mod_panel_keys.lua). None of
--- them is a key to choose: one press would do two things. X hides or shows the descriptions (D91).
+-- them is a key to choose: one press would do two things. X hides or shows the descriptions (D91), F makes the chosen
+-- mod a favourite or undoes it (D178): from 1.0.2 on, neither a key row nor the panel key can take F in the panel, and
+-- a panel key F written before gives its default.
 M.MOVES = { UP_ARROW = "up", DOWN_ARROW = "down", LEFT_ARROW = "left", RIGHT_ARROW = "right", RETURN = "enter",
-	Z = "prev", C = "next", R = "restore", X = "descriptions" }
+	Z = "prev", C = "next", R = "restore", X = "descriptions", F = "favorite" }
 M.LIST = { "None", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F12", "PageUp", "PageDown", "Home", "End",
 	"Insert", "Delete", "NumPadZero", "NumPadOne", "NumPadTwo", "NumPadFour", "NumPadFive", "NumPadSix", "NumPadSeven",
 	"NumPadEight", "NumPadNine", "Multiply", "Add", "Subtract", "Decimal", "Divide", "G", "H", "J", "L", "N", "U", "Y",

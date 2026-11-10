@@ -60,6 +60,11 @@ M.HINT_JOIN = "\194\160"
 M.HINTS_PADDING = { Left = 0, Top = 8, Right = 0, Bottom = 0 }
 -- A controller button's icon: in the help, about the small font's height; as a row's value, a little above the text's.
 M.HINT_ICON_SIZE, M.ICON_SIZE = 22, 28
+-- The favourites' icon (D178), left of a mod's title in the list: the game's tracking diamond of the main quest, the
+-- only one of its two in memory in play (discovery 28). Its title then leaves 325 of the 359 the entry had.
+M.FAVORITE_ICON = "/Game/PBZContent/UI/InGame/Quest/T_Track_Story.T_Track_Story"
+M.FAVORITE_SIZE = 24
+M.FAVORITE_PADDING = { Left = 0, Top = 0, Right = 10, Bottom = 0 }
 -- The head of the list (D92), its items as high as a mod of the list. Between its arrows, a value of 52 holds "90 %"
 -- (49) and "开启" (48), with the model of D87. "Panel background", measured to fit, was cut in the game at 0.7.0: the
 -- item is named "Background" since 0.7.1. A box CHECK_SIZE wide, pale, its mark CHECK_INSET inside when checked.
@@ -88,10 +93,29 @@ M.SOFT = { R = 1, G = 1, B = 1, A = 0.65 }
 M.CLEAR = { R = 0, G = 0, B = 0, A = 0 }
 M.LIGHT = { R = 0.8, G = 0.8, B = 0.8, A = 0.9 }   -- the selected band when the menu's is not in memory
 M.BAND = { R = 1, G = 1, B = 1, A = 1 }       -- a row's band as the game draws it; CLEAR hides it, under a title
+-- The favourites' icon: gold as the game draws it on a favourite, darkened on the others (mock-up B chosen by Kevin, 10
+-- November 2026: 30 % of its brightness, 0.3 in sRGB, 0.073 in linear).
+M.FAVORITE_ON = M.WHITE
+M.FAVORITE_OFF = { R = 0.073, G = 0.073, B = 0.073, A = 1 }
 -- The chosen band, faint, on the list's entry under the pointer: lit enough to follow the mouse, never mistaken for the
 -- chosen mod, whose band is whole (D55).
 M.HOVER_OPACITY = 0.3
-M.SHADE = { R = 0.01, G = 0.011, B = 0.014 }   -- the backdrop
+-- The backdrop's colours, by the values of the Background color row (D177): all dark, so that white text stays
+-- readable over them. DarkGrey is the backdrop of every version before 1.0.2.
+M.BACKDROPS = {
+	DarkGrey = { R = 0.01, G = 0.011, B = 0.014 },
+	Black = { R = 0, G = 0, B = 0 },
+	Navy = { R = 0.005, G = 0.009, B = 0.034 },
+	Crimson = { R = 0.045, G = 0.004, B = 0.005 },
+	Forest = { R = 0.004, G = 0.021, B = 0.008 },
+	Plum = { R = 0.023, G = 0.005, B = 0.032 },
+	Slate = { R = 0.016, G = 0.023, B = 0.037 },
+	Sepia = { R = 0.032, G = 0.016, B = 0.007 },
+	-- Lighter than the others, still about 7 to 1 against white text (Dark gold about 9 to 1).
+	Beige = { R = 0.117, G = 0.091, B = 0.058 },
+	DarkGold = { R = 0.107, G = 0.065, B = 0.007 },
+}
+M.BACKDROP = "DarkGrey"   -- when Mod Panel's descriptor has no Background color row to give its default
 -- The backdrop's fade: look C of Dynamic FOV, 55 % dark over 6 % of the width, in 96 bands (8 showed as columns).
 M.FADE_ALPHA, M.FADE_WIDTH, M.FADE_STEPS = 0.55, 0.06, 96
 

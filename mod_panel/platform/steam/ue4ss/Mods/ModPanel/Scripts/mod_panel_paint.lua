@@ -57,10 +57,9 @@ function M.visible(sh, w, v) M.apply(sh, w, "visibility", v, set_visibility) end
 function M.colour(sh, w, name) M.apply(sh, w, "colour", name, set_colour) end
 function M.on(yes, shows) return yes and shows or L.COLLAPSED end
 
--- Whether image w shows the icon of the button name for the icons in use. Its texture is looked for and set only when
--- the icon w shows changes, in this very frame (D75), and the image holds it from then on.
-function M.icon(sh, w, name)
-	local path = Icons.path(name)
+-- Whether image w shows the texture at path, find(arg) giving it. It is looked for and set only when the texture w
+-- shows changes, in this very frame (D75), and the image holds it from then on.
+local function holds(sh, w, path, find, arg)
 	if path == nil then return false end
 	local s = sh[w]
 	if s == nil then
@@ -68,10 +67,16 @@ function M.icon(sh, w, name)
 		sh[w] = s
 	end
 	if s.icon == path then return true end
-	local t = Icons.texture(name)
+	local t = find(arg)
 	if t == nil or not M.tried(pcall(set_texture, w, t)) then return false end
 	s.icon = path
 	return true
 end
+
+-- Whether image w shows the icon of the button name for the icons in use.
+function M.icon(sh, w, name) return holds(sh, w, Icons.path(name), Icons.texture, name) end
+
+-- Whether image w shows the favourites' diamond (D178).
+function M.favorite(sh, w) return holds(sh, w, L.FAVORITE_ICON, Icons.favorite) end
 
 return M

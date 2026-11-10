@@ -16,6 +16,7 @@ return {
 		descriptions = "說明",
 		empty = "勾選「模組已開啟」或「模組已關閉」以列出模組。",
 		escape = "Esc",
+		favorite = "收藏",
 		filter_off = "模組已關閉",
 		filter_off_help = "勾選：清單顯示已關閉的模組。",
 		filter_on = "模組已開啟",

@@ -29,12 +29,16 @@ function M.texts(list_title, list_sub, title, sub, descriptions, close)
 end
 
 -- Entry i of the list: its title, "Off" in the player's language for a mod turned off (nil else), whether it is the
--- chosen mod, and whether the pointer is on it.
-function M.entry(i, title, off, chosen, hovered)
+-- chosen mod, whether the pointer is on it, and whether it is a favourite: its diamond gold, else dark (D178), none
+-- while the game does not hold it.
+function M.entry(i, title, off, chosen, hovered, fav)
 	local F, e = Frame.get(), Pool.entry(i)
 	if F == nil or e == nil then return end
 	local sh = F.shown
 	visible(sh, e.size, L.SELF_HIT_TEST_INVISIBLE)
+	local pictured = P.favorite(sh, e.fav_icon)
+	visible(sh, e.fav, on(pictured, L.VISIBLE))
+	if pictured then apply(sh, e.fav_icon, "colour", fav and "FAVORITE_ON" or "FAVORITE_OFF", P.set_tint) end
 	text(sh, e.title, title)
 	colour(sh, e.title, chosen and "DARK" or off and "GREY" or "WHITE")
 	visible(sh, e.band, on(chosen or hovered, L.HIT_TEST_INVISIBLE))
@@ -95,7 +99,13 @@ function M.hide_from(i, j)
 		return
 	end
 	for n = i, rows do visible(F.shown, Pool.row(n).size, L.COLLAPSED) end
-	for n = j, entries do visible(F.shown, Pool.entry(n).size, L.COLLAPSED) end
+	-- The diamond set on the hidden entries too: done at the hidden panel's first paint, an entry the filter lists
+	-- later is handed nothing while the panel shows.
+	for n = j, entries do
+		local e = Pool.entry(n)
+		visible(F.shown, e.size, L.COLLAPSED)
+		P.favorite(F.shown, e.fav_icon)
+	end
 	h.frame, h.i, h.j, h.rows, h.entries, h.refusals = F, i, j, rows, entries, refusals
 end
 
@@ -167,11 +177,11 @@ function M.restore_on()
 	return s ~= nil and s.visibility == L.VISIBLE
 end
 
--- The backdrop opacity % dark, set again only when it changes or the game refused a band.
-function M.backdrop(opacity)
+-- The backdrop opacity % dark, in color (D177), set again only when one changes or the game refused a band.
+function M.backdrop(opacity, color)
 	local F = Frame.get()
-	if F == nil or F.opacity == opacity then return end
-	if Backdrop.paint(F.bands, opacity, F.max, P.tried) then F.opacity = opacity end
+	if F == nil or (F.opacity == opacity and F.color == color) then return end
+	if Backdrop.paint(F.bands, opacity, color, F.max, P.tried) then F.opacity, F.color = opacity, color end
 end
 
 return M

@@ -41,6 +41,7 @@ local WORDS = {
 	change = "Change",
 	select = "Select",
 	mod = "Mod",
+	favorite = "Favorite",
 	restart = "Applies after a restart.",
 	other_key = "The game may also use this key.",
 	-- Mod Panel's button other than Create (D72): every other button already does something in play.

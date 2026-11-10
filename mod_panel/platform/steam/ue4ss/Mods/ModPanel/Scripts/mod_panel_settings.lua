@@ -23,6 +23,8 @@ M.NAVIGATION, M.HYBRID = "Navigation", "Hybrid"
 M.COMBO_FIRST, M.COMBO_SECOND = "PadComboFirst", "PadComboSecond"
 -- The panel's language: Game, the game's own, or one of the 15 (D153).
 M.LANGUAGE, M.GAME = "Language", "Game"
+-- The backdrop's colour, one of a list of dark ones (D177, mod_panel_layout.lua).
+M.COLOR = "PanelColor"
 -- Rows of Mod Panel that its own page leaves out: Enabled only in Mods Menu, which can turn it back on (D22); the
 -- freeze and the background, at the head of the list (D28).
 M.HIDDEN = { Enabled = true, [M.FREEZE] = true, [M.OPACITY] = true }
@@ -74,9 +76,9 @@ function M.ensure(path, rows, note)
 end
 
 -- The settings in use, from Mod Panel's entry in the catalog (nil when it is not shown), each value checked against
--- its row: { enabled, panel_key, pad_button, icons, opacity, freeze, navigation, classic, combo, language }. The panel
--- key can be any key Mod Panel can name, as a wait writes it (D69, mod_panel_capture.lua). combo: { first, second },
--- two buttons of their lists, neither None and not the same, else nil: no combination.
+-- its row: { enabled, panel_key, pad_button, icons, opacity, color, freeze, navigation, classic, combo, language }.
+-- The panel key can be any key Mod Panel can name, as a wait writes it (D69, mod_panel_capture.lua). combo: { first,
+-- second }, two buttons of their lists, neither None and not the same, else nil: no combination.
 function M.from(entry, rows)
 	local by_key = {}
 	for _, row in ipairs(rows) do
@@ -113,14 +115,15 @@ function M.from(entry, rows)
 		classic = navigation ~= M.HYBRID,
 		combo = combo,
 		language = value(M.LANGUAGE, listed),
+		color = value(M.COLOR, listed),
 	}
 end
 
 -- For the log.
 function M.describe(s)
-	return string.format("%s, panel key %s, background %s %%, button %s, combination %s, icons %s, freeze %s, "
+	return string.format("%s, panel key %s, background %s %% %s, button %s, combination %s, icons %s, freeze %s, "
 		.. "navigation %s, language %s", s.enabled and "on" or "off", tostring(s.panel_key),
-		s.opacity and Json.number_text(s.opacity) or "?", tostring(s.pad_button),
+		s.opacity and Json.number_text(s.opacity) or "?", tostring(s.color), tostring(s.pad_button),
 		s.combo and s.combo[1] .. " + " .. s.combo[2] or "none", tostring(s.icons), s.freeze and "on" or "off",
 		tostring(s.navigation), tostring(s.language))
 end

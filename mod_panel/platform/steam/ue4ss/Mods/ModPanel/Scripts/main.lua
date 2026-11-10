@@ -4,8 +4,10 @@
 -- (mod_panel_state.lua). Everything runs from the player controller's tick, inside UE4SS's lock
 -- (mod_panel_driver.lua); a key's bind only counts its presses (mod_panel_keys.lua). With the panel closed and no key
 -- pressed, a frame asks the game only whether the controller's button was pressed (mod_panel_pad.lua, D67) and, when
--- the player chose a combination, whether its two buttons are held (D136); once a second, it reads Mod Panel's own
--- signal file (mod_panel_watch.lua) and tries again a mod's signal that could not be written (mod_panel_signal.lua).
+-- the player chose a combination, whether its two buttons are held (D136); in the seconds after a load, it also
+-- prepares the panel, hidden, 3 ms a frame at most, until done (mod_panel_prepare.lua, D180); once a second, it reads
+-- Mod Panel's own signal file (mod_panel_watch.lua) and tries again a mod's signal that could not be written
+-- (mod_panel_signal.lua).
 -- The JavaScript mods Mods Menu runs come from the list Mod Panel's script link writes (mod_panel_js_mods.lua, D173).
 
 local U = require("mod_panel_unreal")
@@ -27,7 +29,7 @@ local State = require("mod_panel_state")
 local Langs = require("mod_panel_langs")
 local JsMods = require("mod_panel_js_mods")
 
-local VERSION = "1.0.1"
+local VERSION = "1.0.2"
 local TICK_SECONDS = 0.1
 local EARLY = 0.001               -- a frame this close to the next tick reaches it: no tick lost to the clock's steps
 local TICKS_A_SECOND = math.floor(1 / TICK_SECONDS + 0.5)
@@ -121,7 +123,7 @@ local function frame_work(param)
 		if S.next_tick <= now then S.next_tick = now + TICK_SECONDS end
 	end
 	if S.new_controller and not S.panel.busy() then S.new_controller = false end
-	if presses ~= nil or S.panel.busy() or pad_button() ~= nil or pad_combo() ~= nil then
+	if presses ~= nil or S.panel.busy() or S.panel.wants() or pad_button() ~= nil or pad_combo() ~= nil then
 		local pc = controller(param)
 		if pc ~= nil then
 			if S.new_controller then
@@ -216,4 +218,4 @@ end
 
 log("Mod Panel %s loaded", VERSION)
 -- Last: once the hook or the notification is set, the mod runs on the game thread, and this file must be done by then.
-if start() then Driver.start(frame, function() S.new_controller = true end, log) end
+if start() then Driver.start(frame, function() S.new_controller = true; S.panel.loaded() end, log) end

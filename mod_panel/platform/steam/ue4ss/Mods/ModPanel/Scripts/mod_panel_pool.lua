@@ -87,6 +87,16 @@ local ENTRY = {
 	function(B, e) e.overlay = B.new("Overlay"); e.frame:SetContent(e.overlay) end,
 	function(B, e) e.band = B.band(); hidden(e.band); Make.fill(e.overlay:AddChildToOverlay(e.band)) end,
 	function(B, e) e.h = B.new("HorizontalBox"); Make.fill(e.overlay:AddChildToOverlay(e.h), L.ENTRY_PADDING) end,
+	-- The favourites' diamond (D178), its texture set by the view. Hit by the pointer (IsHovered): a click on the
+	-- entry over it makes the mod a favourite or undoes it, instead of choosing it.
+	function(B, e)
+		e.fav = B.sized(L.FAVORITE_SIZE, L.FAVORITE_SIZE)
+		hidden(e.fav)
+		local slot = e.h:AddChildToHorizontalBox(e.fav)
+		slot:SetVerticalAlignment(L.CENTRE)
+		slot:SetPadding(L.FAVORITE_PADDING)
+	end,
+	function(B, e) e.fav_icon = B.new("Image"); e.fav:SetContent(e.fav_icon) end,
 	function(B, e)
 		e.title = B.text("font_text", L.TEXT_SIZE, L.WHITE, true)
 		local slot = e.h:AddChildToHorizontalBox(e.title)
@@ -102,7 +112,7 @@ local function current()
 	local F = Frame.get()
 	if F == nil then return nil end
 	if P == nil or P.frame ~= F then
-		P = { frame = F, rows = {}, entries = {}, building = nil, slices = { longest = 0 } }
+		P = { frame = F, rows = {}, entries = {}, building = nil, slices = {} }
 	end
 	return P
 end

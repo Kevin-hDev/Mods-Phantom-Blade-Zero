@@ -68,6 +68,7 @@ function M.new(d)
 		Device.start(pc)
 		Hints.start(by_pad and "pad" or "keys")
 		Icons.start(d.report)
+		PadCommands.give_way(d.pad_button(), d.pad_combo())
 		C.waited = false
 		if not Context.on_now() then return end
 		Pad.start(pc)
@@ -113,7 +114,7 @@ function M.new(d)
 			and Combo.open(Pad.held(), pair, now) then
 			return "the controller's combination", nil
 		end
-		local c = PadCommands.take(Pad.held(), pressed, now)
+		local c = PadCommands.take(Pad.held(), pressed, now, button, d.pad_combo())
 		local line = Context.frame(pc)
 		if line then d.report("panel: %s", line) end
 		return nil, c

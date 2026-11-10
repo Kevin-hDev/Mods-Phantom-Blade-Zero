@@ -10,7 +10,7 @@ Movement and camera mods for Phantom Blade Zero, and an in-game settings panel, 
 | [Dynamic FOV](dynamic_fov/) | A field of view that follows your movement, one per situation (walking, sprinting, crouching, combat), with an in-game panel | 1.0.6 |
 | [Movement Tuning](movement_tuning/) | Faster or slower moves and attacks, each on its own or all at once, higher jumps, the stick's curve, automatic or toggle sprint, stops without sliding, the sprint resumed after a move, faster dodge landings, the high-speed sprint's delay, the sprint turned off if you want, and a realism setting: no sideways glide in turns, smooth slowdowns, heavier starts | 1.0.5 |
 | [Slide Anywhere](slide_anywhere/) | Slide anywhere, on flat ground, downhill and uphill, with the game's own slide animation | 1.0.0 |
-| [Mod Panel](mod_panel/) | An in-game panel for the settings of every UE4SS mod, with a controller or with keyboard and mouse, in 15 languages | 1.0.1 |
+| [Mod Panel](mod_panel/) | An in-game panel for the settings of every UE4SS mod, with a controller or with keyboard and mouse, in 15 languages | 1.0.2 |
 | [Vault & Climb Anywhere](vault_climb_anywhere/) | Vault over and climb onto the obstacles the game refuses, up to 5 m high, with the game's own animations (beta) | 1.0.0 |
 
 Each folder holds the mod exactly as it ships on Nexus Mods: its `platform` folder (and, for Mod Panel, its `ProjectPBZ` folder) mirrors the game folder. Mod Panel's folder also holds its README and its guide for mod authors, in [English](mod_panel/MOD-AUTHORS.md) and [Simplified Chinese](mod_panel/MOD-AUTHORS.zh-CN.md).

@@ -8,6 +8,7 @@ An in-game settings panel for every UE4SS mod of Phantom Blade Zero. Open it whi
 - **Made for the controller.** Every command works with a PlayStation or Xbox controller, with the buttons shown as their icons, and also with the keyboard and the mouse.
 - **The game keeps running behind it**, or freezes while the panel is open if you turn `Freeze game` on.
 - **A short list.** By default, only the mods that are on show; check `Mod disabled` to see the others.
+- **Favorites first.** Mark the mods you change most: they move to the top of the list, their diamond lit, even after you restart the game.
 - **Every mod off in one press.** `All mods`, at the top of the list, turns off every mod that has an on/off switch (its `Enabled` setting), Mod Panel excepted, and later turns back on only those, even after you restart the game.
 - **Explanations in their own column**, which you can hide.
 - **Sections that fold**, and settings greyed while another setting makes them useless, when the mod's author asks for it.
@@ -51,11 +52,14 @@ The panel opens only in play: not in a cutscene, a loading screen or one of the 
 | L2 / R2 | | First / last setting of the page |
 | Triangle | R | `Restore defaults`, then `Undo` |
 | Square | X | Hide or show the explanations |
+| R3 | F | Mark or unmark the mod as a favorite |
 | Create | F1 | Close |
 
-With the mouse: point at a setting, click it or its arrows, drag a bar, and scroll with the wheel.
+In the list of mods, Right also marks the selected mod as a favorite, and Left unmarks it.
 
-`Hybrid` navigation, on Mod Panel's page, goes straight to the mod's settings: up and down move through them, L1 and R1 change the mod, and Circle or Escape close.
+With the mouse: point at a setting, click it or its arrows, drag a bar, and scroll with the wheel; click a mod's diamond to mark or unmark it.
+
+`Hybrid` navigation, on Mod Panel's page, goes straight to the mod's settings: up and down move through them, L1 and R1 change the mod, R3 or F marks it as a favorite, and Circle or Escape close.
 
 - **Choosing a key or a button:** press Cross on the setting, then the key or the button you want. Escape cancels.
 - **Actions** ask for two presses: the first one arms the button ("Press again"), the second one sends it.
@@ -67,7 +71,7 @@ With the mouse: point at a setting, click it or its arrows, drag a bar, and scro
 
 Mod Panel saves a mod's settings half a second after your last change, and when you switch mods or close the panel. Most mods take the change at once; a mod that does not listen for it takes it at its next start, and a setting marked "Applies after a restart" needs one.
 
-Mod Panel's own settings, on its page in the panel: `Navigation`, `Panel key`, `Controller button`, `Controller combination`, `Button icons` (`Auto` follows the controller in use, or `PlayStation`, `Xbox`) and `Language`. `All mods`, `Freeze game` and `Background` sit at the top of the list of mods. All these settings are kept in `ModPanel.config.json`; the list's filter, the hidden column, the last mod opened and the mods `All mods` turned off are kept in `ModPanel.state.json`, both in `platform\steam\ue4ss\Mods\ModPanel`.
+Mod Panel's own settings, on its page in the panel: `Navigation`, `Panel key`, `Controller button`, `Controller combination`, `Button icons` (`Auto` follows the controller in use, or `PlayStation`, `Xbox`), `Language` and `Background color` (the panel's background in one of ten colors). `All mods`, `Freeze game` and `Background` sit at the top of the list of mods. All these settings are kept in `ModPanel.config.json`; the list's filter, the hidden column, the last mod opened, the mods `All mods` turned off, your favorites and the sections you folded or opened are kept in `ModPanel.state.json`, both in `platform\steam\ue4ss\Mods\ModPanel`.
 
 Mod Panel's texts are in the game's 15 languages: English, German, Latin American Spanish, Spanish, French, Italian, Japanese, Korean, Brazilian Portuguese, Portuguese, Russian, Thai, Vietnamese, Simplified Chinese and Traditional Chinese. `Language` on Mod Panel's page chooses: `Game` follows the game's language, or pick one. Each mod's own texts show in that language when its author wrote it, else in English.
 

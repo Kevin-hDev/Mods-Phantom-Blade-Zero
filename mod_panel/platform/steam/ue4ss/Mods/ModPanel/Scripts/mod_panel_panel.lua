@@ -6,7 +6,8 @@
 -- given back to the game first, then the files written (mod_panel_closing.lua, D102). An error while the panel is shown
 -- refuses the opening. Play is looked at ten times a second, the screen at each frame; the commands
 -- (mod_panel_commands.lua) and the changes' writing (mod_panel_edits.lua) run in the open frames. A reason not to open
--- is said once until another comes. Taken from Dynamic FOV 1.0.4 (dynamic_fov_panel.lua).
+-- is said once until another comes. Prepared ahead, hidden, after a load (mod_panel_prepare.lua, D180). Taken from
+-- Dynamic FOV 1.0.4 (dynamic_fov_panel.lua).
 
 local U = require("mod_panel_unreal")
 local L = require("mod_panel_layout")
@@ -24,6 +25,7 @@ local Freeze = require("mod_panel_freeze")
 local Claim = require("mod_panel_claim")
 local Closing = require("mod_panel_closing")
 local Language = require("mod_panel_language")
+local Prepare = require("mod_panel_prepare")
 
 local M = {}
 
@@ -40,6 +42,7 @@ function M.new(d)
 		report = d.report, problem = d.problem })
 	local opening = Opening.new(d.catalog, screen.all_rows_of, d.max, function(line) d.report("%s", line) end,
 		function(gi) language.speak(gi, true) end)
+	local prepare = Prepare.new(opening, function() return d.settings().enabled end, d.report, d.problem)
 	local freeze = Freeze.new(d.report, d.problem)
 	local claim = Claim.new(d.own, d.problem)
 	local close = Closing.new({ commands = commands, controls = controls, freeze = freeze, claim = claim, nav = nav,
@@ -65,6 +68,7 @@ function M.new(d)
 		look.mod, look.row, look.head, look.now, look.back = nav.mod, nav.focus(), nav.head, os.clock(), nav.backs()
 		look.hover, look.on_restore, look.lit = R and R.band, R and R.on_restore, R and R.lit
 		look.opacity, look.icons = head.opacity(d.settings().opacity), d.settings().icons
+		look.color = d.settings().color
 		look.descriptions = d.state.get("descriptions")
 		screen.paint(look)
 	end
@@ -99,6 +103,7 @@ function M.new(d)
 		local ok, err = Frame.show(true)
 		if not ok then return refuse("the panel could not be shown (" .. tostring(err) .. ")", true) end
 		P.state, P.refused, P.opened, P.ticks = "open", nil, P.opened + 1, 0
+		prepare.made()
 		claim.hold()
 		commands.start()
 		Pointer.reset(d.problem)
@@ -177,9 +182,11 @@ function M.new(d)
 				if other then return refuse(other, false) end
 				P.state, P.ready, P.taken, P.frames, P.longest = "opening", false, false, 0, 0
 				P.by_pad = not by_key
+				prepare.opening()
 				opening.begin()
+				return
 			end
-			return
+			return prepare.frame(pc)
 		end
 		if not d.settings().enabled then return P.close(pc, "Mod Panel was turned off in Mods Menu") end
 		if P.state == "opening" then
@@ -194,7 +201,8 @@ function M.new(d)
 	-- Ten times a second while the panel opens (once the player was seen in play) or is open; once a second while it
 	-- is open, Mod Panel's input context looked for and its claim written again (D98).
 	function P.tick(pc)
-		if P.state == "closed" or opening.gi == nil then return end
+		if P.state == "closed" then return prepare.tick(pc, os.clock()) end
+		if opening.gi == nil then return end
 		local playing, pawn = Game.in_play(pc, freeze.holds())
 		if not playing then return P.close(pc, pawn) end
 		if U.address(pawn) ~= opening.pawn then return P.close(pc, "the character changed") end
@@ -209,8 +217,11 @@ function M.new(d)
 	end
 
 	function P.busy() return P.state ~= "closed" end
-	-- The status line's slot for this frame's time (mod_panel_status.lua).
-	function P.slot() return P.state end
+	-- Whether the closed panel needs the frames' controller and its ticks to prepare itself (D180).
+	function P.wants() return P.state == "closed" and prepare.wants() end
+	function P.loaded() prepare.loaded() end
+	-- The status line's slot for this frame's time (mod_panel_status.lua); preparing counts as an opening's pieces.
+	function P.slot() return prepare.preparing() and P.state == "closed" and "opening" or P.state end
 	function P.openings() return P.opened end
 
 	return P

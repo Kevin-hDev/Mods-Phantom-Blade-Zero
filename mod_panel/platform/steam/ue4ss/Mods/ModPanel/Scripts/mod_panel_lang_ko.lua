@@ -17,6 +17,7 @@ return {
 		descriptions = "설명",
 		empty = "모드 목록을 보려면 '모드 켜짐' 또는 '모드 꺼짐'에 체크하세요.",
 		escape = "Esc",
+		favorite = "즐겨찾기",
 		filter_off = "모드 꺼짐",
 		filter_off_help = "체크 시 꺼진 모드가 목록에 표시됩니다.",
 		filter_on = "모드 켜짐",

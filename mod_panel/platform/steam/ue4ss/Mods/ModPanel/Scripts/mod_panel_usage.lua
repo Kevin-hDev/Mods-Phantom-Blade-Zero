@@ -10,7 +10,7 @@ local M = {}
 
 -- The keys of the open panel, by their count in the presses (mod_panel_keys.lua), and their name in the log.
 local KEYS = { { "up", "Up" }, { "down", "Down" }, { "left", "Left" }, { "right", "Right" }, { "enter", "Enter" },
-	{ "prev", "Z" }, { "next", "C" }, { "restore", "R" }, { "descriptions", "X" } }
+	{ "prev", "Z" }, { "next", "C" }, { "restore", "R" }, { "descriptions", "X" }, { "favorite", "F" } }
 
 -- keys[count]: the presses heard; pad[name]: the controller's presses, in the order first pressed (order); rows,
 -- entries: the times the pointer came onto one; row, entry: the one it was on at the last frame; moved: the frames the
@@ -39,7 +39,7 @@ function M.frame(k, R)
 	end
 	if R.over ~= nil and R.over ~= U.row then U.rows = U.rows + 1 end
 	if R.entry ~= nil and R.entry ~= U.entry then U.entries = U.entries + 1 end
-	if R.pick ~= nil then U.clicks = U.clicks + 1 end
+	if R.pick ~= nil or R.fav ~= nil then U.clicks = U.clicks + 1 end
 	if R.mouse_moved then U.moved = U.moved + 1 end
 	U.row, U.entry = R.over, R.entry
 end

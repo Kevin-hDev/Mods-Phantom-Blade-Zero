@@ -21,14 +21,15 @@ local Scroll = require("mod_panel_scroll")
 
 local M = {}
 
--- over: the row under the pointer; entry: the entry under it; pick: an entry clicked; arrow: -1 or 1 while the left
+-- over: the row under the pointer; entry: the entry under it; pick: an entry clicked; fav: an entry's diamond clicked
+-- (D178); arrow: -1 or 1 while the left
 -- or right arrow of the row under the pointer is pressed; value: that row's value clicked; head: the frame's head item
 -- under the pointer, head_arrow its arrow pressed (-1, 1), head_click its value or box clicked; close, restore, hide,
 -- show: those buttons clicked; on_close, on_restore: the pointer on them; lit: "hide" or "show" under the pointer;
 -- moved: a row whose bar the player moved, to fraction; mouse_moved: the mouse itself moved; band: the entry to light,
 -- under the pointer while the mouse is in use; pressed: a button, an arrow or a bar under the pointer is held.
 -- on_close, on_restore and lit stay off while the mouse is not in use. A table used again at each read.
-local R = { over = nil, entry = nil, pick = nil, arrow = nil, value = false, head = nil, head_arrow = nil,
+local R = { over = nil, entry = nil, pick = nil, fav = nil, arrow = nil, value = false, head = nil, head_arrow = nil,
 	head_click = false, close = false, on_close = false, restore = false, on_restore = false, hide = false,
 	show = false, lit = nil, moved = nil, fraction = nil, mouse_moved = false, band = nil, pressed = false }
 local held = nil                  -- the button seen pressed at the last read
@@ -158,10 +159,15 @@ local function entry_button(i)
 	return e and e.button
 end
 
+local function entry_favorite(i)
+	local e = Pool.entry(i)
+	return e and e.fav
+end
+
 -- What the mouse did since the last read: rows, the number of rows the chosen mod shows; entries, the number listed;
 -- keyed, a key or a button acted in this frame. The frame must be alive (Frame.alive(), asked first at each frame).
 function M.read(rows, entries, keyed)
-	R.over, R.entry, R.pick, R.arrow, R.value = nil, nil, nil, nil, false
+	R.over, R.entry, R.pick, R.fav, R.arrow, R.value = nil, nil, nil, nil, nil, false
 	R.head, R.head_arrow, R.head_click, R.hide, R.show, R.lit = nil, nil, false, false, false, nil
 	R.close, R.on_close, R.restore, R.on_restore, R.moved, R.fraction = false, false, false, false, nil, nil
 	R.mouse_moved, R.band, R.pressed = false, nil, false
@@ -175,7 +181,10 @@ function M.read(rows, entries, keyed)
 	if R.over ~= nil then
 		on_row(R.over, before)
 	elseif R.entry ~= nil then
-		if clicked(entry_button(R.entry), before) then R.pick = R.entry end
+		-- The diamond is inside the entry's button: a click on it is the button's, let go over the diamond (D178).
+		if clicked(entry_button(R.entry), before) then
+			if hovers(entry_favorite, R.entry) then R.fav = R.entry else R.pick = R.entry end
+		end
 	elseif R.head ~= nil then
 		on_head(F, R.head, before)
 	else

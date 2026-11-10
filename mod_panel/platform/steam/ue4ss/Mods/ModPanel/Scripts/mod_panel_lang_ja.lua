@@ -17,6 +17,7 @@ return {
 		descriptions = "説明",
 		empty = "「MOD有効」または「MOD無効」にチェックを入れると、MODが一覧に表示されます。",
 		escape = "Esc",
+		favorite = "お気に入り",
 		filter_off = "MOD無効",
 		filter_off_help = "チェック時：オフになっているMODを一覧に表示します。",
 		filter_on = "MOD有効",

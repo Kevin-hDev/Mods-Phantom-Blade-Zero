@@ -19,6 +19,7 @@ return {
 		descriptions = "Mô Tả",
 		empty = "Chọn “Mod Đang Bật” hoặc “Mod Đang Tắt” để hiện danh sách mod.",
 		escape = "Esc",
+		favorite = "Yêu Thích",
 		filter_off = "Mod Đang Tắt",
 		filter_off_help = "Đã chọn: danh sách hiện các mod đang tắt.",
 		filter_on = "Mod Đang Bật",

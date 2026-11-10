@@ -67,7 +67,7 @@ A mod is listed when all of these hold:
 
 The bridge folder `PBZModsMenuBridge` and the `shared` folder are never listed. Mod Panel lists 256 mods at most.
 
-**Order:** Mod Panel first, then the mods by their English title, whatever the case of the letters, then by folder name. The order is the same in every language.
+**Order:** the mods the player marked as favorites first, then the others. In each group, Mod Panel first, then the mods by their English title, whatever the case of the letters, then by folder name. The order is the same in every language.
 
 **On and off:** a `toggle` row whose key is `Enabled` is your mod's switch. By default, the list shows only the mods that are on (the box `Mod enabled` is checked, `Mod disabled` is not); a mod without an `Enabled` row counts as on. Give your mod an `Enabled` row, first in the list, so that players can turn it off and shorten the list. `All mods`, at the top of the list, turns off in one press every mod that has this row, and later turns back on only those; a mod without it keeps running, and a mod whose `Enabled` row is greyed is left alone. The change reaches your mod like any other ([section 6](#6-taking-a-change-at-once-the-signal-file)).
 

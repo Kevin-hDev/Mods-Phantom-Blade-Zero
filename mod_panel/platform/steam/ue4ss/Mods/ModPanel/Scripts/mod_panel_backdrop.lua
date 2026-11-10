@@ -39,7 +39,7 @@ end
 function M.band(B, canvas, i, max)
 	local x1, x2, from_strip = M.span(i, max, L.STRIP)
 	local b = B.new("Border")
-	b:SetBrushColor({ R = L.SHADE.R, G = L.SHADE.G, B = L.SHADE.B, A = 0 })
+	b:SetBrushColor(L.CLEAR)
 	local slot = B.place(canvas, b, x1, 0, x2, 1)
 	b:SetVisibility(L.HIT_TEST_INVISIBLE)
 	return { border = b, slot = slot, from_strip = from_strip }
@@ -52,15 +52,20 @@ function M.alpha(from_strip, opacity, max)
 	return alpha * ease(1 - from_strip / fade_width(alpha))
 end
 
-local function set_alpha(band, alpha)
-	band.border:SetBrushColor({ R = L.SHADE.R, G = L.SHADE.G, B = L.SHADE.B, A = alpha })
+local function set_alpha(band, shade, alpha)
+	band.border:SetBrushColor({ R = shade.R, G = shade.G, B = shade.B, A = alpha })
 end
 
--- Darkens the bands for opacity; tried(ok) counts what the game refused. Returns whether every band took it.
-function M.paint(bands, opacity, max, tried)
-	local all = true
+-- The colour of a Background color value (D177); the default's for a value Mod Panel does not know.
+function M.shade(color)
+	return L.BACKDROPS[color] or L.BACKDROPS[L.BACKDROP]
+end
+
+-- Darkens the bands for opacity, in color; tried(ok) counts what the game refused. Returns whether every band took it.
+function M.paint(bands, opacity, color, max, tried)
+	local all, shade = true, M.shade(color)
 	for _, band in ipairs(bands) do
-		if not tried(pcall(set_alpha, band, M.alpha(band.from_strip, opacity, max))) then all = false end
+		if not tried(pcall(set_alpha, band, shade, M.alpha(band.from_strip, opacity, max))) then all = false end
 	end
 	return all
 end

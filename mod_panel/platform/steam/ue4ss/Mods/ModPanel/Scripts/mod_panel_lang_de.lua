@@ -21,6 +21,7 @@ return {
 		descriptions = "Beschreibungen",
 		empty = "Hake Mod aktiviert oder Mod deaktiviert an, um Mods aufzulisten.",
 		escape = "Esc",
+		favorite = "Favorit",
 		filter_off = "Mod deaktiviert",
 		filter_off_help = "Angehakt: Die Liste zeigt die deaktivierten Mods.",
 		filter_on = "Mod aktiviert",

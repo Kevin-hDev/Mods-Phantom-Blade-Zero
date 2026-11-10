@@ -1,7 +1,8 @@
 -- What the open panel shows, worked out at each frame from the catalog, the changes waiting to be written and the
 -- panel's state; the view sets in the game only what changed (mod_panel_view.lua, mod_panel_view_head.lua). The head of
 -- the list (mod_panel_head.lua); the list the filter shows (mod_panel_listing.lua), the mods' titles in the player's
--- language, "Off" on a mod turned off (D34), the chosen mod lit, a phrase when none is listed. The chosen mod's rows,
+-- language, "Off" on a mod turned off (D34), each mod's diamond, gold on a favourite (D178), the chosen mod lit, a
+-- phrase when none is listed. The chosen mod's rows,
 -- each kind as Mods Menu shows it but a button row, whose value is the button's icon (mod_panel_icons.lua), a change
 -- waiting shown over the file's value, and a row awaiting a key or a button saying so (mod_panel_capture.lua); under
 -- its title, "Settings not saved" while a writing fails. A greyed row in grey, without its arrows (D148); a section's
@@ -29,7 +30,8 @@ local M = {}
 
 -- d: { catalog (the mods read), own (Mod Panel's folder name), changes (mod_panel_changes.lua) and edits
 -- (mod_panel_edits.lua): what the commands changed; capture (mod_panel_capture.lua): the wait for a key; listing
--- (mod_panel_listing.lua), head (mod_panel_head.lua), folds (mod_panel_folds.lua) }.
+-- (mod_panel_listing.lua), head (mod_panel_head.lua), folds (mod_panel_folds.lua), favorites
+-- (mod_panel_favorites.lua) }.
 function M.new(d)
 	local catalog, own, changes, edits, capture = d.catalog, d.own, d.changes, d.edits, d.capture
 	local S = { lang = "en", close = "", key_shown = nil, back_shown = false }
@@ -128,8 +130,8 @@ function M.new(d)
 	-- state: { mod, the chosen mod's name; row, the chosen row's place among rows_of (nil: none); head, the chosen
 	-- item's place in the head (nil: a row is chosen); hover, the place of the list's entry under the pointer (nil:
 	-- none); on_restore, the pointer on Restore defaults; lit, "hide" or "show" under the pointer; opacity, the
-	-- backdrop's %; icons, ButtonIcons in use; descriptions, whether they show; now, the clock; back, whether Escape
-	-- and Circle come back to the list }.
+	-- backdrop's %; color, its Background color (D177); icons, ButtonIcons in use; descriptions, whether they show;
+	-- now, the clock; back, whether Escape and Circle come back to the list }.
 	function S.paint(state)
 		Icons.use(state.icons)
 		if (state.back == true) ~= S.back_shown then close_with(S.key_shown, state.back == true) end
@@ -148,7 +150,7 @@ function M.new(d)
 		ViewHead.empty(say("empty"), #list == 0)
 		for i, entry in ipairs(list) do
 			View.entry(i, pick(entry.title) or entry.name, catalog.off(entry) and say("mod_off") or nil, entry == chosen,
-				i == state.hover)
+				i == state.hover, d.favorites.is(entry.name))
 		end
 		for i, r in ipairs(rows) do
 			looks[i] = looks[i] or {}
@@ -168,7 +170,7 @@ function M.new(d)
 		View.restore(label and say(label), state.on_restore)
 		local keys, pad, words = Hints.lines(S.lang, label, state.back)
 		View.hints(keys, pad, words, Hints.device())
-		View.backdrop(state.opacity)
+		View.backdrop(state.opacity, state.color)
 		ViewHead.columns(state.descriptions, say("hide"), say("show"), state.lit)
 	end
 
