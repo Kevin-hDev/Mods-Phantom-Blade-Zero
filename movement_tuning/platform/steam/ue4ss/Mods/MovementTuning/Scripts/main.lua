@@ -2,8 +2,9 @@
 -- ladders, ropes and slides, weapon draw, stance) and attacks, each at its own speed or all at the Global one, higher
 -- jumps, a left stick curve that lets the player walk, the sticks' dead zones, auto or toggle sprint (which give way
 -- to the game's walk), the sprint or only the high-speed sprint turned off or its wait changed, stops without a slide
--- when sped up, and full speed again at the end of a special move or of a dodge, whose landing goes faster. Settings in MovementTuning.config.json in the mod's folder, changed in Mods
--- Menu (Nexus 149) or by hand (movement_watch.lua).
+-- when sped up, full speed again at the end of a special move or of a dodge, whose landing goes faster, and Realism
+-- (movement_realism.lua). Settings in MovementTuning.config.json in the mod's folder, changed in Mods Menu (Nexus 149)
+-- or by hand (movement_watch.lua).
 --
 -- The work happens in the player controller's ReceiveTick.
 
@@ -24,8 +25,9 @@ local Dodge = require("movement_dodge")
 local Press = require("movement_press")
 local SprintOff = require("movement_sprint_off")
 local Brake = require("movement_brake")
+local Realism = require("movement_realism")
 
-local VERSION = "1.0.3"
+local VERSION = "1.0.4"
 local CONTROLLER_TICK = "/Game/PBZContent/Blueprint/Character/Player/BP_PlayerController.BP_PlayerController_C:ReceiveTick"
 local CLIENT_RESTART = "/Script/Engine.PlayerController:ClientRestart"
 local STATUS_EVERY = 600          -- seconds between two status lines
@@ -86,6 +88,7 @@ local function new_pawn(pawn, addr, now)
 	Resume.forget()
 	Press.forget()
 	Brake.forget()
+	Realism.forget()
 	S.pawn, S.restarted, S.asc, S.asc_addr = addr, false, nil, nil
 	Speed.forget()
 	-- A load can unload a class or a timeline and put another at its address: both are read anew, one at a time.
@@ -99,12 +102,12 @@ end
 local function on_tick(hooked)
 	local now = os.clock()
 	local s = Watch.settings()
-	local busy = s.enabled and (s.resume or s.landing or s.high_off or s.high_delay ~= nil
+	local busy = s.enabled and (s.resume or s.landing or s.high_off or s.high_delay ~= nil or s.realistic
 		or not (s.ground_neutral and s.jump_neutral and s.timeline_neutral and s.stick_neutral))
 	-- Off, or every setting at the game's own, with nothing of the mod's left on the character: nothing is read from
 	-- the game, not even the pawn. A new pawn still reads the settings: ClientRestart sets restarted.
 	if not busy and not S.restarted and not Ground.holding() and not Jump.holding(now) and not Stick.holding()
-		and not SprintOff.holding() and not Brake.holding() then
+		and not SprintOff.holding() and not Brake.holding() and not Realism.holding() then
 		Watch.check(now)
 		return
 	end
@@ -126,18 +129,22 @@ local function on_tick(hooked)
 	end
 	local resume_on = s.enabled and s.resume
 	local landing_on = s.enabled and s.landing
-	-- The resume needs the game's speeds, and its long sprint's hold is written by the ground speeds.
-	local ground_on = s.enabled and (not s.ground_neutral or left ~= nil or resume_on)
+	local realistic = s.enabled and s.realistic
+	-- The resume needs the game's speeds, and its long sprint's hold is written by the ground speeds, whose drops
+	-- Realism eases.
+	local ground_on = s.enabled and (not s.ground_neutral or left ~= nil or resume_on or realistic)
 	local jump_on = s.enabled and not s.jump_neutral
 	local cmc, mode = nil, nil
-	if ground_on or jump_on or landing_on or Ground.holding() or Jump.holding(now) then
+	if ground_on or jump_on or landing_on or Ground.holding() or Jump.holding(now) or Realism.holding() then
 		cmc, mode = U.movement(pawn)
 	end
+	local real = Realism.frame(pawn, cmc, mode, realistic and s.realism or nil, realistic and s.hyper, now, log)
 	Sprints.frame(controller, pawn, s, stick_on, travel, now, log)
 	if ground_on then
 		-- The long sprint held by the resume, never while it is turned off (chosen during one, it would come back).
 		local floor = resume_on and Resume.floor(now) or nil
-		Ground.frame(pawn, cmc, mode, now, s.rates, log, push, left, not (s.enabled and s.high_off) and floor or nil)
+		Ground.frame(pawn, cmc, mode, now, s.rates, log, push, left, not (s.enabled and s.high_off) and floor or nil,
+			real)
 		Brake.frame(cmc, mode, Ground.factor_now(), push, now, log)
 	else
 		Ground.release(cmc)

@@ -2,6 +2,13 @@
 
 local M = {}
 
+-- CharacterMovement.MovementMode: none, on the ground, in a jump or a fall; special moves run in other modes (5).
+M.NONE, M.WALKING, M.FALLING = 0, 1, 3
+-- Seconds: a longer frame is a pause or a load, and what was being measured across it is dropped.
+M.PAUSE = 0.25
+-- An acceleration above this, in cm/s a second: the game takes the stick (it gives zero while it ignores the stick).
+M.PUSHED = 1
+
 function M.num(v)
 	v = tonumber(v)
 	if v == nil or v ~= v then return nil end
@@ -13,6 +20,9 @@ local function valid_of(obj) return obj:IsValid() end
 local function address_of(obj) return obj:GetAddress() end
 local function get_of(p) return p:get() end
 local function class_address_of(obj) return obj:GetClass():GetAddress() end
+local function velocity_of(cmc) return cmc.Velocity end
+local function acceleration_of(cmc) return cmc:GetCurrentAcceleration() end
+local function yaw_of(actor) return actor:K2_GetActorRotation().Yaw end
 
 function M.is_valid(obj)
 	if obj == nil then return false end
@@ -77,6 +87,31 @@ function M.flat(v)
 	pcall(function() x, y = tonumber(v.X), tonumber(v.Y) end)
 	if x == nil or y == nil or x ~= x or y ~= y then return nil end
 	return x, y, math.sqrt(x * x + y * y)
+end
+
+-- The movement component's velocity, flat: x, y and its size; nil when unreadable.
+function M.velocity(cmc)
+	local ok, v = pcall(velocity_of, cmc)
+	if not ok then return nil end
+	return M.flat(v)
+end
+
+-- The acceleration the game gives from the stick, flat: x, y and its size; nil when unreadable.
+function M.acceleration(cmc)
+	local ok, a = pcall(acceleration_of, cmc)
+	if not ok then return nil end
+	return M.flat(a)
+end
+
+-- The actor's facing, in degrees from -180 to 180; nil when unreadable.
+function M.yaw(actor)
+	local ok, yaw = pcall(yaw_of, actor)
+	return ok and M.num(yaw) or nil
+end
+
+-- The signed angle from the yaw b to the yaw a, -180 to 180 deg.
+function M.angle(a, b)
+	return (a - b + 540) % 360 - 180
 end
 
 -- Whether the player holds the key (key: an FKey table { KeyName = FName }); false when it cannot be read.

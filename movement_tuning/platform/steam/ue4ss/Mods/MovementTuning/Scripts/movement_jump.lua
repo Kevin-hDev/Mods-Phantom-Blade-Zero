@@ -18,7 +18,7 @@ local Gravity = require("movement_gravity")
 
 local M = {}
 
-local WALKING, FALLING = 1, 3   -- CharacterMovement.MovementMode on the ground and in a jump or a fall
+local WALKING, FALLING = U.WALKING, U.FALLING
 local MAX_REPORTS = 5           -- jumps written to the log for each character
 local MAX_NOTES = 5             -- gravities set or put back by the game, written to the log for each character
 local MAX_TASKS = 512           -- tasks looked at for a jump ability at a takeoff; the player has about 40

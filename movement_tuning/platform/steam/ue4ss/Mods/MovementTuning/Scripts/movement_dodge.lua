@@ -18,7 +18,7 @@ local Landing = require("movement_landing")
 
 local M = {}
 
-local WALKING = 1
+local WALKING = U.WALKING
 local MARK, NOT_A_DODGE = "_Dash_", "Attack"
 local LOOK = 0.1   -- seconds between two reads of the montage while the stick is ignored: a dodge holds it 0.26 to
                    -- 1.07 s (seen in game); standing still with the stick let go, a read every LOOK s costs little

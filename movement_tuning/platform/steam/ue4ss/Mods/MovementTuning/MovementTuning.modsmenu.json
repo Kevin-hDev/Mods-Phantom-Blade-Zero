@@ -4,10 +4,10 @@
     "zh-Hans": "动作速度调整"
   },
   "description": {
-    "en": "Faster walking, running, sprinting, dodges, jumps, wall runs, ladders and attacks: one speed for every move, or a speed for each. Higher jumps. A left stick curve that lets you walk, stick dead zones, auto sprint, or no sprint at all.",
-    "zh-Hans": "更快的行走、奔行、快速奔行、闪避、跳跃、跑墙、爬梯和攻击：所有动作使用同一速度，或为每个动作单独设置速度。跳得更高。左摇杆曲线让行走更容易，可调整摇杆死区，并支持自动快速奔行，也可关闭快速奔行。"
+    "en": "Faster walking, running, sprinting, dodges, jumps, wall runs, ladders and attacks: one speed for every move, or a speed for each. Higher jumps. A left stick curve that lets you walk, stick dead zones, auto sprint, or no sprint at all. Realism: no sideways glide, smooth slowdowns, heavier starts.",
+    "zh-Hans": "更快的行走、奔行、快速奔行、闪避、跳跃、跑墙、爬梯和攻击：所有动作使用同一速度，或为每个动作单独设置速度。跳得更高。左摇杆曲线让行走更容易，可调整摇杆死区，并支持自动快速奔行，也可关闭快速奔行。真实感：转弯不再侧滑，平稳减速，起步更沉稳。"
   },
-  "version": "1.0.3",
+  "version": "1.0.4",
   "settings": [
     {
       "key": "Enabled",
@@ -17,8 +17,8 @@
         "zh-Hans": "启用"
       },
       "help": {
-        "en": "Off: every move and attack plays at the game's own speed, jumps keep the game's height, and the sticks and the sprint work as in the game.",
-        "zh-Hans": "关闭：所有动作和攻击恢复游戏原有速度，跳跃恢复游戏原有高度，摇杆和快速奔行恢复游戏原有设定。"
+        "en": "Off: every move and attack plays at the game's own speed, jumps keep the game's height, and the sticks, the sprint, turns, starts and slowdowns work as in the game.",
+        "zh-Hans": "关闭：所有动作和攻击恢复游戏原有速度，跳跃恢复游戏原有高度，摇杆、快速奔行、转弯、起步和减速均恢复游戏原有设定。"
       },
       "default": true
     },
@@ -2900,6 +2900,49 @@
         "zh-Hans": "地面闪避的落地动作播放得更快，操控更早恢复。关闭：按“闪避”行的速度播放。"
       },
       "default": true
+    },
+    {
+      "type": "heading",
+      "label": {
+        "en": "Realism",
+        "zh-Hans": "真实感"
+      }
+    },
+    {
+      "key": "Realism",
+      "type": "choice",
+      "label": {
+        "en": "Realism level",
+        "zh-Hans": "真实感程度"
+      },
+      "help": {
+        "en": "Realistic: your character runs where it faces, with no sideways glide in turns, and slows from a sprint to a run or from a run to a walk in under half a second instead of at once. Hyper realistic: the same, and while you run freely (no enemy locked, out of fights) your character also takes half as long again to get up to speed, turns its body more slowly and loses up to 15% of its speed in the sharpest turns, back within half a second. Your top speeds, stops and dodges stay as they are. None: as in the game.",
+        "zh-Hans": "写实：角色朝面向的方向奔跑，转弯时不再侧滑；从快速奔行减速到奔行、或从奔行减速到行走时，在半秒内平稳减速，而不是瞬间降速。超写实：在写实的基础上，自由奔跑时（未锁定敌人、不在战斗中），起步加速所需时间延长一半，身体转向更慢，最急的转弯中最多损失15%的速度，并在半秒内恢复。最高速度、停步和闪避保持不变。无：保持游戏原有设定。"
+      },
+      "default": "None",
+      "options": [
+        {
+          "value": "None",
+          "label": {
+            "en": "None",
+            "zh-Hans": "无"
+          }
+        },
+        {
+          "value": "Realistic",
+          "label": {
+            "en": "Realistic",
+            "zh-Hans": "写实"
+          }
+        },
+        {
+          "value": "HyperRealistic",
+          "label": {
+            "en": "Hyper realistic",
+            "zh-Hans": "超写实"
+          }
+        }
+      ]
     }
   ]
 }

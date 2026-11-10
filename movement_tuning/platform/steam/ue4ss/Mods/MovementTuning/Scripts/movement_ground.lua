@@ -7,10 +7,12 @@
 -- The game rewrites MaxWalkSpeed every frame before the movement uses it, and the controller's tick, where the mod
 -- writes, runs in between: the status lines count the game's rewrites, 62,628 for 62,628 writes in one session
 -- (verified in game). Should the game leave the mod's speed in place, the mod builds on the game's last own speed,
--- never on its own.
+-- never on its own. With Realism on, a drop of that speed is eased (movement_downshift.lua), even at the game's speeds,
+-- and HyperRealistic lowers it in sharp turns (movement_hyper.lua): this module is the one writer of MaxWalkSpeed.
 
 local U = require("movement_unreal")
 local Curve = require("movement_curve")
+local Downshift = require("movement_downshift")
 
 local M = {}
 
@@ -18,7 +20,7 @@ local M = {}
 -- speed in the air at MaxWalkSpeed too (verified in game): given the game's speed back at takeoff, a run at 2x
 -- would lose half its speed in every jump.
 -- Special moves (other modes) get the game's speed.
-local WALKING, FALLING = 1, 3
+local WALKING, FALLING = U.WALKING, U.FALLING
 local READ_EVERY = 1           -- seconds between two reads of the gait speeds
 local SAME = 0.5               -- a speed this close to the one written is still the mod's
 local MAX_GAIT_LINES = 12      -- walk and run reached with the stick's curve on, said with the push: enough to check
@@ -32,6 +34,7 @@ local gait_lines = 0
 function M.forget()
 	G = { gaits = nil, next_read = 0, said = false, written = nil, game = nil, writes = 0, rewrites = 0, top = 0,
 		ratio = nil, gait = nil, slowed = 0, lifted = false, factor = nil }
+	Downshift.forget()
 end
 M.forget()
 
@@ -82,6 +85,7 @@ function M.release(cmc)
 		end
 	end
 	G.written, G.game, G.ratio, G.lifted, G.factor = nil, nil, nil, false, nil
+	Downshift.forget()
 end
 
 -- The stick curve's part of the speed (movement_curve.lua): on the ground from the push; in the air the share of the
@@ -124,8 +128,9 @@ end
 
 -- cmc, mode: the movement component and its MovementMode, read by main.lua. push, left: the left stick's push and its
 -- curve (movement_stick.lua, movement_curve.lua), nil when off. floor: a game speed to lift the game's to, the long
--- sprint held after a special move (movement_resume.lua), nil when none.
-function M.frame(pawn, cmc, mode, now, rates, say, push, left, floor)
+-- sprint held after a special move (movement_resume.lua), nil when none. realism: the Realism row's part
+-- (movement_realism.lua), nil when off: the speed's drops eased, and keep, the share of the speed kept in a turn.
+function M.frame(pawn, cmc, mode, now, rates, say, push, left, floor, realism)
 	if now >= G.next_read then
 		G.next_read = now + READ_EVERY
 		G.gaits = read_gaits(pawn)
@@ -159,6 +164,11 @@ function M.frame(pawn, cmc, mode, now, rates, say, push, left, floor)
 	if G.lifted then base = floor end
 	G.factor = M.factor(base, G.gaits, rates)
 	local want = curved(base, mode, push, left, say) * G.factor
+	if realism ~= nil then
+		want = Downshift.soften(want, cmc, mode, now, say) * realism.keep
+	else
+		Downshift.forget()
+	end
 	if math.abs(cur - want) > SAME then
 		if not pcall(function() cmc.MaxWalkSpeed = want end) then return end
 		G.writes = G.writes + 1

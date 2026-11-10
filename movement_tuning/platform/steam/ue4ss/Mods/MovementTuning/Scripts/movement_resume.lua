@@ -22,13 +22,13 @@ local Dodge = require("movement_dodge")
 
 local M = {}
 
-local NONE, WALKING, FALLING = 0, 1, 3   -- CharacterMovement.MovementMode; special moves run in other modes (5)
+local NONE, WALKING, FALLING = U.NONE, U.WALKING, U.FALLING
 local WAIT = 1.5       -- seconds after a move's end the stick is waited for: the longest seen, 0.98 s (side wall run)
 local SNAP = 0.3       -- seconds after the stick is taken again that the speed is raised: the game's sprint comes back
                        -- up to 0.15 s after it, and the long sprint's hold lifts the speed the frame after
 local HOLD = 3         -- seconds the long sprint is held at most: the game brings its own back after 2 s of sprint
 local MARGIN = 25      -- a speed this far under the one allowed is raised
-local MOVING = 1       -- an acceleration above this: the game takes the stick
+local MOVING = U.PUSHED
 local SAME = 0.5
 local MAX_REPORTS = 5  -- resumes written to the log for each character
 local REPORTED = 100   -- a raise this big at least is written: the top of a climb gives five of 25, which took the
@@ -81,7 +81,7 @@ function M.stop()
 end
 
 -- The speed raised to the speed allowed when under it, along the acceleration (ax, ay, acc: read this frame by
--- accel()). Returns the speed before and the one allowed, or nil.
+-- U.acceleration). Returns the speed before and the one allowed, or nil.
 local function raise(cmc, ax, ay, acc)
 	local allowed, v = nil, nil
 	pcall(function() allowed = tonumber(cmc.MaxWalkSpeed) end)
@@ -94,13 +94,6 @@ local function raise(cmc, ax, ay, acc)
 		return nil
 	end
 	return speed, allowed
-end
-
--- The acceleration on the ground, flat: x, y and its size; nil when unreadable.
-local function accel(cmc)
-	local a = nil
-	pcall(function() a = cmc:GetCurrentAcceleration() end)
-	return flat(a)
 end
 
 -- After the move: the long sprint held while the game sprints, as long as its own speed stays under it.
@@ -127,7 +120,7 @@ function M.frame(pawn, cmc, mode, now, game, gaits, rates, resume, landing, say)
 	G.stopped = false
 	-- Read once a frame on the ground, for the dodge's watch, the end of a special move and the raise.
 	local ax, ay, acc = nil, nil, nil
-	if mode == WALKING then ax, ay, acc = accel(cmc) end
+	if mode == WALKING then ax, ay, acc = U.acceleration(cmc) end
 	local takes = acc ~= nil and acc > MOVING
 	local dodged = Dodge.frame(pawn, cmc, mode, takes, now, rates, landing, say)
 	if not resume then

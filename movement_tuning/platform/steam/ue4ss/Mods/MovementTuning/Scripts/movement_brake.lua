@@ -1,29 +1,30 @@
--- Stops without the slide (Kevin, 9 November 2026: sped up, "quand je m'arrete d'un coup, le personnage continue de
--- gliser sur 1 ou 2m"). The engine brakes a character with no input by a deceleration (BrakingDecelerationWalking)
--- plus a friction (GroundFriction x BrakingFrictionFactor) times the speed (Unreal's ApplyVelocityBraking), so a
--- faster character needs more room to stop: its stopping distance grows with the square of the speed for the first
--- part. At k times the game's speed, the deceleration x k^2 and the braking friction x k stop it over the game's own
--- distance, in 1/k of the game's time (v = k u, t = s / k gives the game's equation back). The game's stop animations
--- are fitted to its own distance (single source: another mod's notes). Only braking reads these two values; the
--- friction's own value, which turning also uses, is left alone. Not verified in game: the first stops are measured in
--- UE4SS.log, with or without the change. Like the ground speeds, the game's own values are built on, never the mod's.
+-- Stops without the slide (Kevin, 9 November 2026: sped up, "when I stop at once, the character goes on sliding for 1
+-- or 2 m"). The engine brakes a character with no input by a deceleration (BrakingDecelerationWalking)
+-- plus a friction (BrakingFriction x BrakingFrictionFactor: the game brakes with a friction of its own,
+-- bUseSeparateBrakingFriction on, verified in game) times the speed (Unreal's ApplyVelocityBraking), so a faster
+-- character needs more room to stop: its stopping distance grows with the square of the speed for the first part. At
+-- k times the game's speed, the deceleration x k^2 and the braking friction x k stop it over the game's own distance,
+-- in 1/k of the game's time (v = k u, t = s / k gives the game's equation back). The game's stop animations are fitted
+-- to its own distance (single source: another mod's notes). Only braking reads these two values; GroundFriction, which
+-- only turning reads, is the grip's (movement_grip.lua). The first stops are measured in UE4SS.log. The game's own
+-- values are built on, never the mod's (movement_held.lua).
 
 local U = require("movement_unreal")
+local Held = require("movement_held")
 
 local M = {}
 
-local WALKING = 1
+local WALKING = U.WALKING
 local NEUTRAL = 1.001      -- a factor this close to 1 changes nothing
-local SAME = 1e-3          -- a value this close to the one written is still the mod's
 local FIELDS = { { name = "BrakingDecelerationWalking", power = 2 }, { name = "BrakingFrictionFactor", power = 1 } }
 -- The first stops measured, for the log: a stick let go under LET_GO while faster than STOP_FROM, until the speed is
 -- under STOPPED, the stick pushed again, or MAX_STOP seconds.
 local MAX_STOP_LINES = 6
 local LET_GO, STOP_FROM, STOPPED, MAX_STOP = 0.05, 300, 10, 3
 
--- base, written: each field's game value and the value the mod wrote, by name. broken: a field cannot be read or
--- written, said once. stop: the stop being measured; lines: stops written to the log.
-local B = { base = {}, written = {}, lines = 0 }
+-- held: the values the mod holds. broken: a field cannot be read or written, said once. stop: the stop being
+-- measured; lines: stops written to the log.
+local B = { held = Held.new(), lines = 0 }
 
 -- A new character. What was written is kept: the same component given back (a cutscene, a restart) still holds the
 -- mod's values, and reading them as the game's would scale them twice. Another component's values are not the mod's,
@@ -35,38 +36,7 @@ M.forget()
 
 -- Gives the game its values back where the mod's are still in place.
 function M.release(cmc)
-	if next(B.written) == nil then return end
-	for _, field in ipairs(FIELDS) do
-		local written = B.written[field.name]
-		if cmc ~= nil and written ~= nil then
-			local cur = nil
-			pcall(function() cur = U.num(cmc[field.name]) end)
-			if cur ~= nil and math.abs(cur - written) <= SAME then
-				pcall(function() cmc[field.name] = B.base[field.name] end)
-			end
-		end
-	end
-	B.base, B.written = {}, {}
-end
-
--- One field at the game's value times k^power; false when it cannot be read or written.
-local function hold(cmc, field, k)
-	local name, cur = field.name, nil
-	pcall(function() cur = U.num(cmc[name]) end)
-	if cur == nil then return false end
-	local written = B.written[name]
-	if written == nil or math.abs(cur - written) > SAME then B.base[name] = cur end
-	local want = B.base[name] * k ^ field.power
-	if math.abs(cur - want) > SAME and not pcall(function() cmc[name] = want end) then return false end
-	B.written[name] = want
-	return true
-end
-
-local function speed_of(cmc)
-	local v = nil
-	pcall(function() v = cmc.Velocity end)
-	local _, _, speed = U.flat(v)
-	return speed
+	Held.release(B.held, cmc)
 end
 
 -- The speed is read only while the stick is let go, and only until the last stop measured.
@@ -76,7 +46,7 @@ local function measure(cmc, k, push, now, say)
 		B.stop = nil
 		return
 	end
-	local speed = speed_of(cmc)
+	local _, _, speed = U.velocity(cmc)
 	if speed == nil then return end
 	local s = B.stop
 	if s == nil then
@@ -99,7 +69,7 @@ function M.frame(cmc, mode, k, push, now, say)
 	local on = k ~= nil and k > NEUTRAL and not B.broken
 	if on then
 		for _, field in ipairs(FIELDS) do
-			if not hold(cmc, field, k) then
+			if not Held.hold(B.held, cmc, field.name, k ^ field.power) then
 				B.broken, on = true, false
 				say("the braking cannot be changed (%s): stops keep the game's braking", field.name)
 				break
@@ -111,7 +81,7 @@ function M.frame(cmc, mode, k, push, now, say)
 end
 
 function M.holding()
-	return next(B.written) ~= nil
+	return Held.holding(B.held)
 end
 
 return M
