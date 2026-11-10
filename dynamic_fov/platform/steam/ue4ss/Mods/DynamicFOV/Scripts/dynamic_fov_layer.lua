@@ -3,7 +3,7 @@
 -- next change of mode, and the target offset follows the character, not the screen; the layer moves the view at once,
 -- eased over BLEND seconds, along the screen (CameraProbe pass 4, 4 November 2026). The layer holds in every mode,
 -- dialogues included (seen then): it is set only while the camera is in a managed mode, and taken away in any other
--- mode and while a cinematic camera has the view.
+-- mode and while a cinematic camera has the view. During an execution, main.lua asks for none, in less time.
 
 local U = require("dynamic_fov_unreal")
 local Modes = require("dynamic_fov_modes")
@@ -32,8 +32,8 @@ local L = { ready = nil, name = nil, camera = nil, mode = nil, managed = false, 
 local function get_mode(cam) return cam:GetCurrentCameraMode() end
 local function get_cine(cam) return cam:IsCineCameraActive() end
 local function get_base(mode) return mode.CameraModeSettings.LocationSettings.DefaultCameraDistance end
-local function set_distance(cam, name, d) cam:SetAdditiveParameter_Distance(name, d, M.BLEND) end
-local function set_offset(cam, name, v) cam:SetAdditiveParameter_SocketOffset(name, v, M.BLEND) end
+local function set_distance(cam, name, d, blend) cam:SetAdditiveParameter_Distance(name, d, blend) end
+local function set_offset(cam, name, v, blend) cam:SetAdditiveParameter_SocketOffset(name, v, blend) end
 
 local function ready(log)
 	if L.ready ~= nil then return L.ready end
@@ -99,8 +99,8 @@ end
 
 -- At each tick. want: { distance = % of the mode's own, height, side = cm }, or nil while the mod is off or all three
 -- are 0. Returns "idle" when nothing was asked of the game, "kept", "set", "failed" or "off" (unknown functions);
--- report(fmt, ...) hears of each change of the layer.
-function M.frame(cam, want, log, report)
+-- report(fmt, ...) hears of each change of the layer. blend: the seconds a change takes, BLEND unless given.
+function M.frame(cam, want, log, report, blend)
 	if want == nil and L.applied == NONE then return "idle" end
 	if not U.is_valid(cam) then
 		-- The layer went with its camera.
@@ -116,8 +116,8 @@ function M.frame(cam, want, log, report)
 	if not ready(log) then return "off" end
 	local t = target(cam, want, log)
 	if not differs(t, L.applied) then return "kept" end
-	local ok1 = pcall(set_distance, cam, L.name, t.distance)
-	local ok2 = pcall(set_offset, cam, L.name, { X = 0, Y = t.side, Z = t.height })
+	local ok1 = pcall(set_distance, cam, L.name, t.distance, blend or M.BLEND)
+	local ok2 = pcall(set_offset, cam, L.name, { X = 0, Y = t.side, Z = t.height }, blend or M.BLEND)
 	if not (ok1 and ok2) then return "failed" end
 	L.applied = is_none(t) and NONE or t
 	if is_none(t) then

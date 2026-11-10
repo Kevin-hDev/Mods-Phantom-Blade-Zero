@@ -2,7 +2,8 @@
 -- modes scanned, and the values the settings want written there (dynamic_fov_modes.lua). The camera eases itself
 -- towards its mode's values, so they are written only when they change: checked every two looks, all the camera's
 -- modes scanned every ten once they stop changing (modes the game would load again). While the panel shows one
--- setting's field of view, every managed mode takes it (preview).
+-- setting's field of view, every managed mode takes it (preview); during an execution, every managed mode takes
+-- the game's own (pause).
 
 local U = require("dynamic_fov_unreal")
 local Settings = require("dynamic_fov_settings")
@@ -29,9 +30,9 @@ end
 function M.new(T, log, new_pawn)
 	-- wanted: the values written for each setting, nil while the mod is off, so the game's values go back. preview:
 	-- the values every managed mode takes while the panel shows one field of view. reapply: a change to write at the
-	-- next tick rather than at the next look.
+	-- next tick rather than at the next look. paused: an execution, the game's values written meanwhile.
 	local K = { pawn = nil, pawn_name = nil, camera = nil, check_in = 0, scan_in = 0, dirty = true, reapply = false,
-		restored = false, modes = -1, managed = -1, empty = 0, wanted = nil, speed = 0, preview = nil }
+		restored = false, modes = -1, managed = -1, empty = 0, wanted = nil, speed = 0, preview = nil, paused = false }
 	local C = {}
 
 	-- At most once for each mode in a session: with the mod on, the values before are the game's own.
@@ -41,7 +42,7 @@ function M.new(T, log, new_pawn)
 	end
 
 	local function wanted(setting)
-		if K.wanted == nil then return nil end
+		if K.wanted == nil or K.paused then return nil end
 		return K.preview or K.wanted[setting]
 	end
 
@@ -61,6 +62,13 @@ function M.new(T, log, new_pawn)
 		if (K.preview and K.preview.fov) == fov then return end
 		K.preview = fov and { fov = fov, speed = K.speed } or nil
 		K.reapply = true
+	end
+
+	-- During an execution (on), the game's values in every managed mode, and the settings' back after it; written at
+	-- the next tick. The game's camera eases to them at the mode's own speed, also the game's meanwhile.
+	function C.pause(on)
+		if K.paused == on then return end
+		K.paused, K.reapply = on, true
 	end
 
 	-- The camera of the controller's pawn. A pawn is known by its address and its name: one that takes the old one's
@@ -118,7 +126,8 @@ function M.new(T, log, new_pawn)
 		local writes, failed = Modes.apply(wanted, first_write)
 		T.writes, T.failed = T.writes + writes, T.failed + failed
 		if failed > 0 or (writes > 0 and not quiet) then
-			T.bounded("write", "%s: modes written %d%s%s", K.wanted and "settings applied" or "game's values back",
+			T.bounded("write", "%s: modes written %d%s%s",
+				(K.wanted and not K.paused) and "settings applied" or "game's values back",
 				writes, failed > 0 and string.format(", could not be written %d", failed) or "",
 				fresh > 0 and string.format(" (modes new to the mod %d)", fresh) or "")
 		end

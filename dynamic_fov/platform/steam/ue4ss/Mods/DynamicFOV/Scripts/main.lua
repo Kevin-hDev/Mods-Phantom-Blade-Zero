@@ -13,6 +13,8 @@
 -- looked at once a second, and at the next tick after a change; the comfort options through four fields of the
 -- camera's modes (dynamic_fov_comfort.lua), the same way.
 -- When the settings are read: dynamic_fov_watch.lua.
+-- During an execution, given or taken, the camera is the game's, place and field of view (1.0.7): the game films most
+-- in the combat view in progress, where the place pushed the view into the enemy (dynamic_fov_executions.lua).
 
 local U = require("dynamic_fov_unreal")
 local Settings = require("dynamic_fov_settings")
@@ -27,9 +29,13 @@ local Hotkey = require("dynamic_fov_hotkey")
 local Panel = require("dynamic_fov_panel")
 local Image = require("dynamic_fov_image")
 local Comfort = require("dynamic_fov_comfort")
+local ImageLines = require("dynamic_fov_image_lines")
+local Executions = require("dynamic_fov_executions")
 
-local VERSION = "1.0.6"
+local VERSION = "1.0.7"
 local TICK_SECONDS = 0.1          -- a tick: the view's place
+-- Seconds the place takes to go as an execution starts: 0.2 is too abrupt for the eyes (Kevin, 10 November 2026).
+local EXECUTION_BLEND = 0.4
 local EARLY = 0.001               -- a frame this close to the next tick reaches it: no tick lost to the clock's steps
 local LOOK_TICKS = 10             -- ticks between two looks (settings, menu, modes): once a second
 local STATUS_EVERY = 600          -- looks between two status lines
@@ -43,8 +49,9 @@ local DESCRIPTOR_PATH = MOD_DIR and MOD_DIR .. "/" .. MOD_DIR:match("([^/\\]+)$"
 
 -- new_controller: a player controller was made (a load) since the last tick. key: the panel key whose bind was last
 -- asked for. no_controller: frames in a row whose controller could not be read; get_failed: that reading failed once.
+-- execution: the player is in one.
 local S = { controller = nil, new_controller = true, next_tick = 0, ticks = 0, looks = 0, settings = nil,
-	position = nil, key = nil, no_controller = 0, get_failed = false }
+	position = nil, key = nil, no_controller = 0, get_failed = false, execution = false }
 
 local function log(fmt, ...)
 	local ok, msg = pcall(string.format, fmt, ...)
@@ -72,6 +79,9 @@ local function use(s, at_once)
 		S.position = { distance = s.distance, height = s.height, side = s.side }
 	end
 	camera.use(s, at_once)
+	-- Nothing an execution would give back to the game, nothing watched: the place at 0, the game's fields of view (the
+	-- transition time paces only the field of view, then the same in every view).
+	Executions.set_on(S.position ~= nil or (s.enabled and not Settings.game_fovs(s)))
 	Image.want(s.enabled and Settings.colour_factor(s) or nil, s.enabled and s.clean_image)
 	Comfort.want(s)
 end
@@ -91,30 +101,10 @@ panel = Panel.new({ log = log, warn = warn, report = function(fmt, ...) T.bounde
 	descriptor_path = DESCRIPTOR_PATH, settings = function() return S.settings end,
 	apply = function(s) use(s, true) end, preview = camera.show, camera = camera.camera })
 
--- Not while the panel is open: each click on Colours or Clean image would say it. The last line is held and said once
--- the panel is closed, so the log tells what the camera ended up with (silent before 1.0.3's trial of 5 November 2026).
-local held_image = nil
-
-local function report_image(fmt, ...)
-	local line = string.format(fmt, ...)
-	if panel.is_open() then held_image = line return end
-	held_image = nil
-	T.bounded("image", "%s", line)
-end
-
--- What went wrong is said even while the panel is open, under its own bound: routine lines never silence it.
-local function problem_image(fmt, ...)
-	T.bounded("image problem", fmt, ...)
-end
+local image_look = ImageLines.new(T, function() return panel.is_open() end)
 
 local function look_image()
-	local writes, failed = Image.look(S.controller, report_image, problem_image)
-	T.image_writes, T.image_failed = T.image_writes + writes, T.image_failed + failed
-	if held_image ~= nil and not panel.is_open() then
-		local line = held_image
-		held_image = nil
-		T.bounded("image", "%s", line)
-	end
+	image_look(S.controller)
 end
 
 -- The camera found by the last look; a toggle in the panel is one write, so its lines are said even while it is open.
@@ -141,9 +131,20 @@ local function report_position(fmt, ...)
 	T.bounded("position", "camera position: " .. fmt, ...)
 end
 
--- The camera found by the last look: a new pawn's camera takes the place at most a second after it arrives.
+-- The fields of view go to the game's as an execution starts, and back to the settings' as it ends; the mod off, no
+-- execution is followed, and the settings' are none.
+local function executions(pc)
+	local now = Executions.tick(pc, os.clock(), T)
+	if now == S.execution then return end
+	S.execution = now
+	camera.pause(now)
+end
+
+-- The camera found by the last look: a new pawn's camera takes the place at most a second after it arrives. No place
+-- during an execution: it goes in EXECUTION_BLEND, and comes back in the layer's own time.
 local function place()
-	local result = Layer.frame(camera.camera(), S.position, log, report_position)
+	local want = not S.execution and S.position or nil
+	local result = Layer.frame(camera.camera(), want, log, report_position, S.execution and EXECUTION_BLEND or nil)
 	if result == "set" then T.sets = T.sets + 1 elseif result == "failed" then T.set_failed = T.set_failed + 1 end
 end
 
@@ -152,15 +153,18 @@ local function tick(pc)
 	if S.new_controller then
 		S.new_controller = false
 		camera.new_controller()
+		Executions.reset()
 		T.run("panel", panel.close, pc, "a load")
 	end
 	if panel.is_open() then T.run("panel", panel.tick, pc) end
+	-- First: the fields of view an execution changes are written within this tick.
+	T.run("executions", executions, pc)
 	if S.ticks % LOOK_TICKS == 0 then
 		T.run("looks", look)
 		-- Outside look: the status line is written even while an error repeats there.
 		if S.looks % STATUS_EVERY == 0 then
 			local modes, managed = camera.counts()
-			T.line(modes, managed, STATUS_EVERY * LOOK_TICKS * TICK_SECONDS // 60)
+			T.line(modes, managed, STATUS_EVERY * LOOK_TICKS * TICK_SECONDS // 60, Executions.seen())
 		end
 	end
 	if camera.pending() then T.run("panel", camera.tick) end
@@ -219,6 +223,7 @@ if SETTINGS_PATH ~= nil then
 	SettingsFile.ensure_file(SETTINGS_PATH, warn)
 end
 
--- Last: once the hook or the notification is set, the mod runs on the game thread, and this file must be done by
+-- Last: once the hook or the notifications are set, the mod runs on the game thread, and this file must be done by
 -- then. The lines below are only written when something failed.
+Executions.watch(log)
 Driver.start(frame, function() S.new_controller = true end, log)

@@ -135,6 +135,14 @@ function M.resolve(raw, warn)
 	return s
 end
 
+-- Whether the four fields of view are the game's own (the Game preset, or Custom at 75).
+function M.game_fovs(s)
+	for _, k in ipairs(M.FOV_KEYS) do
+		if s[k.field] ~= M.GAME_FOV then return false end
+	end
+	return true
+end
+
 -- The factor the colours give to the saturation, or nil for the game's own.
 function M.colour_factor(s)
 	local percent = tonumber(s.colours)
