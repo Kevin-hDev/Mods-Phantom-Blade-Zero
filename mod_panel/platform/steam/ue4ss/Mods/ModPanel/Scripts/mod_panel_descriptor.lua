@@ -13,6 +13,7 @@ local Values = require("mod_panel_values")
 local KeyNames = require("mod_panel_key_names")
 local PadNames = require("mod_panel_pad_names")
 local Greyed = require("mod_panel_greyed")
+local Folds = require("mod_panel_folds")
 
 local M = {}
 
@@ -202,17 +203,14 @@ function M.check(name, doc, config, note)
 		note("setting " .. reason)
 		return nil
 	end
-	local keyed, headings = false, 0
+	local keyed, fold_id = false, Folds.ids()
 	for i = 1, math.min(#list, MAX_ROWS) do
 		local r = list[i]
 		local row
 		if type(r) == "table" and r.type == "readonly" then row = readonly(r) else row = check_setting(r, why) end
 		if row then
 			row.generated = made[r] == true
-			if row.type == "heading" then
-				headings = headings + 1
-				row.fold = headings
-			end
+			if row.type == "heading" then row.fold = fold_id(row.label.en) end
 			mod.rows[#mod.rows + 1] = row
 			keyed = keyed or row.key ~= nil
 		end

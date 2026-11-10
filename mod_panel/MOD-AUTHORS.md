@@ -2,7 +2,7 @@
 
 Mod Panel is an in-game settings panel for the UE4SS mods of Phantom Blade Zero. It reads the same two files as Mods Menu: **if your mod already shows its settings in Mods Menu, it shows them in Mod Panel too, with nothing to change.** Mod Panel does not need Mods Menu, and players may have either one, or both. JavaScript mods made for Mods Menu need it to run, and show in Mod Panel while it runs them ([section 2](#javascript-mods)).
 
-This guide describes Mod Panel 1.0.0: which mods it lists, the whole format of the files it reads, what it writes, and how your mod takes a change at once.
+This guide describes Mod Panel 1.0.1: which mods it lists, the whole format of the files it reads, what it writes, and how your mod takes a change at once.
 
 [简体中文版](MOD-AUTHORS.zh-CN.md)
 
@@ -235,7 +235,7 @@ A title over the rows that follow it, down to the next title. `label` is require
 { "type": "heading", "label": { "en": "Camera position", "zh-Hans": "镜头位置" } }
 ```
 
-Every title folds the rows under it: the player selects it and presses Cross, Enter, Left or Right, or clicks its "Show" or "Hide". `collapsed: true` makes the section start folded; without it, it starts open. Mod Panel keeps each section as the player left it until the game closes, and never writes it to a file. `Restore defaults` also puts back the rows of a folded section.
+Every title folds the rows under it: the player selects it and presses Cross, Enter, Left or Right, or clicks its "Show" or "Hide". `collapsed: true` makes the section start folded; without it, it starts open. Mod Panel keeps each section as the player left it, even after the game is started again. It knows a section by its English title: changing that title brings the section back to how you set it, and adding or moving sections does not change the others. Two titles alike in one mod are told apart by their order. `Restore defaults` also puts back the rows of a folded section.
 
 ```json
 { "type": "heading", "label": { "en": "Advanced", "zh-Hans": "高级" }, "collapsed": true }
@@ -396,7 +396,7 @@ end
 return Signal
 ```
 
-A mod that does not read the signal file still works: it takes the new settings at its next start. Mods Menu's console command is not sent by Mod Panel 1.0.0.
+A mod that does not read the signal file still works: it takes the new settings at its next start. Mods Menu's console command is not sent by Mod Panel 1.0.1.
 
 ## 7. If your mod has its own panel, or reads buttons itself
 

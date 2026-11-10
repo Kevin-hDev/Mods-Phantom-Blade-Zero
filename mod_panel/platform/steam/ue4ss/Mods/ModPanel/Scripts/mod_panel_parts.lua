@@ -18,7 +18,7 @@ local M = {}
 
 -- d: as mod_panel_panel.lua's.
 function M.new(d)
-	local p = { folds = Folds.new() }
+	local p = { folds = Folds.new(d.state) }
 	-- Changes tell All mods of a mod the player turns on, and All mods changes through them: told once both exist.
 	p.changes = Changes.new({ catalog = d.catalog, edits = d.edits, own = d.own, folds = p.folds,
 		turned_on = function(name) p.all.forget(name) end })

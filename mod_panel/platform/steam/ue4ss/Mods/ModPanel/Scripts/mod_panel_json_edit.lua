@@ -37,7 +37,8 @@ local function string_text(s)
 end
 
 -- A value as JSON.stringify writes it in Mods Menu's ASCII form: a boolean, a number (null when not finite), a text, a
--- list of these on one line (the mods All mods turned off, mod_panel_state.lua), or null.
+-- list of these or of such lists on one line (the mods All mods turned off, the sections folded, mod_panel_state.lua),
+-- or null.
 function M.literal(v)
 	local t = type(v)
 	if t == "boolean" then return tostring(v) end

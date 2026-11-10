@@ -2,7 +2,7 @@
 
 Mod Panel（模组面板）是 Phantom Blade Zero 的 UE4SS 模组的游戏内设置面板。它读取与 Mods Menu（模组菜单）相同的两个文件：**如果你的模组已经在 Mods Menu 中显示设置，那么无需做任何改动，它也会在 Mod Panel 中显示这些设置。** Mod Panel 不需要 Mods Menu，玩家可以只装其中一个，也可以两个都装。为 Mods Menu 制作的 JavaScript 模组需要 Mods Menu 才能运行；在 Mods Menu 运行它们时，它们也会显示在 Mod Panel 中（[第 2 节](#javascript-模组)）。
 
-本指南介绍 Mod Panel 1.0.0：它会列出哪些模组、它读取的文件的完整格式、它写入什么，以及你的模组如何立即采用更改。
+本指南介绍 Mod Panel 1.0.1：它会列出哪些模组、它读取的文件的完整格式、它写入什么，以及你的模组如何立即采用更改。
 
 [English](MOD-AUTHORS.md)
 
@@ -235,7 +235,7 @@ Mod Panel 最多列出 64 个 JavaScript 模组。每次打开面板时都会重
 { "type": "heading", "label": { "en": "Camera position", "zh-Hans": "镜头位置" } }
 ```
 
-每个标题都可以折叠其下方的行：玩家选中标题后按 ×键、Enter、左或右，或点击它的“显示”或“隐藏”。`collapsed: true` 让该部分一开始就是折叠的；没有它时，一开始是展开的。Mod Panel 会保持玩家留下的折叠状态，直到游戏关闭，并且从不把它写入文件。“恢复默认设置”也会恢复折叠部分中的行。
+每个标题都可以折叠其下方的行：玩家选中标题后按 ×键、Enter、左或右，或点击它的“显示”或“隐藏”。`collapsed: true` 让该部分一开始就是折叠的；没有它时，一开始是展开的。Mod Panel 会保持玩家留下的折叠状态，重新启动游戏后也是如此。它按英文标题识别各部分：修改英文标题会让该部分恢复为你设定的状态，添加或移动部分不会改变其他部分。同一模组中相同的标题按先后顺序区分。“恢复默认设置”也会恢复折叠部分中的行。
 
 ```json
 { "type": "heading", "label": { "en": "Advanced", "zh-Hans": "高级" }, "collapsed": true }
@@ -396,7 +396,7 @@ end
 return Signal
 ```
 
-不读取信号文件的模组仍然可以工作：它会在下次启动时采用新的设置。Mod Panel 1.0.0 不会发送 Mods Menu 的控制台命令。
+不读取信号文件的模组仍然可以工作：它会在下次启动时采用新的设置。Mod Panel 1.0.1 不会发送 Mods Menu 的控制台命令。
 
 ## 7. 模组有自己的面板或自行读取按键时
 

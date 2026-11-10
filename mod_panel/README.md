@@ -59,7 +59,7 @@ With the mouse: point at a setting, click it or its arrows, drag a bar, and scro
 
 - **Choosing a key or a button:** press Cross on the setting, then the key or the button you want. Escape cancels.
 - **Actions** ask for two presses: the first one arms the button ("Press again"), the second one sends it.
-- **Sections:** select a section's title and press Cross, Enter, Left or Right, or click its "Show" or "Hide", to fold it or open it. Sections stay as you left them until you quit the game.
+- **Sections:** select a section's title and press Cross, Enter, Left or Right, or click its "Show" or "Hide", to fold it or open it. Sections stay as you left them, even after you restart the game.
 - **Greyed settings** wait for another setting: select one to read which, for example "Set Preset to Custom to change this row."
 - **Restore defaults** puts every setting of the mod that has a default back to it, keys and buttons included; a key that another setting already uses stays as it is. `Undo`, right after, brings them all back.
 
