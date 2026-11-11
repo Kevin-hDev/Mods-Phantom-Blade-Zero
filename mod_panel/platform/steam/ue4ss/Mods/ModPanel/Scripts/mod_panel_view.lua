@@ -28,10 +28,11 @@ function M.texts(list_title, list_sub, title, sub, descriptions, close)
 	text(sh, F.close_text, close)
 end
 
--- Entry i of the list: its title, "Off" in the player's language for a mod turned off (nil else), whether it is the
--- chosen mod, whether the pointer is on it, and whether it is a favourite: its diamond gold, else dark (D178), none
--- while the game does not hold it.
-function M.entry(i, title, off, chosen, hovered, fav)
+-- Entry i of the list: its title, whether it is the chosen mod, whether the pointer is on it, whether it is a
+-- favourite (its diamond gold, else dark, D178, none while the game does not hold it), and its switch (D183): sw true
+-- for on, false for off, nil for none; locked, greyed (D148); on_word and off_word in the player's language, both
+-- set so that the switch takes the longer one's room. A mod off has its title pale.
+function M.entry(i, title, chosen, hovered, fav, sw, locked, on_word, off_word)
 	local F, e = Frame.get(), Pool.entry(i)
 	if F == nil or e == nil then return end
 	local sh = F.shown
@@ -39,15 +40,28 @@ function M.entry(i, title, off, chosen, hovered, fav)
 	local pictured = P.favorite(sh, e.fav_icon)
 	visible(sh, e.fav, on(pictured, L.VISIBLE))
 	if pictured then apply(sh, e.fav_icon, "colour", fav and "FAVORITE_ON" or "FAVORITE_OFF", P.set_tint) end
+	local pale = sw == false
 	text(sh, e.title, title)
-	colour(sh, e.title, chosen and "DARK" or off and "GREY" or "WHITE")
+	colour(sh, e.title, chosen and (pale and "DARK_GREY" or "DARK") or (pale and "GREY" or "WHITE"))
 	visible(sh, e.band, on(chosen or hovered, L.HIT_TEST_INVISIBLE))
 	if chosen or hovered then apply(sh, e.band, "opacity", chosen and 1 or L.HOVER_OPACITY, P.set_opacity) end
-	visible(sh, e.off, on(off ~= nil, L.HIT_TEST_INVISIBLE))
-	if off ~= nil then
-		text(sh, e.off, off)
-		colour(sh, e.off, chosen and "DARK_GREY" or "GREY")
-	end
+	visible(sh, e.switch, on(sw ~= nil, L.SELF_HIT_TEST_INVISIBLE))
+	if sw == nil then return end
+	text(sh, e.on_word, on_word)
+	text(sh, e.off_word, off_word)
+	visible(sh, e.on_word, sw and L.HIT_TEST_INVISIBLE or L.HIDDEN)
+	visible(sh, e.off_word, sw and L.HIDDEN or L.HIT_TEST_INVISIBLE)
+	local grey = chosen and "DARK_GREY" or "GREY"
+	colour(sh, e.on_word, locked and grey or chosen and "SWITCH_ON_DARK" or "SWITCH_ON")
+	colour(sh, e.off_word, grey)
+end
+
+-- Whether entry i's diamond and its switch show: the pointer asks their buttons only then.
+function M.entry_parts(i)
+	local F, e = Frame.get(), Pool.entry(i)
+	if F == nil or e == nil then return false, false end
+	local f, s = F.shown[e.fav], F.shown[e.switch]
+	return f ~= nil and f.visibility == L.VISIBLE, s ~= nil and s.visibility == L.SELF_HIT_TEST_INVISIBLE
 end
 
 -- Row i, by its look k (mod_panel_screen.lua): kind, label, value, number (the value in the number font), button (the

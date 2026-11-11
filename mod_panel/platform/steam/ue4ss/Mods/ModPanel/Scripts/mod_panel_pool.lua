@@ -25,6 +25,14 @@ local function beside(h, w)
 	h:AddChildToHorizontalBox(w):SetVerticalAlignment(L.CENTRE)
 end
 
+-- A switch's word in its overlay, at its side (L.START or L.END).
+local function word(overlay, text, side)
+	local slot = overlay:AddChildToOverlay(text)
+	slot:SetHorizontalAlignment(side)
+	slot:SetVerticalAlignment(L.CENTRE)
+	slot:SetPadding(L.SWITCH_WORD_PADDING)
+end
+
 -- The steps of a row r, each making one object: B, the frame's builder; box, the box that scrolls the rows.
 local ROW = {
 	function(B, r, box) r.size = B.sized(nil, L.ROW_HEIGHT); hidden(r.size); box:AddChild(r.size) end,
@@ -87,16 +95,21 @@ local ENTRY = {
 	function(B, e) e.overlay = B.new("Overlay"); e.frame:SetContent(e.overlay) end,
 	function(B, e) e.band = B.band(); hidden(e.band); Make.fill(e.overlay:AddChildToOverlay(e.band)) end,
 	function(B, e) e.h = B.new("HorizontalBox"); Make.fill(e.overlay:AddChildToOverlay(e.h), L.ENTRY_PADDING) end,
-	-- The favourites' diamond (D178), its texture set by the view. Hit by the pointer (IsHovered): a click on the
-	-- entry over it makes the mod a favourite or undoes it, instead of choosing it.
+	-- The favourites' diamond (D178), its texture set by the view, and the switch's arrows and word (D183): each a
+	-- button of its own inside the entry's, whose click is not the entry's (mod_panel_entry_click.lua). The diamond's
+	-- button without a margin, so the diamond stays where it was in 1.0.2.
 	function(B, e)
-		e.fav = B.sized(L.FAVORITE_SIZE, L.FAVORITE_SIZE)
+		e.fav = B.button()
 		hidden(e.fav)
 		local slot = e.h:AddChildToHorizontalBox(e.fav)
 		slot:SetVerticalAlignment(L.CENTRE)
 		slot:SetPadding(L.FAVORITE_PADDING)
 	end,
-	function(B, e) e.fav_icon = B.new("Image"); e.fav:SetContent(e.fav_icon) end,
+	function(B, e)
+		e.fav_box = B.sized(L.FAVORITE_SIZE, L.FAVORITE_SIZE)
+		Make.fill(e.fav:SetContent(e.fav_box), L.NO_PADDING)
+	end,
+	function(B, e) e.fav_icon = B.new("Image"); e.fav_box:SetContent(e.fav_icon) end,
 	function(B, e)
 		e.title = B.text("font_text", L.TEXT_SIZE, L.WHITE, true)
 		local slot = e.h:AddChildToHorizontalBox(e.title)
@@ -104,7 +117,21 @@ local ENTRY = {
 		slot:SetVerticalAlignment(L.CENTRE)
 		slot:SetPadding(L.LABEL_PADDING)
 	end,
-	function(B, e) e.off = B.text("font_text", L.SMALL_SIZE, L.GREY); hidden(e.off); beside(e.h, e.off) end,
+	-- The mod's On/Off switch (D183), collapsed for a mod without one. Its arrows and its word are buttons made as the
+	-- head's items' are (mod_panel_frame_head.lua), margins included, so the arrows stand under theirs. Both words are
+	-- there, the one not shown hidden but keeping its room, so the switch is as wide as the language's longer word, on
+	-- every line (L.HIDDEN). Off at its left, On at its right.
+	function(B, e) e.switch = B.new("HorizontalBox"); hidden(e.switch); beside(e.h, e.switch) end,
+	function(B, e) e.left = B.button(); beside(e.switch, e.left) end,
+	function(B, e) e.left_box = B.sized(L.ARROW_SIZE, L.ARROW_SIZE); e.left:SetContent(e.left_box) end,
+	function(B, e) e.left_box:SetContent(B.arrow(true)) end,
+	function(B, e) e.value = B.button(); beside(e.switch, e.value) end,
+	function(B, e) e.words = B.new("Overlay"); e.value:SetContent(e.words) end,
+	function(B, e) e.off_word = B.text("font_text", L.TEXT_SIZE, L.GREY); word(e.words, e.off_word, L.START) end,
+	function(B, e) e.on_word = B.text("font_text", L.TEXT_SIZE, L.SWITCH_ON); word(e.words, e.on_word, L.END) end,
+	function(B, e) e.right = B.button(); beside(e.switch, e.right) end,
+	function(B, e) e.right_box = B.sized(L.ARROW_SIZE, L.ARROW_SIZE); e.right:SetContent(e.right_box) end,
+	function(B, e) e.right_box:SetContent(B.arrow(false)) end,
 }
 
 -- The reserve of the frame now, a new one with a new frame; nil without a whole frame.

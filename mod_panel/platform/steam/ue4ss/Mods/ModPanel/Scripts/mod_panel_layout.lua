@@ -6,7 +6,11 @@
 
 local M = {}
 
-M.VISIBLE, M.COLLAPSED, M.HIT_TEST_INVISIBLE, M.SELF_HIT_TEST_INVISIBLE = 0, 1, 3, 4   -- ESlateVisibility
+-- ESlateVisibility.
+M.VISIBLE, M.COLLAPSED, M.HIDDEN, M.HIT_TEST_INVISIBLE, M.SELF_HIT_TEST_INVISIBLE = 0, 1, 2, 3, 4
+-- HIDDEN keeps its room, which COLLAPSED gives up: an overlay is as wide as its widest child that is not collapsed,
+-- and only a collapsed child goes unmeasured (SOverlay::ComputeDesiredSize and SWidget::Prepass_ChildLoop, Unreal 5.7,
+-- source unique), so a word hidden there still widens its box.
 M.FILL, M.START, M.CENTRE, M.END = 0, 1, 2, 3   -- EHorizontalAlignment and EVerticalAlignment: left or top first
 -- ETextOverflowPolicy: a text too long for its room ends with "…". The engine cuts a text at its clipping area, not at
 -- its own room (TextBlock.h, "doesn't fit within the clip rect"; SlateTextLayout.cpp line 194): without ClipToBounds
@@ -25,8 +29,9 @@ M.SIDE, M.GAP = 0.025, 0.02       -- the right margin; between two columns
 -- measured on a capture of 7 November 2026: the game's text is Segoe UI's at 22.45 points or less for a font size of
 -- 18; Chinese, one em (24) a sign. The list widened from 17.5 to 21 % in 0.7.0 (D156, D163), to the left, the settings
 -- kept: the head's names, beside their arrows, were cut (trial of 0.6.0), and the longest, "Sfondo del pannello" and
--- "Tạm Dừng Trò Chơi", filled their room.
-local LIST_WIDTH, SETTINGS_WIDTH, DESCRIPTIONS_WIDTH = 0.21, 0.345, 0.165
+-- "Tạm Dừng Trò Chơi", filled their room. A quarter wider in 1.0.3 (D183), to the left again: each mod's line takes its
+-- On/Off switch, and without it nearly every mod's title would be cut.
+local LIST_WIDTH, SETTINGS_WIDTH, DESCRIPTIONS_WIDTH = 0.2625, 0.345, 0.165
 M.DESCRIPTIONS = { 1 - M.SIDE - DESCRIPTIONS_WIDTH, 1 - M.SIDE }
 M.SETTINGS = { M.DESCRIPTIONS[1] - M.GAP - SETTINGS_WIDTH, M.DESCRIPTIONS[1] - M.GAP }
 M.LIST = { M.SETTINGS[1] - M.GAP - LIST_WIDTH, M.SETTINGS[1] - M.GAP }
@@ -38,8 +43,9 @@ M.NARROW_STRIP = M.NARROW_LIST[1] - M.SIDE
 
 -- Sizes, in the screen's units (a 1080 screen is 1080 high). A row of the settings and an entry of the list are as high
 -- as the game's own settings rows. In a column of 34.5 % (662), two arrows and their value leave the label 320 after
--- its gap, a bar and its value 344; the list's entry (21 %) leaves its title 359, 295 beside "已关闭". The value beside a
--- bar holds "游戏原有" (96); between the arrows, "Middle mouse button".
+-- its gap, a bar and its value 344. The list's entry (26.25 %, D183) leaves its title what its diamond and its switch
+-- leave, the switch as wide as the language's longer On or Off (not measured in game). The value beside a bar holds
+-- "游戏原有" (96); between the arrows, "Middle mouse button".
 M.ROW_HEIGHT, M.ENTRY_HEIGHT, M.LINE_HEIGHT = 44, 40, 2
 M.SLIDER_WIDTH, M.VALUE_WIDTH, M.CHOICE_WIDTH, M.ARROW_SIZE = 150, 104, 230, 24
 M.TITLE_SIZE, M.TEXT_SIZE, M.SMALL_SIZE = 24, 18, 16
@@ -60,14 +66,18 @@ M.HINT_JOIN = "\194\160"
 M.HINTS_PADDING = { Left = 0, Top = 8, Right = 0, Bottom = 0 }
 -- A controller button's icon: in the help, about the small font's height; as a row's value, a little above the text's.
 M.HINT_ICON_SIZE, M.ICON_SIZE = 22, 28
--- The favourites' icon (D178), left of a mod's title in the list: the game's tracking diamond of the main quest, the
--- only one of its two in memory in play (discovery 28). Its title then leaves 325 of the 359 the entry had.
+-- The favourites' icon (D178), left of a mod's title in the list: the game's tracking diamond of the main quest. Read
+-- from Mod Panel's copy of it, beside the scripts (D184); the game's own texture when that file cannot be read, though
+-- it is not always in memory (discovery 28).
+M.FAVORITE_FILE = "Icons/favorite.png"
 M.FAVORITE_ICON = "/Game/PBZContent/UI/InGame/Quest/T_Track_Story.T_Track_Story"
 M.FAVORITE_SIZE = 24
 M.FAVORITE_PADDING = { Left = 0, Top = 0, Right = 10, Bottom = 0 }
--- The head of the list (D92), its items as high as a mod of the list. Between its arrows, a value of 52 holds "90 %"
--- (49) and "开启" (48), with the model of D87. "Panel background", measured to fit, was cut in the game at 0.7.0: the
--- item is named "Background" since 0.7.1. A box CHECK_SIZE wide, pale, its mark CHECK_INSET inside when checked.
+-- The head of the list (D92), its items as high as a mod of the list. Between its arrows, a value of 52 at least holds
+-- "90 %" (49) and "开启" (48), with the model of D87, and as much as the language's On and Off take: "Encendido" ran
+-- over its right arrow (captures of 10 November 2026, D183). "Panel background", measured to fit, was cut in the game
+-- at 0.7.0: the item is named "Background" since 0.7.1. A box CHECK_SIZE wide, pale, its mark CHECK_INSET inside when
+-- checked.
 M.HEAD_VALUE_WIDTH, M.CHECK_SIZE = 52, 18
 M.CHECK_INSET = { Left = 4, Top = 4, Right = 4, Bottom = 4 }
 M.CHECK_EDGE = { R = 1, G = 1, B = 1, A = 0.35 }
@@ -97,6 +107,12 @@ M.BAND = { R = 1, G = 1, B = 1, A = 1 }       -- a row's band as the game draws 
 -- November 2026: 30 % of its brightness, 0.3 in sRGB, 0.073 in linear).
 M.FAVORITE_ON = M.WHITE
 M.FAVORITE_OFF = { R = 0.073, G = 0.073, B = 0.073, A = 1 }
+-- A mod's switch in the list (D183, mock-up C chosen by Kevin, 10 November 2026): On in the diamond's gold (its most
+-- frequent colour, 224, 184, 112 in sRGB), darker on the chosen band (128, 90, 22), as that band's text is; Off as
+-- GREY. Gold on every backdrop: Kevin found Dark gold and Beige readable.
+M.SWITCH_ON = { R = 0.745, G = 0.479, B = 0.162, A = 1 }
+M.SWITCH_ON_DARK = { R = 0.216, G = 0.102, B = 0.008, A = 1 }
+M.SWITCH_WORD_PADDING = { Left = 6, Top = 0, Right = 6, Bottom = 0 }   -- between the switch's word and its arrows
 -- The chosen band, faint, on the list's entry under the pointer: lit enough to follow the mouse, never mistaken for the
 -- chosen mod, whose band is whole (D55).
 M.HOVER_OPACITY = 0.3

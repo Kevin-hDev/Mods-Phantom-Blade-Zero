@@ -88,8 +88,8 @@ function M.pad() S.device = "pad" end
 -- At each frame of the open panel: k, the keys' presses (or nil); R, what the pointer did (mod_panel_pointer.lua). A
 -- still pointer is no gesture, even when a row scrolls under it.
 function M.frame(k, R)
-	if k ~= nil or R.mouse_moved or R.pick ~= nil or R.fav ~= nil or R.value or R.arrow ~= nil or R.moved ~= nil or R.close
-		or R.restore or R.head_arrow ~= nil or R.head_click or R.hide or R.show then
+	if k ~= nil or R.mouse_moved or R.pick ~= nil or R.fav ~= nil or R.switch ~= nil or R.value or R.arrow ~= nil
+		or R.moved ~= nil or R.close or R.restore or R.head_arrow ~= nil or R.head_click or R.hide or R.show then
 		S.device = "keys"
 	end
 end

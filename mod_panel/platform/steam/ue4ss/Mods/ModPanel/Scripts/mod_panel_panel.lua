@@ -85,14 +85,15 @@ function M.new(d)
 		close(pc, why)
 	end
 
-	-- The panel made, painted then shown; whether it shows. The help's device and the controller's icons first, so the
-	-- hidden panel's first paint has them; what the player does counted from here, so that any closing says this
-	-- opening's. The frame is looked at first: the last look was two frames before (D103).
+	-- The panel made, painted then shown; whether it shows. The commands first: the list made below forgets the mods
+	-- switched from it at the last opening (D183). The help's device and the controller's icons before the first paint;
+	-- what the player does counted from here, for the closing's line. The frame is looked at first (D103).
 	local function show(pc)
 		local other = claim.taken()
 		if other then return refuse(other, false) end
 		if not Frame.alive() then return refuse("the game took the panel off the screen", true) end
 		local lang = language.speak(opening.gi, true)
+		commands.start()
 		head.start()
 		nav.start(d.state.get("mod"))
 		freeze.start()
@@ -105,7 +106,6 @@ function M.new(d)
 		P.state, P.refused, P.opened, P.ticks = "open", nil, P.opened + 1, 0
 		prepare.made()
 		claim.hold()
-		commands.start()
 		Pointer.reset(d.problem)
 		Input.take(pc, d.problem, controls.on())
 		return true

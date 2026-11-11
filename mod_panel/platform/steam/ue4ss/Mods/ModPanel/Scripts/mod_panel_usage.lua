@@ -39,7 +39,7 @@ function M.frame(k, R)
 	end
 	if R.over ~= nil and R.over ~= U.row then U.rows = U.rows + 1 end
 	if R.entry ~= nil and R.entry ~= U.entry then U.entries = U.entries + 1 end
-	if R.pick ~= nil or R.fav ~= nil then U.clicks = U.clicks + 1 end
+	if R.pick ~= nil or R.fav ~= nil or R.switch ~= nil then U.clicks = U.clicks + 1 end
 	if R.mouse_moved then U.moved = U.moved + 1 end
 	U.row, U.entry = R.over, R.entry
 end

@@ -32,6 +32,18 @@ function M.item(i, k, selected)
 	end
 end
 
+-- The language's On and Off, hidden in each item's value: its room (D183).
+function M.words(on_word, off_word)
+	local F = Frame.get()
+	if F == nil then return end
+	for _, h in ipairs(F.head) do
+		if h.room_on ~= nil then
+			text(F.shown, h.room_on, on_word)
+			text(F.shown, h.room_off, off_word)
+		end
+	end
+end
+
 -- Whether the head's item i shows: the pointer asks only those.
 function M.item_on(i)
 	local F = Frame.get()

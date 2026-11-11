@@ -36,7 +36,6 @@ return {
 		mod = "Mod",
 		mod_count = "%d Mods",
 		mod_count_one = "%d Mod",
-		mod_off = "Aus",
 		move = "Bewegen",
 		no_button = "Keine Controller-Taste gedrückt.",
 		no_key = "Keine Taste gedrückt.",

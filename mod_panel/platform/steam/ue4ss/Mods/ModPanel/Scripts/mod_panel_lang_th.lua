@@ -33,7 +33,6 @@ return {
 		mod = "ม็อด",
 		mod_count = "%d ม็อด",
 		mod_count_one = "%d ม็อด",
-		mod_off = "ปิดอยู่",
 		move = "เลื่อน",
 		no_button = "ไม่ได้กดปุ่ม",
 		no_key = "ไม่ได้กดปุ่มคีย์บอร์ด",

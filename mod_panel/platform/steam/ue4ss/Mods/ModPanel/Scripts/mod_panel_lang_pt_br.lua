@@ -34,7 +34,6 @@ return {
 		mod = "Mod",
 		mod_count = "%d mods",
 		mod_count_one = "%d mod",
-		mod_off = "Desativado",
 		move = "Mover",
 		no_button = "Nenhum botão foi apertado.",
 		no_key = "Nenhuma tecla foi apertada.",

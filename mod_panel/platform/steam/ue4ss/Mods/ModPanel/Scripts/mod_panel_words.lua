@@ -15,8 +15,6 @@ local WORDS = {
 	mod_count_one = "%d mod",
 	on = "On",
 	off = "Off",
-	-- A mod turned off, in the list: Mods Menu's word for a mod in that state, not the switch's.
-	mod_off = "Off",
 	run = "Run",
 	press_again = "Press again",
 	sent = "Sent",

@@ -31,7 +31,6 @@ return {
 		mod = "MOD",
 		mod_count = "%d個のMOD",
 		mod_count_one = "%d個のMOD",
-		mod_off = "オフ",
 		move = "移動",
 		no_button = "ボタンが押されていません。",
 		no_key = "キーが押されていません。",

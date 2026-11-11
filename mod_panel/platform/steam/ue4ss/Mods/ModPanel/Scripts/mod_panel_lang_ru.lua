@@ -34,7 +34,6 @@ return {
 		mod = "Мод",
 		mod_count = "Модов: %d",
 		mod_count_one = "Модов: %d",
-		mod_off = "Выкл.",
 		move = "Перемещение",
 		no_button = "Кнопка не нажата.",
 		no_key = "Клавиша не нажата.",

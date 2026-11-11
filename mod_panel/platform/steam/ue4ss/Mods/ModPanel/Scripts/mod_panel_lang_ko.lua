@@ -31,7 +31,6 @@ return {
 		mod = "모드",
 		mod_count = "모드 %d개",
 		mod_count_one = "모드 %d개",
-		mod_off = "꺼짐",
 		move = "이동",
 		no_button = "누른 버튼이 없습니다.",
 		no_key = "누른 키가 없습니다.",

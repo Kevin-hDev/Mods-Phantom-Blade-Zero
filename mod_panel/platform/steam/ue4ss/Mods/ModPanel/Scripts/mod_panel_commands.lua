@@ -1,8 +1,8 @@
 -- What the presses and the pointer do on the open panel: the keys' and the controller's moves, then the pointer's, then
 -- the commands on the chosen row or head's item (mod_panel_head.lua). Taken out of mod_panel_panel.lua as it was in
 -- 0.2.0; the controller's commands come as the keys'. X, Square, Hide and Show hide or show the descriptions (D91). F,
--- R3 and a click on a mod's diamond make it a favourite or undo it, and so do Right and Left on the chosen mod in
--- Classic's list (D178).
+-- R3 and a click on a mod's diamond make it a favourite or undo it (D178). Right and Left on the chosen mod in
+-- Classic's list turn it on and off, and so do its switch's arrows clicked; a click on its word turns it over (D183).
 -- While a key or a button is awaited (mod_panel_capture.lua), the presses go to the wait, and only a click on another
 -- mod, which ends it, acts (D83).
 
@@ -16,32 +16,32 @@ local MOVING = { "up", "down", "left", "right", "enter", "prev", "next", "restor
 
 -- d: nav (mod_panel_nav.lua), changes (mod_panel_changes.lua), capture (mod_panel_capture.lua), controls
 -- (mod_panel_controls.lua), edits (mod_panel_edits.lua), catalog, head (mod_panel_head.lua), state
--- (mod_panel_state.lua), listing (mod_panel_listing.lua), favorites (mod_panel_favorites.lua), classic() (whether the
--- navigation is Classic now).
+-- (mod_panel_state.lua), listing (mod_panel_listing.lua), favorites (mod_panel_favorites.lua), switches
+-- (mod_panel_switches.lua), classic() (whether the navigation is Classic now).
 function M.new(d)
 	local nav, changes, capture, controls, head = d.nav, d.changes, d.capture, d.controls, d.head
 	-- over, over_head: the row and the frame's head item under the pointer at the last frame. stale: the mod changed
 	-- while the mouse may hold something of the page before; the pointer's value, arrows, bar and Restore defaults
-	-- then do nothing until nothing is pressed (D112). input: what a wait is given at each frame, used again.
-	local C = { over = nil, over_head = nil, stale = false }
+	-- then do nothing until nothing is pressed (D112). side: the controller's side held at the last frame, so that a
+	-- mod's switch acts at its press only (audit of 1.0.3). input: what a wait is given at each frame, used again.
+	local C = { over = nil, over_head = nil, stale = false, side = nil }
 	local input = { moves = 0, escape = 0, buttons = nil, button = false }
 
 	-- At each opening.
 	function C.start()
-		C.over, C.over_head, C.stale = nil, nil, false
+		C.over, C.over_head, C.stale, C.side = nil, nil, false, nil
+		d.listing.release()
 	end
 
 	-- The place among the head's items shown of the frame's head item j, or nil.
 	local function item(j) return j and head.place(FrameHead.ITEMS[j]) end
 
-	-- The mod called name made a favourite (yes) or no longer one, yes nil for the other way; the list sorted again
-	-- keeps the chosen mod in view.
-	local function favorite(name, yes)
-		if yes == nil then yes = not d.favorites.is(name) end
-		if d.favorites.set_to(name, yes) then nav.follow() end
+	-- The mod called name made a favourite, or no longer one; the list sorted again keeps the chosen mod in view.
+	local function favorite(name)
+		if d.favorites.toggle(name) then nav.follow() end
 	end
 
-	-- Classic, the chosen mod's entry chosen in the list: Right and Left make it a favourite or undo it.
+	-- Classic, the chosen mod's entry chosen in the list: Right and Left turn it on and off.
 	local function on_entry() return d.classic() and nav.list and nav.head == nil end
 
 	-- The moves of k, the presses; then the pointer's, a row or a head's item chosen only when the pointer comes onto
@@ -89,7 +89,11 @@ function M.new(d)
 
 	-- One arrow held at this frame at most: the pointer's on a row (page: read on this page) or on the head, else the
 	-- controller's (side: -1 or 1 while it holds left or right, mod_panel_pad_commands.lua) on the chosen item or row.
+	-- A mod's switch takes the side at its press only: held, it would turn off each mod Down passes, and the chosen
+	-- mod again once Circle comes back to the list with Left still held (audit of 1.0.3).
 	local function hold(entry, rows, R, now, side, page)
+		local pressed = side ~= C.side and side or nil
+		C.side = side
 		local i = item(R.head)
 		if R.arrow ~= nil and page then
 			head.release()
@@ -100,7 +104,7 @@ function M.new(d)
 		head.release()
 		local f = nav.focus()
 		if side ~= nil and entry ~= nil and f ~= nil then return changes.hold(entry, rows[f], f, side, now) end
-		if side ~= nil and on_entry() then favorite(nav.mod, side > 0) end
+		if pressed ~= nil and on_entry() then d.switches.set(nav.mod, pressed > 0, now) end
 		changes.hold(nil, nil, nil, nil, now)
 	end
 
@@ -120,8 +124,8 @@ function M.new(d)
 				enter(entry, row, k.enter, now)
 			end
 		else
-			if k.left > 0 and on_entry() then favorite(nav.mod, false) end
-			if k.right > 0 and on_entry() then favorite(nav.mod, true) end
+			if k.left > 0 and on_entry() then d.switches.set(nav.mod, false, now) end
+			if k.right > 0 and on_entry() then d.switches.set(nav.mod, true, now) end
 			if k.enter > 0 then nav.enter() end
 		end
 	end
@@ -137,9 +141,16 @@ function M.new(d)
 		local row = f and rows[f] or nil
 		local flips = (k and k.descriptions or 0) + ((R.hide or R.show) and 1 or 0)
 		if flips % 2 == 1 then d.state.set("descriptions", not d.state.get("descriptions")) end
+		-- The entries the pointer clicked, found before F sorts the list again under their places.
+		local list = (R.fav or R.switch) and d.listing.list(nav.mod)
+		local clicked, switched = R.fav and list[R.fav], R.switch and list[R.switch]
 		if (k and k.favorite or 0) % 2 == 1 then favorite(nav.mod) end
-		local clicked = R.fav and d.listing.list(nav.mod)[R.fav]
 		if clicked then favorite(clicked.name) end
+		if switched then
+			local yes = nil
+			if R.flip ~= 0 then yes = R.flip > 0 end
+			d.switches.set(switched.name, yes, now)
+		end
 		if k ~= nil then keyed(k, entry, row, now) end
 		local i = item(R.head)
 		if R.head_click and i ~= nil then filtered(head.enter(i, 1, now), now) end

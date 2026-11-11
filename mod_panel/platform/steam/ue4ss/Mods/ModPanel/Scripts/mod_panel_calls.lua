@@ -154,6 +154,9 @@ M.PAUSE = { ENGINE .. "GameplayStatics", "SetGamePaused", { OBJECT, BOOL } }
 -- The mouse's place (D100; WidgetLayoutLibrary.h line 92, no parameter). Without it, the pointer chooses nothing by
 -- passing over.
 M.MOUSE = { UMG .. "WidgetLayoutLibrary", "GetMousePositionOnPlatform", {} }
+-- The favourites' diamond read from Mod Panel's own file (D184; KismetRenderingLibrary.h line 210 in Unreal 5.7: the
+-- file decoded into a new texture, no package loaded). Without it, the game's diamond when it is in memory.
+M.IMPORT_TEXTURE = { ENGINE .. "KismetRenderingLibrary", "ImportFileAsTexture2D", { OBJECT, "StrProperty" } }
 
 -- Checked too in the opening's slices, but not needed: their first use is in the frame that shows the panel, the
 -- heaviest of an opening (audit of 0.5.1).

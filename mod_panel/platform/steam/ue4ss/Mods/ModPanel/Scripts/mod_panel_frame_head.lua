@@ -1,8 +1,8 @@
 -- The head of the list's pieces, made with the frame, hidden, in the list's body before its line: All mods, Freeze game
 -- and Background as a row of the settings is (a name, an arrow, a value, an arrow), then Enabled and Disabled (a name
 -- and a box drawn by two borders, D92), each as high as a mod of the list. Then, first in the list's box, the phrase of
--- an empty list. F.head[i] is item i of ITEMS: { size, frame, band, label } and either { left, right, value, word } or
--- { check, edge, mark }.
+-- an empty list. F.head[i] is item i of ITEMS: { size, frame, band, label } and either { left, right, value, word,
+-- room_on, room_off } or { check, edge, mark }.
 
 local L = require("mod_panel_layout")
 local Make = require("mod_panel_make")
@@ -16,14 +16,27 @@ local function beside(h, w)
 	h:AddChildToHorizontalBox(w):SetVerticalAlignment(L.CENTRE)
 end
 
--- The steps of an item's value between its arrows, on h.
+-- A word of the language kept hidden in an item's value, so that the value is as wide as it (L.HIDDEN).
+local function room(F, h, key, add)
+	add(function()
+		h[key] = F.B.text("font_text", L.TEXT_SIZE, L.WHITE)
+		h[key]:SetVisibility(L.HIDDEN)
+		Make.centre(h.value_overlay:AddChildToOverlay(h[key]))
+	end)
+end
+
+-- The steps of an item's value between its arrows, on h: HEAD_VALUE_WIDTH wide at least, and as wide as the
+-- language's On and Off, on every item, so that the arrows stand in line (D183).
 local function arrows(F, h, add)
 	add(function() h.left = F.B.button(); beside(h.h, h.left) end)
 	add(function() h.left_box = F.B.sized(L.ARROW_SIZE, L.ARROW_SIZE); h.left:SetContent(h.left_box) end)
 	add(function() h.left_box:SetContent(F.B.arrow(true)) end)
 	add(function() h.value = F.B.button(); beside(h.h, h.value) end)
-	add(function() h.value_box = F.B.sized(L.HEAD_VALUE_WIDTH); h.value:SetContent(h.value_box) end)
+	add(function() h.value_box = F.B.sized(); h.value:SetContent(h.value_box) end)
 	add(function() h.value_overlay = F.B.new("Overlay"); h.value_box:SetContent(h.value_overlay) end)
+	add(function() h.least = F.B.sized(L.HEAD_VALUE_WIDTH); h.value_overlay:AddChildToOverlay(h.least) end)
+	room(F, h, "room_on", add)
+	room(F, h, "room_off", add)
 	add(function()
 		h.word = F.B.text("font_text", L.TEXT_SIZE, L.WHITE)
 		Make.centre(h.value_overlay:AddChildToOverlay(h.word))

@@ -34,7 +34,6 @@ return {
 		mod = "Mod",
 		mod_count = "%d mod",
 		mod_count_one = "%d mod",
-		mod_off = "Tắt",
 		move = "Di Chuyển",
 		no_button = "Chưa nhấn nút nào.",
 		no_key = "Chưa nhấn phím nào.",

@@ -58,8 +58,8 @@ function M.colour(sh, w, name) M.apply(sh, w, "colour", name, set_colour) end
 function M.on(yes, shows) return yes and shows or L.COLLAPSED end
 
 -- Whether image w shows the texture at path, find(arg) giving it. It is looked for and set only when the texture w
--- shows changes, in this very frame (D75), and the image holds it from then on.
-local function holds(sh, w, path, find, arg)
+-- shows changes, in this very frame (D75), and the image holds it from then on; kept(arg, t) hears it set.
+local function holds(sh, w, path, find, arg, kept)
 	if path == nil then return false end
 	local s = sh[w]
 	if s == nil then
@@ -70,6 +70,7 @@ local function holds(sh, w, path, find, arg)
 	local t = find(arg)
 	if t == nil or not M.tried(pcall(set_texture, w, t)) then return false end
 	s.icon = path
+	if kept then kept(arg, t) end
 	return true
 end
 
@@ -77,6 +78,6 @@ end
 function M.icon(sh, w, name) return holds(sh, w, Icons.path(name), Icons.texture, name) end
 
 -- Whether image w shows the favourites' diamond (D178).
-function M.favorite(sh, w) return holds(sh, w, L.FAVORITE_ICON, Icons.favorite) end
+function M.favorite(sh, w) return holds(sh, w, L.FAVORITE_ICON, Icons.favorite, sh, Icons.kept) end
 
 return M

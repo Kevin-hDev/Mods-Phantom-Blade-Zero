@@ -34,7 +34,6 @@ return {
 		mod = "模组",
 		mod_count = "%d 个模组",
 		mod_count_one = "%d 个模组",
-		mod_off = "已关闭",
 		move = "移动",
 		no_button = "未按下任何控制器按键。",
 		no_key = "未按下任何按键。",

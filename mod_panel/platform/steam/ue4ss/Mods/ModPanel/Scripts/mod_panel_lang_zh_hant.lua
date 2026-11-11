@@ -30,7 +30,6 @@ return {
 		mod = "模組",
 		mod_count = "%d 個模組",
 		mod_count_one = "%d 個模組",
-		mod_off = "已關閉",
 		move = "移動",
 		no_button = "未按下任何按鈕。",
 		no_key = "未按下任何按鍵。",

@@ -170,11 +170,12 @@ function M.new(d)
 		return nil
 	end
 
-	-- row of entry set to v, written half a second after the last change (mod_panel_edits.lua).
+	-- row of entry set to v, written half a second after the last change (mod_panel_edits.lua); whether it changed.
 	function C.set(entry, row, v, now)
-		if v == C.value(entry, row) or C.locked(entry, row) then return end
+		if v == C.value(entry, row) or C.locked(entry, row) then return false end
 		set(entry.name, row, v, now)
 		restore.forget()
+		return true
 	end
 
 	-- A bar moved by the player to fraction (0 to 1); a greyed row refused by C.set.

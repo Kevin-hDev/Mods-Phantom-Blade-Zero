@@ -1,8 +1,8 @@
 -- What the open panel shows, worked out at each frame from the catalog, the changes waiting to be written and the
 -- panel's state; the view sets in the game only what changed (mod_panel_view.lua, mod_panel_view_head.lua). The head of
 -- the list (mod_panel_head.lua); the list the filter shows (mod_panel_listing.lua), the mods' titles in the player's
--- language, "Off" on a mod turned off (D34), each mod's diamond, gold on a favourite (D178), the chosen mod lit, a
--- phrase when none is listed. The chosen mod's rows,
+-- language, each mod's diamond, gold on a favourite (D178), its On/Off switch and its title pale when off (D183), the
+-- chosen mod lit, a phrase when none is listed. The chosen mod's rows,
 -- each kind as Mods Menu shows it but a button row, whose value is the button's icon (mod_panel_icons.lua), a change
 -- waiting shown over the file's value, and a row awaiting a key or a button saying so (mod_panel_capture.lua); under
 -- its title, "Settings not saved" while a writing fails. A greyed row in grey, without its arrows (D148); a section's
@@ -31,7 +31,7 @@ local M = {}
 -- d: { catalog (the mods read), own (Mod Panel's folder name), changes (mod_panel_changes.lua) and edits
 -- (mod_panel_edits.lua): what the commands changed; capture (mod_panel_capture.lua): the wait for a key; listing
 -- (mod_panel_listing.lua), head (mod_panel_head.lua), folds (mod_panel_folds.lua), favorites
--- (mod_panel_favorites.lua) }.
+-- (mod_panel_favorites.lua), switches (mod_panel_switches.lua) }.
 function M.new(d)
 	local catalog, own, changes, edits, capture = d.catalog, d.own, d.changes, d.edits, d.capture
 	local S = { lang = "en", close = "", key_shown = nil, back_shown = false }
@@ -120,6 +120,7 @@ function M.new(d)
 
 	-- The head of the list: each of the frame's items, the chosen one lit (head: its place among the items shown).
 	local function paint_head(head)
+		ViewHead.words(say("on"), say("off"))
 		local chosen = head and d.head.name(head)
 		for i, name in ipairs(FrameHead.ITEMS) do
 			heads[i] = d.head.look(heads[i] or {}, name, S.lang)
@@ -148,9 +149,11 @@ function M.new(d)
 		View.texts(say("title"), count, chosen and pick(chosen.title) or "", sub, about, S.close)
 		paint_head(state.head)
 		ViewHead.empty(say("empty"), #list == 0)
+		local on_word, off_word = say("on"), say("off")
 		for i, entry in ipairs(list) do
-			View.entry(i, pick(entry.title) or entry.name, catalog.off(entry) and say("mod_off") or nil, entry == chosen,
-				i == state.hover, d.favorites.is(entry.name))
+			local sw, locked = d.switches.look(entry)
+			View.entry(i, pick(entry.title) or entry.name, entry == chosen, i == state.hover, d.favorites.is(entry.name),
+				sw, locked, on_word, off_word)
 		end
 		for i, r in ipairs(rows) do
 			looks[i] = looks[i] or {}

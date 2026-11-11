@@ -9,13 +9,15 @@ local M = {}
 
 M.ENABLED = "Enabled"
 
--- The mod's Enabled switch, or nil: a mod without one cannot be turned off in play (D157).
-local function switch(entry)
+-- The mod's Enabled switch, or nil: a mod without one cannot be turned off in play (D157). Also the list's switch's
+-- (mod_panel_switches.lua).
+function M.switch(entry)
 	for _, row in ipairs(entry.rows) do
 		if row.key == M.ENABLED and row.type == "toggle" then return row end
 	end
 	return nil
 end
+local switch = M.switch
 
 -- d: { catalog, changes (mod_panel_changes.lua), state (mod_panel_state.lua), own (Mod Panel's folder name),
 -- report(fmt, ...) for the log }.
