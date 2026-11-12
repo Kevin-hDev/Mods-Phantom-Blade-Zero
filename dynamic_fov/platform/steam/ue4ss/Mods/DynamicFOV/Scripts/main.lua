@@ -10,8 +10,8 @@
 -- closed, a tick asks nothing of the game. Everything runs from the player controller's tick, inside UE4SS's lock
 -- (dynamic_fov_driver.lua).
 -- The colours and the clean image go through the image settings of the camera seen through (dynamic_fov_image.lua),
--- looked at once a second, and at the next tick after a change; the comfort options through four fields of the
--- camera's modes (dynamic_fov_comfort.lua), the same way.
+-- looked at once a second, at the next tick after a change, and for a scene's camera in the frame the game makes
+-- it (1.0.8); the comfort options through four fields of the camera's modes (dynamic_fov_comfort.lua), as often.
 -- When the settings are read: dynamic_fov_watch.lua.
 -- During an execution, given or taken, the camera is the game's, place and field of view (1.0.7): the game films most
 -- in the combat view in progress, where the place pushed the view into the enemy (dynamic_fov_executions.lua).
@@ -32,7 +32,7 @@ local Comfort = require("dynamic_fov_comfort")
 local ImageLines = require("dynamic_fov_image_lines")
 local Executions = require("dynamic_fov_executions")
 
-local VERSION = "1.0.7"
+local VERSION = "1.0.8"
 local TICK_SECONDS = 0.1          -- a tick: the view's place
 -- Seconds the place takes to go as an execution starts: 0.2 is too abrupt for the eyes (Kevin, 10 November 2026).
 local EXECUTION_BLEND = 0.4
@@ -101,11 +101,8 @@ panel = Panel.new({ log = log, warn = warn, report = function(fmt, ...) T.bounde
 	descriptor_path = DESCRIPTOR_PATH, settings = function() return S.settings end,
 	apply = function(s) use(s, true) end, preview = camera.show, camera = camera.camera })
 
-local image_look = ImageLines.new(T, function() return panel.is_open() end)
-
-local function look_image()
-	image_look(S.controller)
-end
+local look_image, born_image = ImageLines.new(T, function() return panel.is_open() end,
+	function() return S.controller end)
 
 -- The camera found by the last look; a toggle in the panel is one write, so its lines are said even while it is open.
 local function look_comfort()
@@ -177,7 +174,7 @@ end
 local function get(param) return param:get() end
 
 -- Every frame: the panel's keys and, while it is open, its frame; a tick every TICK_SECONDS. Without a key pressed,
--- an open panel or a tick due, a frame reads nothing from the game.
+-- an open panel, a camera the game just made or a tick due, a frame reads nothing from the game.
 local function frame_work(param)
 	-- Asked here, under UE4SS's lock, never at start: a bind's Lua runs on UE4SS's own thread. Before the presses are
 	-- taken, so a key changed in the settings never counts the old one's.
@@ -189,6 +186,8 @@ local function frame_work(param)
 	local now = os.clock()
 	local due = now + EARLY >= S.next_tick
 	local busy = toggles > 0 or escapes > 0 or panel.is_open()
+	-- First, and whatever the controller: a scene's shot is seen through its camera within this frame.
+	if Image.waiting() then T.run("cameras", born_image) end
 	if not (due or busy) then return end
 	local ok, pc = pcall(get, param)
 	if not ok and not S.get_failed then
@@ -226,4 +225,5 @@ end
 -- Last: once the hook or the notifications are set, the mod runs on the game thread, and this file must be done by
 -- then. The lines below are only written when something failed.
 Executions.watch(log)
+Image.watch(log)
 Driver.start(frame, function() S.new_controller = true end, log)

@@ -29,9 +29,9 @@ end
 
 function M.new(log)
 	local T = { lines = {}, errors = 0, new_errors = 0, slots = { looks = slot(), ticks = slot(), frames = slot(),
-		panel = slot(), executions = slot() },
+		panel = slot(), executions = slot(), cameras = slot() },
 		writes = 0, failed = 0, sets = 0, set_failed = 0, image_writes = 0, image_failed = 0, comfort_writes = 0,
-		comfort_failed = 0 }
+		comfort_failed = 0, image_early = 0 }
 	for kind in pairs(MAX_LINES) do T.lines[kind] = 0 end
 
 	function T.bounded(kind, fmt, ...)
@@ -41,8 +41,8 @@ function M.new(log)
 		if n == MAX_LINES[kind] then log("further %s lines are not written", kind) end
 	end
 
-	-- Runs fn(...), its time counted under name ("looks", "ticks", "frames", "panel" or "executions"); an error is
-	-- written, then only counted.
+	-- Runs fn(...), its time counted under name ("looks", "ticks", "frames", "panel", "executions" or "cameras");
+	-- an error is written, then only counted.
 	function T.run(name, fn, ...)
 		local s = T.slots[name]
 		local start = os.clock()
@@ -61,23 +61,29 @@ function M.new(log)
 	-- The cost since the last status line. Ticks at work are those with a camera position to hold or to take away;
 	-- frames are every call of the player controller's tick hook, the rest within them; the panel's calls are its
 	-- frames while open, its openings, closings and refusals, and its changes written at the next tick. The executions'
-	-- ticks are all of them; executions: those started since the last line.
+	-- ticks are all of them; executions: those started since the last line. New cameras: the frames that had
+	-- cameras the game just made, and the image values written to a scene's at its making, which the image
+	-- values written count too.
 	-- No word a mod manager takes for an error unless there is one: this game's mod manager on Nexus paints
 	-- red any line with error(s), failed, failure, exception or fatal, and yellow warn(ing)(s); "failed 0" and "errors
 	-- since start 0" made every status line red (5 November 2026). Refused writes are said in other words, and only
 	-- when there were some; the errors are those since the last line, so one old error does not keep every line red.
 	function T.line(modes, managed, minutes, executions)
 		local l, t, f, p, e = T.slots.looks, T.slots.ticks, T.slots.frames, T.slots.panel, T.slots.executions
-		-- What a frame costs outside the looks, the ticks, the panel and the executions: mostly frames with nothing
-		-- to do.
-		local rest = { calls = f.calls, busy = math.max(f.busy - l.busy - t.busy - p.busy - e.busy, 0) }
+		local c = T.slots.cameras
+		-- What a frame costs outside the looks, the ticks, the panel, the executions and the new cameras: mostly
+		-- frames with nothing to do.
+		local rest = { calls = f.calls, busy = math.max(f.busy - l.busy - t.busy - p.busy - e.busy - c.busy, 0) }
 		log("status: %d camera modes, %d managed; in the last %d minutes: %d looks, about %d microseconds a look on "
 			.. "average, the longest under %d ms, mode writes %d%s%s; camera position: "
 			.. "%d ticks at work, about %d microseconds each, the longest under %d ms, layer set %d%s; "
 			.. "image values written %d%s; comfort values written %d%s; "
-			.. "frames %d (%d a second), about %d microseconds each (about %d outside the looks, ticks, panel and "
-			.. "executions), the longest under %d ms; panel: %d calls, about %d microseconds each, the longest under "
-			.. "%d ms; executions: %d started, %d ticks watched, about %d microseconds each, the longest under %d ms",
+			.. "frames %d (%d a second), about %d microseconds each (about %d outside the looks, ticks, panel, "
+			.. "executions and new cameras), the longest under %d ms; panel: %d calls, about %d microseconds each, the "
+			.. "longest under "
+			.. "%d ms; executions: %d started, %d ticks watched, about %d microseconds each, the longest under %d ms; "
+			.. "new cameras: %d frames with some, about %d microseconds each, the longest under %d ms, %d image values "
+			.. "written at their making",
 			math.max(modes, 0), math.max(managed, 0), minutes, l.calls, average_us(l), longest_ms(l), T.writes,
 			T.failed > 0 and string.format(", could not be written %d", T.failed) or "",
 			T.new_errors > 0 and string.format("; %d errors", T.new_errors) or "",
@@ -86,10 +92,11 @@ function M.new(log)
 			T.image_failed > 0 and string.format(", could not be written %d", T.image_failed) or "", T.comfort_writes,
 			T.comfort_failed > 0 and string.format(", could not be written %d", T.comfort_failed) or "", f.calls,
 			math.floor(f.calls / math.max(minutes * 60, 1) + 0.5), average_us(f), average_us(rest), longest_ms(f),
-			p.calls, average_us(p), longest_ms(p), executions or 0, e.calls, average_us(e), longest_ms(e))
+			p.calls, average_us(p), longest_ms(p), executions or 0, e.calls, average_us(e), longest_ms(e),
+			c.calls, average_us(c), longest_ms(c), T.image_early)
 		for name in pairs(T.slots) do T.slots[name] = slot() end
 		T.writes, T.failed, T.sets, T.set_failed, T.new_errors = 0, 0, 0, 0, 0
-		T.image_writes, T.image_failed, T.comfort_writes, T.comfort_failed = 0, 0, 0, 0
+		T.image_writes, T.image_failed, T.comfort_writes, T.comfort_failed, T.image_early = 0, 0, 0, 0, 0
 	end
 
 	return T

@@ -7,7 +7,7 @@
     "en": "A field of view for each situation (normal view, sprint, crouch, lock-on), transition time, camera distance, height and side, comfort options, vivid colours and a clean image. Cutscenes, dialogues and special moves keep the game's camera. The panel key (F8 by default) opens the settings in play.",
     "zh-Hans": "为不同状态（普通镜头、冲刺、下蹲、锁定敌人）分别设置视野，并可调整过渡时间，以及镜头的距离、高度和左右位置，还有舒适选项，并能让色彩更鲜艳、画面更纯净。过场动画、对话和特殊招式保持游戏原有镜头。游戏中按面板按键（默认 F8）打开设置。"
   },
-  "version": "1.0.7",
+  "version": "1.0.8",
   "greyedUnless": {
     "Enabled": true
   },

@@ -30,6 +30,12 @@ local function value_of(slider) return slider:GetValue() end
 local function offset_of(box) return box:GetScrollOffset() end
 local function fraction_of(box) return box:GetViewFraction() end
 local function set_offset(box, v) box:SetScrollOffset(v) end
+local function full_name_of(w) return w:GetFullName() end
+
+local function full_name(w)
+	local ok, n = pcall(full_name_of, w)
+	return ok and type(n) == "string" and n or nil
+end
 
 -- Builds the panel under outer, the game instance, for the panel's lines (dynamic_fov_panel_rows.lua), hidden.
 -- Returns true, the names of the game's pieces not found and those of the controller's icons not found, or false and
@@ -39,13 +45,17 @@ function M.build(outer, lines, log)
 	local ok, w, missing, absent = pcall(Build.build, outer, lines, log)
 	if not ok then return false, tostring(w) end
 	W = w
+	W.name = full_name(w.root)
 	return true, missing, absent
 end
 
--- Whether a built panel is on the screen. One the game took off it is forgotten.
+-- Whether a built panel is on the screen. One the game took off it is forgotten, and so is one whose address
+-- another object has taken since: UE4SS's IsValid answers for an address, and that object on the screen would pass
+-- for the panel while the panel's pieces are destroyed ones (audit of 11 November 2026). The name is read only on an
+-- object that exists: on a destroyed one the read crashes the game, and no pcall catches it.
 function M.alive()
 	if W == nil then return false end
-	if U.is_valid(W.root) then
+	if U.is_valid(W.root) and full_name(W.root) == W.name then
 		local ok, on = pcall(in_viewport, W.root)
 		if ok and on == true then return true end
 	end

@@ -43,8 +43,13 @@ local function key_of(m)
 	return ok and type(name) == "string" and name ~= "None" and name or nil
 end
 
+-- A mapping whose action is gone is not ours, and its name is never read: on a destroyed object the read crashes
+-- the game, and no pcall catches it (audit of 11 November 2026).
 local function ours(m)
-	local ok, name = pcall(function() return m.Action:GetFName():ToString() end)
+	local ok, name = pcall(function()
+		local action = m.Action
+		return U.is_valid(action) and action:GetFName():ToString() or nil
+	end)
 	return ok and type(name) == "string" and name:sub(1, #OWN) == OWN
 end
 

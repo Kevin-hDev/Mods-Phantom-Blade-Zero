@@ -7,9 +7,10 @@ local Image = require("dynamic_fov_image")
 
 local M = {}
 
--- T: the mod's lines and counts (dynamic_fov_status.lua); is_open(): whether the panel is open. Returns
--- look(controller), which looks at the image settings and says what changed.
-function M.new(T, is_open)
+-- T: the mod's lines and counts (dynamic_fov_status.lua); is_open(): whether the panel is open; controller():
+-- the player controller. Returns look(), which looks at the image settings and says what changed, and born(),
+-- which gives the image to the cameras the game just made.
+function M.new(T, is_open, controller)
 	local held = nil
 
 	local function report(fmt, ...)
@@ -23,14 +24,21 @@ function M.new(T, is_open)
 		T.bounded("image problem", fmt, ...)
 	end
 
-	return function(controller)
-		local writes, failed = Image.look(controller, report, problem)
+	local function count(writes, failed)
 		T.image_writes, T.image_failed = T.image_writes + writes, T.image_failed + failed
 		if held ~= nil and not is_open() then
 			local line = held
 			held = nil
 			T.bounded("image", "%s", line)
 		end
+	end
+
+	return function()
+		count(Image.look(controller(), report, problem))
+	end, function()
+		local writes, failed = Image.born(report, problem)
+		T.image_early = T.image_early + writes
+		count(writes, failed)
 	end
 end
 
