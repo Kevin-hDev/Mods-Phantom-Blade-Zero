@@ -4,10 +4,10 @@
     "zh-Hans": "动作速度调整"
   },
   "description": {
-    "en": "Faster or slower walking, running, sprinting, dodges, wall runs, ladders and attacks: one speed for every move, or a speed for each. Higher jumps. A left stick curve that lets you walk, stick dead zones, auto sprint, or no sprint at all. Realism: no sideways glide, smooth slowdowns, heavier starts.",
-    "zh-Hans": "更快或更慢的行走、奔行、快速奔行、闪避、跑墙、爬梯和攻击：所有动作使用同一速度，或为每个动作单独设置速度。跳得更高。左摇杆曲线让行走更容易，可调整摇杆死区，并支持自动快速奔行，也可关闭快速奔行。真实感：转弯不再侧滑，平稳减速，起步更沉稳。"
+    "en": "Faster or slower walking, running, sprinting, dodges, wall runs, ladders and attacks: one speed for all or one each, and enemy speeds too. Higher jumps. A left stick curve that lets you walk, stick dead zones, auto sprint or no sprint. Realism: no sideways glide, smooth slowdowns, heavier starts.",
+    "zh-Hans": "更快或更慢的行走、奔行、快速奔行、闪避、跑墙、爬梯和攻击：所有动作使用同一速度，或为每个动作单独设置速度，也可调整敌人的速度。跳得更高。左摇杆曲线让行走更容易，可调整摇杆死区，并支持自动快速奔行，也可关闭快速奔行。真实感：转弯不再侧滑，平稳减速，起步更沉稳。"
   },
-  "version": "1.0.5",
+  "version": "1.0.6",
   "settings": [
     {
       "key": "Enabled",
@@ -3343,6 +3343,46 @@
           }
         }
       ]
+    },
+    {
+      "type": "heading",
+      "label": {
+        "en": "Enemies",
+        "zh-Hans": "敌人"
+      },
+      "collapsed": true
+    },
+    {
+      "key": "EnemyAttacks",
+      "type": "number",
+      "min": 0.5,
+      "max": 3,
+      "step": 0.05,
+      "default": 1,
+      "label": {
+        "en": "Enemy attacks",
+        "zh-Hans": "敌人攻击"
+      },
+      "help": {
+        "en": "How fast enemies attack. 1 is the game's own speed, 0.5 half as fast, 3 three times as fast. Their entrances, grabs, executions and reactions to your hits keep the game's own speed.",
+        "zh-Hans": "敌人攻击的速度。1 为游戏原有速度，0.5 为一半速度，3 为三倍速度。敌人的登场、擒拿、处决以及被你击中时的反应保持游戏原有速度。"
+      }
+    },
+    {
+      "key": "EnemyMovement",
+      "type": "number",
+      "min": 0.5,
+      "max": 3,
+      "step": 0.05,
+      "default": 1,
+      "label": {
+        "en": "Enemy movement",
+        "zh-Hans": "敌人移动"
+      },
+      "help": {
+        "en": "How fast enemies walk, run, dodge and jump; their legs keep pace, so they don't slide. 1 is the game's own speed, 0.5 half as fast, 3 three times as fast.",
+        "zh-Hans": "敌人行走、奔跑、闪避和跳跃的速度；腿部动作随之调整，不会滑步。1 为游戏原有速度，0.5 为一半速度，3 为三倍速度。"
+      }
     }
   ]
 }

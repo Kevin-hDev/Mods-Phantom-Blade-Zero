@@ -41,6 +41,11 @@ M.OLD_AUTO = Sprint.OLD_AUTO
 -- as set (movement_realism.lua). None by default: a player who updates keeps the movement they know.
 local NO_REALISM, HYPER = "None", "HyperRealistic"
 M.REALISM = { key = "Realism", options = { NO_REALISM, "Realistic", HYPER }, default = NO_REALISM }
+-- The enemies (Kevin, 12 November 2026, movement_enemies.lua): their attacks and their movement apart, as Soul's: a
+-- player can want fiercer enemies that do not run faster, or the other way. Soul's range; 1 by default, the game's,
+-- so that a player who updates keeps the enemies they know.
+M.ENEMY_ATTACKS = { key = "EnemyAttacks", min = M.MIN, max = M.MAX, step = M.STEP, default = 1 }
+M.ENEMY_MOVEMENT = { key = "EnemyMovement", min = M.MIN, max = M.MAX, step = M.STEP, default = 1 }
 
 -- On the menu's grid: rounded to its step, so 1.35 written by hand and the menu's 1.35 are the same speed.
 -- Divided rather than multiplied by the step: 27 / 20 is the 1.35 written in the file, 27 x 0.05 is not.
@@ -145,6 +150,9 @@ function M.resolve(raw, warn)
 	s.stick_neutral = s.stick.left == nil and s.stick.right == nil and s.auto == nil and s.toggle == nil
 	s.realism = V.choice(raw, M.REALISM.key, M.REALISM.options, M.REALISM.default, warn)
 	s.realistic, s.hyper = s.realism ~= NO_REALISM, s.realism == HYPER
+	s.enemy = { attack = V.ranged(raw, M.ENEMY_ATTACKS, M.ENEMY_ATTACKS.default, warn),
+		move = V.ranged(raw, M.ENEMY_MOVEMENT, M.ENEMY_MOVEMENT.default, warn) }
+	s.enemy_neutral = s.enemy.attack == 1 and s.enemy.move == 1
 	return s
 end
 
@@ -165,9 +173,10 @@ function M.describe(s)
 		parts[#parts + 1] = string.format("%s x%s%s", move.setting, V.show(s.rates[move.key]),
 			s.own[move.key] and "" or " (global)")
 	end
-	return string.format("mod %s, global x%s: %s; attacks x%s; jump height x%s; %s; %s; realism %s",
-		s.enabled and "on" or "off", V.show(s.all), table.concat(parts, ", "), V.show(s.rates[Moves.ATTACKS]),
-		V.show(s.jump_height), describe_sticks(s), Sprint.describe(s), s.realism)
+	return string.format("mod %s, global x%s: %s; attacks x%s; jump height x%s; %s; %s; realism %s; enemy attacks "
+		.. "x%s, enemy movement x%s", s.enabled and "on" or "off", V.show(s.all), table.concat(parts, ", "),
+		V.show(s.rates[Moves.ATTACKS]), V.show(s.jump_height), describe_sticks(s), Sprint.describe(s), s.realism,
+		V.show(s.enemy.attack), V.show(s.enemy.move))
 end
 
 -- The file's keys and their defaults, in the menu's order: the moves under the Jump heading (in_jump) come after Jump
@@ -190,6 +199,8 @@ local function entries()
 	list[#list + 1] = { M.RIGHT.key, tostring(M.RIGHT.default) }
 	Sprint.entries(list)
 	list[#list + 1] = { M.REALISM.key, M.REALISM.default }
+	list[#list + 1] = { M.ENEMY_ATTACKS.key, M.ENEMY_ATTACKS.default }
+	list[#list + 1] = { M.ENEMY_MOVEMENT.key, M.ENEMY_MOVEMENT.default }
 	return list
 end
 

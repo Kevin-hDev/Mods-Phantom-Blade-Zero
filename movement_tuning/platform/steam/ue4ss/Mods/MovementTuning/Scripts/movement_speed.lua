@@ -7,9 +7,11 @@
 -- The push follows the game's own step, not the frame's length: the player controller still ticks
 -- while the game is paused (UE 5.7 PlayerController.cpp, bTickEvenWhenPaused) and its timelines stand still, and a
 -- timeline that loops back or that the game slows with its time-stretch curve moves less than the frame.
--- The tasks are those the game announces as it makes them (movement_tasks.lua), kept when they are the player's. A
--- task's end is told by its time: once over, the game no longer moves it (183 tasks out of 183, verified in game, 5
--- November 2026), while it stays valid. A task standing still is looked at less often, then forgotten.
+-- The tasks are those the game announces as it makes them (movement_tasks.lua), kept when they are the player's, or an
+-- enemy's attack or move when the enemies' part takes it (movement_enemies.lua): the enemies play theirs the same way,
+-- pushed by this same code (EnemyProbe, 12 November 2026, Kevin: « ca fonctionne très bien en jeu »). A task's end is
+-- told by its time: once over, the game no longer moves it (183 tasks out of 183, verified in game, 5 November 2026),
+-- while it stays valid. A task standing still is looked at less often, then forgotten.
 
 local U = require("movement_unreal")
 local Family = require("movement_family")
@@ -20,7 +22,8 @@ local M = {}
 
 local MAX_PUSH_TIME = 0.1   -- a long step of the game (a hitch, a load) pushes as if it lasted 0.1 s at most
 local MAX_GAP = 0.2         -- seconds without a look at the tasks after which their next step is not pushed
-local MAX_TRACKED = 64      -- the player's tasks kept; past this, the one standing still the longest is forgotten
+local MAX_TRACKED = 128     -- tasks kept; past this, the one standing still the longest is forgotten. The player's
+                            -- and the enemies' share it: a fight with ten enemies keeps some sixty at once
 local MAX_TRIES = 5         -- frames a new task is waited for when its owner, its class or its ability cannot be read
 local IDLE = 0.25           -- seconds a task's time stands still before it is looked at every SLOW_LOOK seconds only
 local SLOW_LOOK = 0.1       -- moving again (a pause over), its steps since are pushed at once, within MAX_PUSH_TIME
@@ -51,39 +54,6 @@ function M.remembered()
 	return C.count
 end
 
--- The task's ability system, given by UE4SS as the object or as a weak pointer to Get it from (seen in game).
-local function owner(task)
-	local v, got = nil, nil
-	pcall(function() v = task.AbilitySystemComponent end)
-	if v == nil then return nil end
-	if U.is_valid(v) then return U.address(v) end
-	pcall(function() got = v:Get() end)
-	return U.is_valid(got) and U.address(got) or nil
-end
-
--- What a task is: { key = false } for one left alone, nil when it cannot be read this frame (tried again next frame).
-local function identify(task, say)
-	local timeline, class = Tasks.is_timeline(task)
-	if timeline == nil then return nil end
-	if not timeline then return { key = false } end
-	local ability = nil
-	pcall(function() ability = task.Ability end)
-	-- UE4SS gives an unset object property as an object that is not valid.
-	if not U.is_valid(ability) then return { key = false } end
-	local key = Family.category(ability, say)
-	if key == nil then return nil end
-	return { task = task, key = key, class = class, ability = U.address(ability), fresh = true }
-end
-
--- Whether a task at a known address is still the one worked out: same class, same ability. The task was just checked
--- valid.
-local function same(task, entry)
-	if U.class_address(task, true) ~= entry.class then return false end
-	local ability = nil
-	pcall(function() ability = task.Ability end)
-	return U.address(ability) == entry.ability
-end
-
 local function drop(addr)
 	if C.tasks[addr] ~= nil then C.tasks[addr], C.count = nil, C.count - 1 end
 end
@@ -102,8 +72,9 @@ local function keep(addr, entry, clock)
 	C.tasks[addr] = entry
 end
 
--- The tasks announced since the last frame: the player's are kept, the others let go.
-local function adopt(asc_addr, clock, say)
+-- The tasks announced since the last frame: the player's kept when mine, the others offered to the enemies' part when
+-- it is on (foes: movement_enemies.lua, nil while off), the rest let go.
+local function adopt(asc_addr, clock, say, mine, foes)
 	local list = Tasks.take()
 	if list == nil then return end
 	for addr, task in pairs(list) do
@@ -111,17 +82,25 @@ local function adopt(asc_addr, clock, say)
 			-- UE4SS's object stands for an address: the task kept there is gone, and any task made at its address, an
 			-- enemy's or one left alone, would be read through it.
 			drop(addr)
-			local whose = owner(task)
-			local entry = whose == asc_addr and identify(task, say) or nil
+			local whose, asc = Tasks.owner(task)
+			-- What to keep; false to let the task go, nil while it cannot be read (waited for).
+			local entry = false
+			if whose == nil then
+				entry = nil
+			elseif whose == asc_addr then
+				if mine then entry = Family.entry(task, say) end
+			elseif foes ~= nil then
+				entry = foes.offer(task, whose, asc)
+			end
 			if entry ~= nil then
 				C.tries[addr] = nil
-				if entry.key then keep(addr, entry, clock) end
-			elseif whose == nil or whose == asc_addr then
+				if entry and entry.key then keep(addr, entry, clock) end
+			else
 				local tries = (C.tries[addr] or 0) + 1
 				C.tries[addr] = nil
 				if tries < MAX_TRIES and Tasks.wait(addr, task) then
 					C.tries[addr] = tries
-				elseif tries >= MAX_TRIES and (whose == asc_addr or not R.kept) then
+				elseif tries >= MAX_TRIES and (whose == asc_addr or (whose == nil and not R.kept)) then
 					-- An unreadable owner can be an enemy's being destroyed: said only while no move has ever been
 					-- kept, when the owner reads fail for every task.
 					R.failed = R.failed or "a new move's owner, class or ability cannot be read"
@@ -160,7 +139,7 @@ local function push(task, entry, now, last, fresh, rate, counts)
 end
 
 -- One kept task: pushed while its time moves, looked at less often once it stands still, forgotten after a while.
-local function look(addr, entry, clock, rates, counts)
+local function look(addr, entry, clock, rate, counts)
 	local task = entry.task
 	if not U.is_valid(task) then
 		drop(addr)
@@ -179,10 +158,9 @@ local function look(addr, entry, clock, rates, counts)
 		end
 		return
 	end
-	local rate = rates[entry.key]
 	-- Read only for a task that moves and is pushed: one standing still costs its validity and its time, one at the
 	-- game's speed too (ten attacks at once would cost 40 calls a frame).
-	if rate ~= 1 and not same(task, entry) then
+	if rate ~= 1 and not Tasks.same(task, entry) then
 		drop(addr)
 		return
 	end
@@ -196,9 +174,21 @@ local function look(addr, entry, clock, rates, counts)
 	push(task, entry, now, last, fresh, rate, counts)
 end
 
--- Pushes the time of each of the player's timelines whose move is faster or slower than the game's. asc_addr: the address of the
--- player's ability system. counts: pushes made, by move key. say: the log. Returns the number of tasks looked at.
-function M.frame(asc_addr, clock, rates, counts, say)
+-- The speed a kept task follows this frame; nil while its part is off, and for an enemy's move back at the game's
+-- speed: such a task is let go, it has nothing to give back.
+local function rate_of(entry, rates, foes)
+	if entry.foe then
+		local rate = foes and foes.rates[entry.key]
+		return rate ~= 1 and rate or nil
+	end
+	return rates and rates[entry.key]
+end
+
+-- Pushes the time of each timeline kept whose move is faster or slower than the game's. asc_addr: the address of the
+-- player's ability system. rates: the player's speeds by move key, nil while they are all the game's. foes: the
+-- enemies' part (movement_enemies.lua: offer, and rates by key), nil while off. counts: pushes made, by move key. say:
+-- the log. Returns the number of tasks looked at.
+function M.frame(asc_addr, clock, rates, counts, say, foes)
 	-- Not looked at for a while (every speed at the game's, no pawn, a long hitch): the time the tasks moved since is
 	-- the game's own. Pushed, it would push up to 0.1 s x (speed - 1) at once. Their last time is kept: a task that
 	-- ended meanwhile still reads as standing still.
@@ -208,12 +198,17 @@ function M.frame(asc_addr, clock, rates, counts, say)
 		for _, entry in pairs(C.tasks) do entry.skip, entry.fresh = true, nil end
 	end
 	C.clock, C.dt = clock, dt
-	adopt(asc_addr, clock, say)
+	adopt(asc_addr, clock, say, rates ~= nil, foes)
 	local looked = 0
 	for addr, entry in pairs(C.tasks) do
-		if entry.slow == nil or clock >= entry.slow then
+		local rate = rate_of(entry, rates, foes)
+		if rate == nil then
+			-- The enemies' part off: their tasks are let go. The player's moves all at the game's: their tasks wait,
+			-- unread, and the step after is the game's own, as after a time without a look.
+			if entry.foe then drop(addr) else entry.skip, entry.fresh = true, nil end
+		elseif entry.slow == nil or clock >= entry.slow then
 			looked = looked + 1
-			look(addr, entry, clock, rates, counts)
+			look(addr, entry, clock, rate, counts)
 		end
 	end
 	if R.failed ~= nil and not R.said then

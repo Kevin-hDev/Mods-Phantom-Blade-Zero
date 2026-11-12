@@ -86,6 +86,27 @@ function M.take()
 	return list
 end
 
+-- The task's ability system: its address and the object, given by UE4SS as the object or as a weak pointer to Get it
+-- from (seen in game); nil when unreadable.
+function M.owner(task)
+	local v, got = nil, nil
+	pcall(function() v = task.AbilitySystemComponent end)
+	if v == nil then return nil end
+	if U.is_valid(v) then return U.address(v), v end
+	pcall(function() got = v:Get() end)
+	if U.is_valid(got) then return U.address(got), got end
+	return nil
+end
+
+-- Whether a task at a known address is still the one worked out: same class, same ability (entry.class and
+-- entry.ability, their addresses). The task was just checked valid.
+function M.same(task, entry)
+	if U.class_address(task, true) ~= entry.class then return false end
+	local ability = nil
+	pcall(function() ability = task.Ability end)
+	return U.address(ability) == entry.ability
+end
+
 -- A task taken but not readable yet: it waits for the next frame if there is room. Returns whether it waits.
 function M.wait(addr, task)
 	return add(addr, task, false)

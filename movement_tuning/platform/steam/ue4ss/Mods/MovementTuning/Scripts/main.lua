@@ -2,8 +2,8 @@
 -- ladders, ropes and slides, weapon draw, stance) and attacks, each at its own speed or all at the Global one, higher
 -- jumps, a left stick curve that lets the player walk, the sticks' dead zones, auto or toggle sprint (which give way
 -- to the game's walk), the sprint or only the high-speed sprint turned off or its wait changed, stops without a slide
--- when sped up, full speed again at the end of a special move or of a dodge, whose landing goes faster, and Realism
--- (movement_realism.lua). Settings in MovementTuning.config.json in the mod's folder, changed in Mods Menu (Nexus 149)
+-- when sped up, full speed again at the end of a special move or of a dodge, whose landing goes faster, Realism
+-- (movement_realism.lua), and the enemies' attacks and movement at their own speeds (movement_enemies.lua). Settings in MovementTuning.config.json in the mod's folder, changed in Mods Menu (Nexus 149)
 -- or by hand (movement_watch.lua).
 --
 -- The work happens in the player controller's ReceiveTick.
@@ -26,11 +26,12 @@ local Press = require("movement_press")
 local SprintOff = require("movement_sprint_off")
 local Brake = require("movement_brake")
 local Realism = require("movement_realism")
+local Enemies = require("movement_enemies")
+local Status = require("movement_status")
 
-local VERSION = "1.0.5"
+local VERSION = "1.0.6"
 local CONTROLLER_TICK = "/Game/PBZContent/Blueprint/Character/Player/BP_PlayerController.BP_PlayerController_C:ReceiveTick"
 local CLIENT_RESTART = "/Script/Engine.PlayerController:ClientRestart"
-local STATUS_EVERY = 600          -- seconds between two status lines
 local MAX_ERROR_LINES = 5         -- a repeated error is written a few times, then only counted
 local SLOW_CALL = 0.002           -- seconds: a call surely longer is counted in the status line
 local CLOCK_STEP = 0.001          -- os.clock moves by whole milliseconds on Windows (every longest call in the status
@@ -47,29 +48,6 @@ local S = { hooked = false, restarted = false, errors = 0, window_errors = 0, pa
 local function log(fmt, ...)
 	local ok, msg = pcall(string.format, fmt, ...)
 	print(string.format("[MovementTuning] %s\n", ok and msg or tostring(fmt)))
-end
-
--- One line per move would flood the log: counts and the mod's cost written every STATUS_EVERY seconds. No word a mod
--- manager takes for an error unless there is one: mod managers paint red any line with error(s), failed, failure,
--- exception or fatal, and yellow warn(ing)(s), even "0 errors". The errors are those since the last line.
-local function status(now)
-	if S.next_status == nil then S.next_status = now + STATUS_EVERY end
-	if now < S.next_status then return end
-	S.next_status = now + STATUS_EVERY
-	S.window_errors = S.window_errors + Tasks.errors()
-	local parts = {}
-	for key, n in pairs(S.pushes) do parts[#parts + 1] = string.format("%s %d", key, n) end
-	table.sort(parts)
-	local moving = Ground.report() .. "; " .. Sprints.report() .. "; " .. Resume.report() .. "; " .. SprintOff.report()
-	log("status: in the last %d minutes, frames paced: %s; %s; %d calls (%.0f a second), %d tasks looked at, "
-		.. "%d known, %d timelines unreadable, %.1f microseconds a call on average, longest %.0f ms (1 ms clock), %d "
-		.. "over %.0f ms%s",
-		STATUS_EVERY // 60,
-		#parts > 0 and table.concat(parts, ", ") or "none", moving, S.calls, S.calls / STATUS_EVERY,
-		S.tasks, Speed.remembered(), Timeline.report(),
-		S.calls > 0 and S.busy / S.calls * 1e6 or 0, S.longest * 1e3, S.slow, SLOW_CALL * 1e3,
-		S.window_errors > 0 and string.format(", %d errors", S.window_errors) or "")
-	S.calls, S.busy, S.tasks, S.pushes, S.window_errors, S.longest, S.slow = 0, 0, 0, {}, 0, 0, 0
 end
 
 -- A loaded save or a respawn gives a new pawn, and the settings may have changed. ClientRestart says so even when the
@@ -93,6 +71,7 @@ local function new_pawn(pawn, addr, now)
 	Speed.forget()
 	-- A load can unload a class or a timeline and put another at its address: both are read anew, one at a time.
 	Family.forget()
+	Enemies.forget()
 	Timeline.forget()
 	Ground.forget()
 	Watch.reload()
@@ -103,11 +82,11 @@ local function on_tick(hooked)
 	local now = os.clock()
 	local s = Watch.settings()
 	local busy = s.enabled and (s.resume or s.landing or s.high_off or s.high_delay ~= nil or s.realistic
-		or not (s.ground_neutral and s.jump_neutral and s.timeline_neutral and s.stick_neutral))
+		or not (s.ground_neutral and s.jump_neutral and s.timeline_neutral and s.stick_neutral and s.enemy_neutral))
 	-- Off, or every setting at the game's own, with nothing of the mod's left on the character: nothing is read from
 	-- the game, not even the pawn. A new pawn still reads the settings: ClientRestart sets restarted.
 	if not busy and not S.restarted and not Ground.holding() and not Jump.holding(now) and not Stick.holding()
-		and not SprintOff.holding() and not Brake.holding() and not Realism.holding() then
+		and not SprintOff.holding() and not Brake.holding() and not Realism.holding() and not Enemies.holding() then
 		Watch.check(now)
 		return
 	end
@@ -162,11 +141,14 @@ local function on_tick(hooked)
 	else
 		Jump.pause(cmc, now, log)
 	end
+	local foes = s.enabled and not s.enemy_neutral and s.enemy or nil
+	if foes ~= nil or Enemies.holding() then Enemies.frame(foes, pawn, now, log) end
 	if not s.enabled then return end
 	-- While a dodge plays on the ground with the faster landing on, the timelines are looked at even with every move at
 	-- the game's pace: its landing goes faster (movement_landing.lua).
 	local dodging = Dodge.rates(s.rates)
-	if s.timeline_neutral and dodging == nil then return end
+	local mine = not s.timeline_neutral or dodging ~= nil
+	if not mine and foes == nil then return end
 	if not U.is_valid(S.asc) then
 		local asc = nil
 		pcall(function() asc = pawn.AbilitySystemComponent end)
@@ -174,7 +156,8 @@ local function on_tick(hooked)
 		S.asc_addr = S.asc and U.address(S.asc)
 	end
 	if S.asc_addr == nil then return end
-	S.tasks = S.tasks + Speed.frame(S.asc_addr, now, dodging or s.rates, S.pushes, log)
+	S.tasks = S.tasks + Speed.frame(S.asc_addr, now, mine and (dodging or s.rates) or nil, S.pushes, log,
+		foes and Enemies or nil)
 	if Timeline.first_unreadable() then
 		log("the actions of a timeline cannot be read: that timeline keeps the game's pace")
 	end
@@ -195,7 +178,7 @@ local function safe_tick(self)
 		end
 	end
 	-- Outside on_tick: the status line is written even while an error repeats there.
-	status(os.clock())
+	Status.write(S, os.clock(), SLOW_CALL, log)
 end
 
 -- The player blueprints are not loaded when mods start; ClientRestart fires once the player has a pawn, then again
@@ -222,6 +205,10 @@ Watch.init(MOD_DIR, log)
 local watched, why = Tasks.watch(log)
 if not watched then
 	log("cannot watch the game's moves (%s): moves and attacks keep the game's pace", tostring(why))
+end
+watched, why = Enemies.watch()
+if not watched then
+	log("cannot watch the game's characters (%s): only enemies seen attacking change speed", tostring(why))
 end
 -- Last: once it is set, ClientRestart can run the mod on the game thread while UE4SS's own thread is still in this
 -- file, and two threads in one Lua state can corrupt it.
