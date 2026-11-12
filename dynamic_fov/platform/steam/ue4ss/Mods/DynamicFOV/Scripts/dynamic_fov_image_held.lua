@@ -121,16 +121,17 @@ function M.take(cam, problem, early)
 	H.order = H.order + 1
 	rec = { cam = cam, name = full_name(cam), saved = {}, written = {}, order = H.order, early = early or nil }
 	local unread = 0
-	for _, f in ipairs({ V.SATURATION, table.unpack(V.EFFECTS) }) do
+	for _, f in ipairs(V.FIELDS) do
 		rec.saved[f] = pp and V.read(pp, f)
 		if rec.saved[f] == nil then unread = unread + 1 end
 	end
 	-- Said once: a game update that renamed a field would otherwise leave the player without colours, and no word.
 	if unread > 0 and not H.unread_said then
 		H.unread_said = true
-		problem("image: %d of the 6 image settings of %s cannot be read; they keep the game's", unread, M.name(rec))
+		problem("image: %d of the %d image settings of %s cannot be read; they keep the game's", unread, #V.FIELDS,
+			M.name(rec))
 	end
-	if unread == 1 + #V.EFFECTS then return nil, true end
+	if unread == #V.FIELDS then return nil, true end
 	H.records[addr], H.count = rec, H.count + 1
 	return rec, false
 end

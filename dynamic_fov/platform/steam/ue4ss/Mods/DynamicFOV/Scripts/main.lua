@@ -1,17 +1,17 @@
 -- Dynamic FOV for Phantom Blade Zero: a field of view for each situation (normal view, sprint, crouch, enemy locked
 -- on), from a preset or the player's own values, the time the view takes to change between them, and where the view
 -- sits (distance, height, side). Settings in DynamicFOV.config.json in the mod's folder (dynamic_fov_settings_file.lua),
--- changed in Mods Menu (Nexus 149), by hand, or in the mod's own panel, opened in play with the panel key, F8 unless
--- changed (dynamic_fov_panel.lua); read at each new pawn, and within a second of a change saved in the menu.
+-- changed in Mod Panel, in Mods Menu (Nexus 149) or by hand; the mod's own panel (dynamic_fov_panel.lua) is off
+-- since 1.0.9 (dynamic_fov_panel_switch.lua). Read at each new pawn, and within a second of a change saved in a menu.
 --
 -- The field of view goes through the camera's modes (dynamic_fov_camera.lua), looked at once a second. The view's
 -- place goes through the camera's layer (dynamic_fov_layer.lua), which must leave a dialogue's view as it starts:
 -- while a place is set, the camera's mode is read at each tick, ten times a second; with the three at 0 and the panel
 -- closed, a tick asks nothing of the game. Everything runs from the player controller's tick, inside UE4SS's lock
 -- (dynamic_fov_driver.lua).
--- The colours and the clean image go through the image settings of the camera seen through (dynamic_fov_image.lua),
--- looked at once a second, at the next tick after a change, and for a scene's camera in the frame the game makes
--- it (1.0.8); the comfort options through four fields of the camera's modes (dynamic_fov_comfort.lua), as often.
+-- The colours, the clean image and the cinematic look go through the image settings of the camera seen through
+-- (dynamic_fov_image.lua), looked at once a second, at the next tick after a change, and for a scene's camera in
+-- the frame the game makes it; the comfort options through four fields of the camera's modes, as often.
 -- When the settings are read: dynamic_fov_watch.lua.
 -- During an execution, given or taken, the camera is the game's, place and field of view (1.0.7): the game films most
 -- in the combat view in progress, where the place pushed the view into the enemy (dynamic_fov_executions.lua).
@@ -27,12 +27,13 @@ local Status = require("dynamic_fov_status")
 local Driver = require("dynamic_fov_driver")
 local Hotkey = require("dynamic_fov_hotkey")
 local Panel = require("dynamic_fov_panel")
+local Switch = require("dynamic_fov_panel_switch")
 local Image = require("dynamic_fov_image")
 local Comfort = require("dynamic_fov_comfort")
 local ImageLines = require("dynamic_fov_image_lines")
 local Executions = require("dynamic_fov_executions")
 
-local VERSION = "1.0.8"
+local VERSION = "1.0.9"
 local TICK_SECONDS = 0.1          -- a tick: the view's place
 -- Seconds the place takes to go as an execution starts: 0.2 is too abrupt for the eyes (Kevin, 10 November 2026).
 local EXECUTION_BLEND = 0.4
@@ -82,7 +83,7 @@ local function use(s, at_once)
 	-- Nothing an execution would give back to the game, nothing watched: the place at 0, the game's fields of view (the
 	-- transition time paces only the field of view, then the same in every view).
 	Executions.set_on(S.position ~= nil or (s.enabled and not Settings.game_fovs(s)))
-	Image.want(s.enabled and Settings.colour_factor(s) or nil, s.enabled and s.clean_image)
+	Image.want(Settings.image(s))
 	Comfort.want(s)
 end
 use(Settings.resolve({}, function() end))
@@ -178,7 +179,7 @@ local function get(param) return param:get() end
 local function frame_work(param)
 	-- Asked here, under UE4SS's lock, never at start: a bind's Lua runs on UE4SS's own thread. Before the presses are
 	-- taken, so a key changed in the settings never counts the old one's.
-	if S.key ~= S.settings.panel_key then
+	if Switch.ON and S.key ~= S.settings.panel_key then
 		S.key = S.settings.panel_key
 		Hotkey.want(S.key, log)
 	end

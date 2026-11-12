@@ -6,6 +6,9 @@
 local Json = require("dynamic_fov_json")
 local Hotkey = require("dynamic_fov_hotkey")
 local Values = require("dynamic_fov_values")
+local Looks = require("dynamic_fov_looks")
+local Switch = require("dynamic_fov_panel_switch")
+local Text = require("dynamic_fov_settings_text")
 
 local M = {}
 
@@ -18,12 +21,13 @@ M.TIME_MIN, M.TIME_MAX, M.TIME_STEP = 0.2, 3.0, 0.1
 -- The colours: the game's, or a general saturation at one of five profiles, in % (chosen on 5 November 2026); each
 -- place keeps its own ranges (dynamic_fov_image.lua). The clean image turns off five effects. No preset changes either.
 M.COLOURS = { "Game", "120", "140", "160", "180", "200" }
+-- The cinematic look (1.0.9): off, the game's grade; on, the one picked in the list (dynamic_fov_looks.lua).
 -- How dark the panel's backdrop is, in % (5 November 2026: a little darker than 1.0.2's 55 by default).
 M.OPACITY_MIN, M.OPACITY_MAX, M.OPACITY_STEP = 40, 90, 5
 M.DEFAULTS = { enabled = true, preset = "Default", normal = M.GAME_FOV, sprint = 90, crouch = M.GAME_FOV,
 	lock_on = M.GAME_FOV, transition = 1.5, distance = 0, height = 0, side = 0, steady = false, no_recenter = false,
-	no_pull_back = false, no_shake = false, colours = "Game", clean_image = false, panel_opacity = 65,
-	panel_key = Hotkey.DEFAULT }
+	no_pull_back = false, no_shake = false, colours = "Game", clean_image = false, cinematic_look = false,
+	look = Looks.NAMES[1], panel_opacity = 65, panel_key = Hotkey.DEFAULT }
 -- Each preset moves the four fields of view from the defaults above by the same amount, so the sprint stays wider
 -- than the normal view (values and names chosen on 3 November 2026). Game gives the game's own everywhere, the sprint
 -- too, first in the list (7 November 2026: Default widens the sprint, and no preset gave the game's view). Custom uses
@@ -66,8 +70,12 @@ for i, p in ipairs(M.PRESETS) do PRESET_VALUES[i] = p.value end
 -- The file's keys, spelled as the menu writes them; read in any case. SPELLING gives a lowercase key's spelling.
 M.ENABLED, M.PRESET, M.TRANSITION, M.PANEL_KEY = "Enabled", "Preset", "TransitionTime", "PanelKey"
 M.COLOURS_KEY, M.CLEAN_KEY, M.OPACITY_KEY = "Colours", "CleanImage", "PanelOpacity"
+M.LOOK_ON_KEY, M.LOOK_KEY = "CinematicLook", "Look"
+-- The panel's own two: in the file only while the panel can be opened (dynamic_fov_panel_switch.lua).
+M.PANEL_KEYS = { M.OPACITY_KEY, M.PANEL_KEY }
 M.SPELLING = {}
-for _, name in ipairs({ M.ENABLED, M.PRESET, M.TRANSITION, M.PANEL_KEY, M.COLOURS_KEY, M.CLEAN_KEY, M.OPACITY_KEY }) do
+for _, name in ipairs({ M.ENABLED, M.PRESET, M.TRANSITION, M.PANEL_KEY, M.COLOURS_KEY, M.CLEAN_KEY, M.OPACITY_KEY,
+		M.LOOK_ON_KEY, M.LOOK_KEY }) do
 	M.SPELLING[name:lower()] = name
 end
 for _, k in ipairs(M.FOV_KEYS) do M.SPELLING[k.key] = k.name end
@@ -129,6 +137,8 @@ function M.resolve(raw, warn)
 	end
 	s.colours = Values.choice(raw, M.COLOURS_KEY:lower(), M.COLOURS_KEY, M.COLOURS, M.DEFAULTS.colours, warn)
 	s.clean_image = Values.switch(raw, M.CLEAN_KEY:lower(), M.CLEAN_KEY, M.DEFAULTS.clean_image, warn)
+	s.cinematic_look = Values.switch(raw, M.LOOK_ON_KEY:lower(), M.LOOK_ON_KEY, M.DEFAULTS.cinematic_look, warn)
+	s.look = Values.choice(raw, M.LOOK_KEY:lower(), M.LOOK_KEY, Looks.NAMES, M.DEFAULTS.look, warn)
 	s.panel_opacity = Values.number(raw, M.OPACITY_KEY:lower(), M.OPACITY_KEY, M.DEFAULTS.panel_opacity, M.OPACITY_MIN,
 		M.OPACITY_MAX, M.OPACITY_STEP, warn)
 	s.panel_key = key_name(raw, warn)
@@ -149,13 +159,22 @@ function M.colour_factor(s)
 	return percent and percent / 100 or nil
 end
 
+-- What the image is asked (dynamic_fov_image.lua): the colours' factor, whether it is cleaned, the cinematic look's
+-- name or nil while it is off; the mod off, the game's image.
+function M.image(s)
+	if not s.enabled then return nil, false, nil end
+	return M.colour_factor(s), s.clean_image, s.cinematic_look and s.look or nil
+end
+
 -- The file's keys for settings s, as resolve() would read them back: the switch, the preset, the transition, the four
--- fields of view as set under Custom, the place, the comfort options, the image, then the panel's backdrop and key, in
--- the order the mod writes them.
+-- fields of view as set under Custom, the place, the comfort options, the image and the look, then the panel's
+-- backdrop and key. entries(): those the file holds, in the order the mod writes them; the panel's two only while
+-- it can be opened.
 function M.raw(s)
 	local raw = { [M.ENABLED:lower()] = s.enabled, [M.PRESET:lower()] = s.preset,
 		[M.TRANSITION:lower()] = s.transition, [M.COLOURS_KEY:lower()] = s.colours,
-		[M.CLEAN_KEY:lower()] = s.clean_image, [M.OPACITY_KEY:lower()] = s.panel_opacity,
+		[M.CLEAN_KEY:lower()] = s.clean_image, [M.LOOK_ON_KEY:lower()] = s.cinematic_look,
+		[M.LOOK_KEY:lower()] = s.look, [M.OPACITY_KEY:lower()] = s.panel_opacity,
 		[M.PANEL_KEY:lower()] = s.panel_key }
 	for _, k in ipairs(M.FOV_KEYS) do raw[k.key] = s.custom[k.field] end
 	for _, k in ipairs(M.POSITION_KEYS) do raw[k.key] = s[k.field] end
@@ -169,39 +188,18 @@ function M.entries(s)
 	for _, k in ipairs(M.FOV_KEYS) do order[#order + 1] = k.name end
 	for _, k in ipairs(M.POSITION_KEYS) do order[#order + 1] = k.name end
 	for _, k in ipairs(M.COMFORT_KEYS) do order[#order + 1] = k.name end
-	order[#order + 1] = M.COLOURS_KEY
-	order[#order + 1] = M.CLEAN_KEY
-	order[#order + 1] = M.OPACITY_KEY
-	order[#order + 1] = M.PANEL_KEY
+	for _, name in ipairs({ M.COLOURS_KEY, M.CLEAN_KEY, M.LOOK_ON_KEY, M.LOOK_KEY }) do order[#order + 1] = name end
+	if Switch.ON then
+		for _, name in ipairs(M.PANEL_KEYS) do order[#order + 1] = name end
+	end
 	local entries = {}
 	for i, name in ipairs(order) do entries[i] = { name, raw[name:lower()] } end
 	return entries
 end
 
--- The comfort options turned on, for the log.
-local function comfort_text(s)
-	local on = {}
-	for _, k in ipairs(M.COMFORT_KEYS) do
-		if s[k.field] then on[#on + 1] = k.log end
-	end
-	return #on > 0 and table.concat(on, ", ") or "none"
-end
-
--- The settings for the log; under a preset, the file's own four values too when they differ, as they are the ones
--- written.
+-- The settings for the log.
 function M.describe(s)
-	local text = string.format("mod %s, preset %s, field of view %d, sprint %d, crouch %d, lock-on %d, transition "
-		.. "%.1f s, distance %+d%%, height %+d cm, side %+d cm, colours %s, clean image %s, panel background %d%%, panel key %s"
-		.. ", comfort: %s",
-		s.enabled and "on" or "off", s.preset, s.normal, s.sprint, s.crouch, s.lock_on, s.transition, s.distance,
-		s.height, s.side, s.colours == "Game" and "the game's" or s.colours .. "%", s.clean_image and "on" or "off",
-		s.panel_opacity, s.panel_key, comfort_text(s))
-	local c = s.custom
-	if c.normal == s.normal and c.sprint == s.sprint and c.crouch == s.crouch and c.lock_on == s.lock_on then
-		return text
-	end
-	return string.format("%s; under Custom: field of view %d, sprint %d, crouch %d, lock-on %d", text, c.normal,
-		c.sprint, c.crouch, c.lock_on)
+	return Text.describe(s, M.COMFORT_KEYS, Switch.ON)
 end
 
 -- No format number in the file yet: a file without one is this format. A later format adds one under a key Mods Menu

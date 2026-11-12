@@ -13,6 +13,12 @@ local M = {}
 M.SATURATION = "ColorSaturation"
 M.EFFECTS = { "VignetteIntensity", "FilmGrainIntensity", "BloomIntensity", "SceneFringeIntensity", "LensFlareIntensity" }
 M.NEUTRAL = { X = 1, Y = 1, Z = 1, W = 1 }
+-- What a cinematic look multiplies (1.0.9, dynamic_fov_looks.lua): values the places leave at their neutral.
+M.LOOK = { "ColorContrast", "ColorGammaShadows", "ColorGainMidtones", "ColorGainHighlights" }
+-- Every value the mod may write: a camera's own are kept before its first write.
+M.FIELDS = { M.SATURATION }
+for _, f in ipairs(M.EFFECTS) do M.FIELDS[#M.FIELDS + 1] = f end
+for _, f in ipairs(M.LOOK) do M.FIELDS[#M.FIELDS + 1] = f end
 
 local SAME = 1e-3
 local AXES = { "X", "Y", "Z", "W" }

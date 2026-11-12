@@ -1,7 +1,8 @@
 -- The colours and the clean image (1.0.3), the only part of the mod that writes a camera's image settings. The engine
 -- views through the view target's first active camera component (Unreal 5.7, AActor::CalcCamera), whose settings come
 -- after the places' own: there the general saturation is the camera's own times the profile (it replaces the places'
--- general one, their ranges stay theirs), and the five effects set at 0 (dynamic_fov_image_values.lua). In play that
+-- general one, their ranges stay theirs), and the five effects set at 0 (dynamic_fov_image_values.lua). A cinematic
+-- look (1.0.9) multiplies four more values and the saturation (dynamic_fov_looks.lua). In play that
 -- camera is a cinema camera on the player's character; in a scene, each shot has its own, on a camera actor the game
 -- makes as the shot starts or as the view starts to fade towards it (SceneCameraProbe, 11 November 2026).
 -- The camera seen through is looked at once a second (a value the game put back is written again) and at once after
@@ -14,6 +15,7 @@
 local U = require("dynamic_fov_unreal")
 local V = require("dynamic_fov_image_values")
 local Held = require("dynamic_fov_image_held")
+local Looks = require("dynamic_fov_looks")
 local Made = require("dynamic_fov_made")
 
 local M = {}
@@ -24,8 +26,8 @@ local CAMERA_ACTOR_CLASS = "/Script/Engine.CameraActor"
 
 local New = Made.new(CAMERA_CLASS)
 
--- want: { factor = number or nil, clean = boolean }, nil for the game's image. classes[path]: the engine's classes
--- found. dirty: a change waits for the next look.
+-- want: { factor = number or nil, clean = boolean, look = name or nil }, nil for the game's image. classes[path]:
+-- the engine's classes found. dirty: a change waits for the next look.
 local I = { want = nil, classes = {}, dirty = false, class_said = false }
 
 local function class(path)
@@ -57,11 +59,14 @@ local function films_on(cam, actor_class)
 	return named and type(name) == "string" and name:match(":PersistentLevel%.([^.:]+)%.[^.:]+$") or nil
 end
 
--- The colours' factor (nil: the game's) and whether the image is cleaned; the mod off gives (nil, false).
-function M.want(factor, clean)
-	local w = (factor ~= nil or clean) and { factor = factor, clean = clean == true } or nil
+-- The colours' factor (nil: the game's), whether the image is cleaned, and the cinematic look's name (nil: none);
+-- the mod off gives (nil, false, nil).
+function M.want(factor, clean, look)
+	local w = nil
+	if factor ~= nil or clean or look ~= nil then w = { factor = factor, clean = clean == true, look = look } end
 	local before = I.want
-	if (w == nil) ~= (before == nil) or (w and (w.factor ~= before.factor or w.clean ~= before.clean)) then
+	if (w == nil) ~= (before == nil)
+		or (w and (w.factor ~= before.factor or w.clean ~= before.clean or w.look ~= before.look)) then
 		I.want, I.dirty = w, true
 		New.set_on(w ~= nil)
 	end
@@ -87,10 +92,20 @@ end
 local function targets(rec)
 	local t = {}
 	if I.want == nil then return t end
+	local look = I.want.look and Looks.get(I.want.look) or nil
+	local factor = I.want.factor
+	if look ~= nil and look.saturation ~= nil then factor = (factor or 1) * look.saturation end
 	local own = rec.saved[V.SATURATION]
-	if I.want.factor ~= nil and own ~= nil then
+	if factor ~= nil and own ~= nil then
 		local base = own.on and own.value or V.NEUTRAL
-		t[V.SATURATION] = { X = base.X, Y = base.Y, Z = base.Z, W = base.W * I.want.factor }
+		t[V.SATURATION] = { X = base.X, Y = base.Y, Z = base.Z, W = base.W * factor }
+	end
+	for field, by in pairs(look and look.values or {}) do
+		local saved = rec.saved[field]
+		if saved ~= nil then
+			local base = saved.on and saved.value or V.NEUTRAL
+			t[field] = { X = base.X * by.X, Y = base.Y * by.Y, Z = base.Z * by.Z, W = base.W * by.W }
+		end
 	end
 	if I.want.clean then
 		for _, f in ipairs(V.EFFECTS) do
@@ -106,8 +121,9 @@ local function bring(rec, report, problem, how)
 	local w, f = Held.apply(rec, targets(rec))
 	if w > 0 or f > 0 then
 		(f > 0 and problem or report)("image: %s (%s, %d written%s%s)", I.want == nil and "the game's back"
-			or string.format("colours %s, clean image %s", I.want.factor and string.format("x%.1f", I.want.factor)
-				or "the game's", I.want.clean and "on" or "off"), Held.name(rec), w,
+			or string.format("colours %s, clean image %s%s", I.want.factor and string.format("x%.1f", I.want.factor)
+				or "the game's", I.want.clean and "on" or "off", I.want.look and ", look " .. I.want.look or ""),
+			Held.name(rec), w,
 			f > 0 and string.format(", %d could not be", f) or "", how or "")
 	end
 	return w, f

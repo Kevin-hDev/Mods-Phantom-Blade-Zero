@@ -5,11 +5,15 @@
 
 local Json = require("dynamic_fov_json")
 local Settings = require("dynamic_fov_settings")
+local Switch = require("dynamic_fov_panel_switch")
+local Write = require("dynamic_fov_settings_write")
 
 local M = {}
 
 local MAX_FILE_BYTES = 16384
 local NO_SUCH_FILE = 2
+-- The copy of a file being brought to this version, kept until the next start finds the new file in place.
+local BEFORE = ".before-1.0.9"
 
 -- The folder of the mod whose script is at script_path (".../DynamicFOV/Scripts/main.lua"), or nil.
 function M.mod_dir(script_path)
@@ -21,55 +25,11 @@ function M.file_in(mod_dir)
 	return mod_dir .. "/" .. mod_dir:match("([^/\\]+)$") .. ".config.json"
 end
 
--- Writes text to a temporary file, then puts it in place: the file is never seen half written. The text reaches the
--- disk at the close, so a failed close (a full disk) fails the writing too. Windows renames onto no existing file: the
--- file in place is set aside first, put back if the new one cannot take its place, removed once it has. A copy set
--- aside and left there by a cut (power off) is put back at the next start (M.recover).
-local function put_in_place(path, text)
-	local temporary, aside = path .. ".tmp", path .. ".bak"
-	local f = io.open(temporary, "wb")
-	local ok = f ~= nil and f:write(text) ~= nil
-	if f ~= nil then ok = f:close() == true and ok end
-	if not ok then
-		os.remove(temporary)
-		return false
-	end
-	local had = false
-	local current = io.open(path, "rb")
-	if current ~= nil then
-		current:close()
-		-- Older than the file in place: a copy an earlier cut left there.
-		os.remove(aside)
-		had = os.rename(path, aside) == true
-		if not had then
-			os.remove(temporary)
-			return false
-		end
-	end
-	if os.rename(temporary, path) ~= true then
-		if had then os.rename(aside, path) end
-		os.remove(temporary)
-		return false
-	end
-	if had then os.remove(aside) end
-	return true
-end
-
 local function create(path, warn)
-	if put_in_place(path, Settings.default_text()) then
+	if Write.put_in_place(path, Settings.default_text()) then
 		warn("created the settings file with the defaults")
 	else
 		warn("could not create the settings file; the Mods Menu cannot change the settings until it exists")
-	end
-end
-
--- The menu's bridge only replaces an existing config, so the file is made as soon as the mod starts.
-function M.ensure_file(path, warn)
-	local f, _, code = io.open(path, "rb")
-	if f ~= nil then
-		f:close()
-	elseif code == NO_SUCH_FILE then
-		create(path, warn)
 	end
 end
 
@@ -104,6 +64,68 @@ local function lowered(values, warn)
 end
 
 local function quiet() end
+
+-- The file's entries for values (the file's object, or nil) with changes over them (raw settings, lowercase keys):
+-- the mod's keys in its order, as the mod uses them, then every key it does not know, as written. The panel's two
+-- keys are never among those: while the panel is off they leave the file.
+local function merged(values, changes)
+	local raw = lowered(values or {}, quiet)
+	for key, value in pairs(changes) do raw[key] = value end
+	local s = Settings.resolve(raw, quiet)
+	local entries, ours, others = Settings.entries(s), {}, {}
+	for _, e in ipairs(entries) do ours[e[1]:lower()] = true end
+	for _, name in ipairs(Settings.PANEL_KEYS) do ours[name:lower()] = true end
+	for key in pairs(values or {}) do
+		if not ours[key:lower()] then others[#others + 1] = key end
+	end
+	table.sort(others)
+	for _, key in ipairs(others) do entries[#entries + 1] = { key, values[key] } end
+	return s, entries
+end
+
+-- 1.0.9, the panel off: an earlier version's file loses the panel's two keys, which a menu would show as rows that do
+-- nothing. The earlier file is copied first. A file that cannot be read now, or is not valid JSON, is left to load().
+local function upgrade(path, warn)
+	local values = not Switch.ON and read_object(path) or nil
+	local found = false
+	for key in pairs(values or {}) do
+		for _, name in ipairs(Settings.PANEL_KEYS) do found = found or key:lower() == name:lower() end
+	end
+	if not found then return end
+	local copy = path .. BEFORE
+	local f = io.open(path, "rb")
+	local text = f and f:read(MAX_FILE_BYTES)
+	if f ~= nil then f:close() end
+	local c = text and io.open(copy, "wb")
+	local copied = c ~= nil and c:write(text) ~= nil
+	if c ~= nil then copied = c:close() == true and copied end
+	if copied and Write.put_in_place(path, Json.encode(select(2, merged(values, {})))) then
+		warn(string.format("the panel's two settings left the settings file (the mod's own panel is off since 1.0.9); "
+			.. "the earlier file is kept as %s until the next start", copy:match("([^/\\]+)$")))
+	else
+		os.remove(copy)
+		warn("could not take the panel's two settings out of the settings file; trying again at the next start")
+	end
+end
+
+-- At start. The menu's bridge only replaces an existing config, so the file is made when missing; a file an upgrade
+-- stopped halfway left missing comes back from its copy; an earlier version's file is upgraded.
+function M.ensure_file(path, warn)
+	local copy = path .. BEFORE
+	local f, _, code = io.open(path, "rb")
+	if f ~= nil then
+		f:close()
+		-- The last start's upgrade is done: its copy can go.
+		os.remove(copy)
+	elseif code ~= NO_SUCH_FILE then
+		return
+	elseif os.rename(copy, path) == true then
+		warn("put back the settings file from an upgrade that stopped halfway")
+	else
+		return create(path, warn)
+	end
+	upgrade(path, warn)
+end
 
 -- Returns the settings, or nil when the file exists but cannot be read at this moment (the caller tries again); then
 -- whether they are the file's own values (false: the defaults, for a file missing or broken).
@@ -152,37 +174,12 @@ function M.save(path, changes, warn)
 		warn(string.format("the settings file %s: kept as %s", why, name))
 		values = nil
 	end
-	local raw = lowered(values or {}, quiet)
-	for key, value in pairs(changes) do raw[key] = value end
-	local s = Settings.resolve(raw, quiet)
-	local entries, ours, others = Settings.entries(s), {}, {}
-	for _, e in ipairs(entries) do ours[e[1]:lower()] = true end
-	for key in pairs(values or {}) do
-		if not ours[key:lower()] then others[#others + 1] = key end
-	end
-	table.sort(others)
-	for _, key in ipairs(others) do entries[#entries + 1] = { key, values[key] } end
-	if put_in_place(path, Json.encode(entries)) then return s end
+	local s, entries = merged(values, changes)
+	if Write.put_in_place(path, Json.encode(entries)) then return s end
 	warn("could not save the panel's settings: the settings file could not be written")
 	return nil
 end
 
--- At start: a file set aside by a save that a cut stopped half way is put back when the file is missing; with the
--- file in place, the copy is older and is removed. A temporary file left by a cut is removed, never put in place: a
--- power cut can lose a file's last writes even after its close, while the copy set aside was on the disk long before.
-function M.recover(path, warn)
-	os.remove(path .. ".tmp")
-	local aside = path .. ".bak"
-	local a = io.open(aside, "rb")
-	if a == nil then return end
-	a:close()
-	local f, _, code = io.open(path, "rb")
-	if f ~= nil then
-		f:close()
-		os.remove(aside)
-	elseif code == NO_SUCH_FILE and os.rename(aside, path) == true then
-		warn("put back the settings file a save had set aside before it was cut short")
-	end
-end
+M.recover = Write.recover
 
 return M

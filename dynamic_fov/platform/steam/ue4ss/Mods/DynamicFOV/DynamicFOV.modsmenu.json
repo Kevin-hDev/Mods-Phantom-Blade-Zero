@@ -4,10 +4,10 @@
     "zh-Hans": "动态视野"
   },
   "description": {
-    "en": "A field of view for each situation (normal view, sprint, crouch, lock-on), transition time, camera distance, height and side, comfort options, vivid colours and a clean image. Cutscenes, dialogues and special moves keep the game's camera. The panel key (F8 by default) opens the settings in play.",
-    "zh-Hans": "为不同状态（普通镜头、冲刺、下蹲、锁定敌人）分别设置视野，并可调整过渡时间，以及镜头的距离、高度和左右位置，还有舒适选项，并能让色彩更鲜艳、画面更纯净。过场动画、对话和特殊招式保持游戏原有镜头。游戏中按面板按键（默认 F8）打开设置。"
+    "en": "A field of view for each situation (normal view, sprint, crouch, lock-on), transition time, camera distance, height and side, comfort options, vivid colours, a clean image and cinematic looks. Cutscenes, dialogues and special moves keep the game's camera.",
+    "zh-Hans": "为不同状态（普通镜头、冲刺、下蹲、锁定敌人）分别设置视野，并可调整过渡时间，以及镜头的距离、高度和左右位置，还有舒适选项，并能让色彩更鲜艳、画面更纯净，还可选用电影色调。过场动画、对话和特殊招式保持游戏原有镜头。"
   },
-  "version": "1.0.8",
+  "version": "1.0.9",
   "greyedUnless": {
     "Enabled": true
   },
@@ -373,42 +373,77 @@
       "default": false
     },
     {
-      "type": "heading",
+      "key": "CinematicLook",
+      "type": "toggle",
       "label": {
-        "en": "Settings panel",
-        "zh-Hans": "设置面板"
+        "en": "Cinematic look",
+        "zh-Hans": "电影色调"
+      },
+      "help": {
+        "en": "On: the colour grade picked in Look, over each place's own tones. Off: the game's grade. Works with Colours and with every preset.",
+        "zh-Hans": "开启：使用“色调”中选择的调色风格，并保留各场景自身的色调。关闭：游戏原有色调。可与“色彩”及所有预设同时使用。"
+      },
+      "default": false
+    },
+    {
+      "key": "Look",
+      "type": "choice",
+      "label": {
+        "en": "Look",
+        "zh-Hans": "色调"
+      },
+      "help": {
+        "en": "With Cinematic look on. Teal and orange: blue-green shadows, orange lights. Warm: golden. Cold: steel blue, less colour. Faded: washed-out colours, strong contrast. Black and white. Vintage: old film, soft and warm.",
+        "zh-Hans": "开启“电影色调”时生效。青橙：阴影偏青，高光偏橙。暖色：金黄色调。冷色：钢蓝色调，色彩稍淡。褪色：色彩淡化，对比强烈。黑白。复古：老电影风格，柔和偏暖。"
+      },
+      "default": "TealOrange",
+      "options": [
+        {
+          "value": "TealOrange",
+          "label": {
+            "en": "Teal and orange",
+            "zh-Hans": "青橙"
+          }
+        },
+        {
+          "value": "Warm",
+          "label": {
+            "en": "Warm",
+            "zh-Hans": "暖色"
+          }
+        },
+        {
+          "value": "Cold",
+          "label": {
+            "en": "Cold",
+            "zh-Hans": "冷色"
+          }
+        },
+        {
+          "value": "Faded",
+          "label": {
+            "en": "Faded",
+            "zh-Hans": "褪色"
+          }
+        },
+        {
+          "value": "BlackWhite",
+          "label": {
+            "en": "Black and white",
+            "zh-Hans": "黑白"
+          }
+        },
+        {
+          "value": "Vintage",
+          "label": {
+            "en": "Vintage",
+            "zh-Hans": "复古"
+          }
+        }
+      ],
+      "greyedUnless": {
+        "CinematicLook": true
       }
-    },
-    {
-      "key": "PanelOpacity",
-      "type": "number",
-      "min": 40,
-      "max": 90,
-      "step": 5,
-      "label": {
-        "en": "Panel background",
-        "zh-Hans": "面板背景"
-      },
-      "help": {
-        "en": "How dark the settings panel's background is, in %: higher hides more of the game behind the panel.",
-        "zh-Hans": "设置面板背景的深浅（%）：数值越高，对面板后方游戏画面的遮挡越多。"
-      },
-      "default": 65,
-      "neverGreyed": true
-    },
-    {
-      "key": "PanelKey",
-      "type": "key",
-      "label": {
-        "en": "Panel key",
-        "zh-Hans": "面板按键"
-      },
-      "help": {
-        "en": "The key that opens and closes this mod's settings panel while you play: a strip at the right of the screen where the settings above apply as you change them, the game going on meanwhile. Escape closes it too. It opens only in play, not in menus, cutscenes or dialogues. F9 opens Mods Menu by default: choosing it keeps F8. None: no panel.",
-        "zh-Hans": "在游戏中打开和关闭本模组设置面板的按键：面板位于画面右侧，上方各项设置均可在其中调整并立即生效，期间游戏不会暂停。按 Esc 也可关闭。仅在游戏进行中可以打开，菜单、过场动画和对话中不可用。F9 默认用于打开模组菜单，选择 F9 时仍保持 F8。无：不使用面板。"
-      },
-      "default": "F8",
-      "neverGreyed": true
     }
   ]
 }

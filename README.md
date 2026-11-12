@@ -7,7 +7,7 @@ Movement and camera mods for Phantom Blade Zero, and an in-game settings panel, 
 | [Jump Strafe](jump_strafe/) | Steer your character in the air during jumps and falls, with the movement keys or the controller's left stick | 1.0.0 |
 | [Tap Strafe](tap_strafe/) | Mid-jump, your character follows the camera as you turn it, with the mouse or the controller's right stick | 1.0.0 |
 | [Dodge Jump](dodge_jump/) | A double and triple jump in the air with the game's own dodge animations, and a jump that goes off right after landing | 1.0.6 |
-| [Dynamic FOV](dynamic_fov/) | A field of view that follows your movement, one per situation (walking, sprinting, crouching, combat), with an in-game panel | 1.0.8 |
+| [Dynamic FOV](dynamic_fov/) | A field of view that follows your movement, one per situation (walking, sprinting, crouching, combat), with six cinematic looks | 1.0.9 |
 | [Movement Tuning](movement_tuning/) | Faster or slower moves and attacks, each on its own or all at once, higher jumps, the stick's curve, automatic or toggle sprint, stops without sliding, the sprint resumed after a move, faster dodge landings, the high-speed sprint's delay, the sprint turned off if you want, a realism setting: no sideways glide in turns, smooth slowdowns, heavier starts, and enemy speeds too | 1.0.6 |
 | [Slide Anywhere](slide_anywhere/) | Slide anywhere, on flat ground, downhill and uphill, with the game's own slide animation | 1.0.0 |
 | [Mod Panel](mod_panel/) | An in-game panel for the settings of every UE4SS mod, with a controller or with keyboard and mouse, in 15 languages | 1.0.4 |
