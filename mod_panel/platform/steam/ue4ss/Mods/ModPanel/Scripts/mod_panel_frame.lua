@@ -1,5 +1,6 @@
--- The panel's frame, built once under the game instance: the backdrop, then three columns. The list of mods: a title,
--- the count, the head of the list (mod_panel_frame_head.lua), a box that scrolls. The chosen mod's settings: its
+-- The panel's frame, built once under the game instance: the backdrop, then three columns. The list of mods: a title
+-- and the search right of it (mod_panel_frame_search.lua), the count, the head of the list (mod_panel_frame_head.lua),
+-- a box that scrolls. The chosen mod's settings: its
 -- title, a line under it for its state ("Settings not saved"), Show at its right end, a box that scrolls for the rows,
 -- Restore defaults and Close below, then the help. The descriptions: Hide, then a text that wraps by itself. The places
 -- of the columns and of the backdrop's bands are kept, to slide them when the descriptions hide (mod_panel_columns.lua,
@@ -17,6 +18,7 @@ local Backdrop = require("mod_panel_backdrop")
 local Slices = require("mod_panel_slices")
 local FrameHints = require("mod_panel_frame_hints")
 local FrameHead = require("mod_panel_frame_head")
+local FrameSearch = require("mod_panel_frame_search")
 local Columns = require("mod_panel_columns")
 
 local M = {}
@@ -43,17 +45,23 @@ local function steps_of(F)
 	local s = {}
 	local function add(fn) s[#s + 1] = fn end
 	for i = 1, Backdrop.BANDS do add(function() F.bands[i] = Backdrop.band(F.B, F.canvas, i, F.max) end) end
-	-- A column's head, from TOP: its title, and a smaller line under it.
-	local function head(x, title, sub, place)
-		local box
+	-- A column's head, from TOP: its title, and a smaller line under it. beside(F, add, line): the steps of what stands
+	-- right of the title, the title then on a line of its own, as wide as its text (the list's search, D186).
+	local function head(x, title, sub, place, beside)
+		local box, line
 		add(function()
 			box = F.B.new("VerticalBox")
 			F.slots[place] = F.B.place(F.canvas, box, x[1], L.TOP, x[2], L.TOP + L.HEADER)
 		end)
+		if beside then
+			add(function() line = F.B.new("HorizontalBox"); box:AddChildToVerticalBox(line):SetPadding(L.TITLE_PADDING) end)
+		end
 		add(function()
 			F[title] = F.B.text("font_text", L.TITLE_SIZE, L.WHITE, true)
-			box:AddChildToVerticalBox(F[title]):SetPadding(L.TITLE_PADDING)
+			if line == nil then return box:AddChildToVerticalBox(F[title]):SetPadding(L.TITLE_PADDING) end
+			line:AddChildToHorizontalBox(F[title]):SetVerticalAlignment(L.END)
 		end)
+		if beside then beside(F, add, function() return line end) end
 		add(function()
 			F[sub] = F.B.text("font_text", L.SMALL_SIZE, L.SOFT, true)
 			box:AddChildToVerticalBox(F[sub])
@@ -79,7 +87,7 @@ local function steps_of(F)
 			F[into]:AddChildToVerticalBox(F[name]):SetSize(L.FILL_SIZE)
 		end)
 	end
-	head(L.LIST, "list_title", "list_sub", "list_head")
+	head(L.LIST, "list_title", "list_sub", "list_head", FrameSearch.add)
 	body(L.LIST, "list_body")
 	FrameHead.add(F, add)
 	scroll("list_body", "list")

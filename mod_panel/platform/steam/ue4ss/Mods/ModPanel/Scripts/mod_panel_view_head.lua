@@ -1,6 +1,6 @@
--- Paints the head of the list (mod_panel_head.lua), the phrase of an empty list, where the columns stand
--- (mod_panel_columns.lua, D90), Hide and Show, only what changed (mod_panel_paint.lua). A box shows checked by the mark
--- inside its pale square, so by a shape and not by a colour alone (D92).
+-- Paints the head of the list (mod_panel_head.lua), the search field (D186), the phrase of an empty list, where the
+-- columns stand (mod_panel_columns.lua, D90), Hide and Show, only what changed (mod_panel_paint.lua). A box shows
+-- checked by the mark inside its pale square, so by a shape and not by a colour alone (D92).
 
 local L = require("mod_panel_layout")
 local Frame = require("mod_panel_frame")
@@ -52,6 +52,26 @@ function M.item_on(i)
 	return s ~= nil and s.visibility ~= L.COLLAPSED
 end
 
+-- The search field (D186): its placeholder, pale, while it is empty and does not type; else its text, and the caret
+-- while it types. Its line and its drawings lit while it types; the magnifier and the cross each shown once its image
+-- holds it, the cross only while there is a text.
+function M.search(typed, typing, placeholder)
+	local F = Frame.get()
+	if F == nil then return end
+	local sh = F.shown
+	local waits = typed == "" and not typing
+	text(sh, F.search_text, waits and placeholder or typing and typed .. L.CARET or typed)
+	colour(sh, F.search_text, waits and "GREY" or "WHITE")
+	local tint = typing and "SEARCH_LIT" or "SEARCH_DIM"
+	apply(sh, F.search_line, "brush", tint, P.set_brush)
+	local glass = P.drawing(sh, F.search_icon, "search")
+	visible(sh, F.search_icon, on(glass, L.HIT_TEST_INVISIBLE))
+	if glass then apply(sh, F.search_icon, "colour", tint, P.set_tint) end
+	local cross = typed ~= "" and P.drawing(sh, F.clear_icon, "clear")
+	visible(sh, F.clear_button, on(cross, L.VISIBLE))
+	if cross then apply(sh, F.clear_icon, "colour", tint, P.set_tint) end
+end
+
 -- The phrase of an empty list, shown while no mod is listed.
 function M.empty(phrase, shown)
 	local F = Frame.get()
@@ -78,7 +98,8 @@ function M.columns(shown, hide, show, lit)
 	colour(sh, F.show_text, lit == "show" and "WHITE" or "SOFT")
 end
 
--- Whether the frame's button called name ("hide_button", "show_button") shows: the pointer asks it only then.
+-- Whether the frame's button called name ("hide_button", "show_button", "clear_button") shows: the pointer asks it
+-- only then.
 function M.button_on(name)
 	local F = Frame.get()
 	local s = F and F.shown[F[name]]

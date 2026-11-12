@@ -29,7 +29,7 @@ local State = require("mod_panel_state")
 local Langs = require("mod_panel_langs")
 local JsMods = require("mod_panel_js_mods")
 
-local VERSION = "1.0.3"
+local VERSION = "1.0.4"
 local TICK_SECONDS = 0.1
 local EARLY = 0.001               -- a frame this close to the next tick reaches it: no tick lost to the clock's steps
 local TICKS_A_SECOND = math.floor(1 / TICK_SECONDS + 0.5)

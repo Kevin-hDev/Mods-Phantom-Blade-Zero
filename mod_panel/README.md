@@ -8,6 +8,7 @@ An in-game settings panel for every UE4SS mod of Phantom Blade Zero. Open it whi
 - **Made for the controller.** Every command works with a PlayStation or Xbox controller, with the buttons shown as their icons, and also with the keyboard and the mouse.
 - **The game keeps running behind it**, or freezes while the panel is open if you turn `Freeze game` on.
 - **A short list.** By default, only the mods that are on show; check `Mod disabled` to see the others.
+- **A search.** Press Ctrl+F, or click the field next to the list's title, and type a few letters: the list keeps the mods whose name has them.
 - **On and off from the list.** A mod that has an on/off switch (its `Enabled` setting) shows it on its line: turn it on or off without opening its page.
 - **Favorites first.** Mark the mods you change most: they move to the top of the list, their diamond lit, even after you restart the game.
 - **Every mod off in one press.** `All mods`, at the top of the list, turns off every mod that has an on/off switch (its `Enabled` setting), Mod Panel excepted, and later turns back on only those, even after you restart the game.
@@ -61,6 +62,17 @@ In the list of mods, Right turns the selected mod on and Left turns it off, when
 With the mouse: point at a setting, click it or its arrows, drag a bar, and scroll with the wheel; click a mod's diamond to mark or unmark it, the arrows of its switch to turn it on or off, and the word between them to turn it over.
 
 `Hybrid` navigation, on Mod Panel's page, goes straight to the mod's settings: up and down move through them, L1 and R1 change the mod, R3 or F marks it as a favorite, and Circle or Escape close.
+
+**Searching** is done with the keyboard and the mouse. Press Ctrl+F, or click the field at the right of the list's title, then type letters, digits and spaces: the list keeps the mods whose name has every word you typed, in any order, in any of the languages of its title, or in its folder's name. While you type:
+
+| Keyboard | Action |
+|---|---|
+| Letters, digits, Space, Backspace | Write in the field, again and again while held; R, Z, C, X, F, and the panel key when it is one of these keys, write too |
+| Up / Down | Previous / next mod found |
+| Enter | Keep the search, and give the keys back to the panel |
+| Escape | Erase the search, and give the keys back to the panel |
+
+The cross at the end of the field erases the search. A click anywhere else, or a controller button, keeps the search and gives the keys back to the panel. Closing the panel erases it.
 
 - **Choosing a key or a button:** press Cross on the setting, then the key or the button you want. Escape cancels.
 - **Actions** ask for two presses: the first one arms the button ("Press again"), the second one sends it.

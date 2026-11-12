@@ -5,7 +5,8 @@
 -- lacks (no Restore defaults) is left out, and so is R3's Favorite while R3 opens the panel (D178); Escape and Circle
 -- say Back in a mod's page of the Classic navigation, where they come back to the list (D130). The lines are made
 -- again only when the language, the controller's icons, the word of the button under the rows, that of Escape and
--- Circle, or whether R3 makes favourites changes.
+-- Circle, or whether R3 makes favourites changes. While the search field types (D186), the keyboard's line says what
+-- its keys do there.
 
 local L = require("mod_panel_layout")
 local Words = require("mod_panel_words")
@@ -19,6 +20,7 @@ local M = {}
 -- word of the button under the rows: Restore defaults, or Undo.
 local KEYS = { { "↑↓", "move" }, { "←→", "change" }, { "Enter", "select" }, { "R", "restore" }, { "Z C", "mod" },
 	{ "F", "favorite" }, { "X", "descriptions" }, { "escape", "close", true } }
+local TYPING = { { "↑↓", "mod" }, { "Enter", "done" }, { "escape", "erase", true } }
 local FAVORITE = "Gamepad_RightThumbstick"
 -- { the buttons, by their engine names, command's word }: the buttons of mod_panel_pad_commands.lua, in the order of
 -- the icons the frame makes for them (mod_panel_frame_hints.lua).
@@ -26,10 +28,10 @@ M.PAD = { { { "Gamepad_FaceButton_Bottom" }, "select" }, { { "Gamepad_FaceButton
 	{ { "Gamepad_LeftShoulder", "Gamepad_RightShoulder" }, "mod" }, { { FAVORITE }, "favorite" },
 	{ { "Gamepad_FaceButton_Left" }, "descriptions" }, { { "Gamepad_FaceButton_Right" }, "close" } }
 
--- device: "keys" or "pad". lang, brand, restore, back, fav: what the lines were made for; keys, pad: the lines; words:
--- the word of each part of PAD, false for one left out.
-local S = { device = "keys", lang = nil, brand = nil, restore = false, back = false, fav = true, keys = "", pad = "",
-	words = {} }
+-- device: "keys" or "pad". lang, brand, restore, back, fav: what the lines were made for; keys, typing, pad: the
+-- lines; words: the word of each part of PAD, false for one left out.
+local S = { device = "keys", lang = nil, brand = nil, restore = false, back = false, fav = true, keys = "",
+	typing = "", pad = "", words = {} }
 
 local function word(name, lang, restore, back)
 	if name == "restore" then name = restore end
@@ -42,15 +44,21 @@ local function joined(keys, w, join)
 	return (keys:gsub(" ", join)) .. join .. w
 end
 
+-- The keyboard's line of the commands list, each part by join.
+local function keys_line(list, lang, restore, back, join)
+	local parts = {}
+	for _, s in ipairs(list) do
+		local w = word(s[2], lang, restore, back)
+		if w ~= nil then parts[#parts + 1] = joined(s[3] and Words.say(s[1], lang) or s[1], w, join) end
+	end
+	return table.concat(parts, L.HINT_GAP)
+end
+
 -- fav: whether R3 makes favourites now (mod_panel_pad_commands.lua); when not, its part is left out.
 local function make(lang, restore, back, fav)
 	-- Plain spaces where the font would draw the no-break ones as nothing: a key may then end a line (D162).
 	local parts, join = {}, Pieces.no_break_space(lang) and L.HINT_JOIN or " "
-	for _, s in ipairs(KEYS) do
-		local w = word(s[2], lang, restore, back)
-		if w ~= nil then parts[#parts + 1] = joined(s[3] and Words.say(s[1], lang) or s[1], w, join) end
-	end
-	S.keys, parts = table.concat(parts, L.HINT_GAP), {}
+	S.keys, S.typing = keys_line(KEYS, lang, restore, back, join), keys_line(TYPING, lang, nil, false, join)
 	for i, s in ipairs(M.PAD) do
 		local w = (fav or s[2] ~= "favorite") and word(s[2], lang, restore, back) or nil
 		-- After its icons, with the gap to the next part, as the text line has.
@@ -66,15 +74,15 @@ end
 
 -- The keyboard's line, the controller's in text, and the word of each part of PAD (false: left out), in lang ("en",
 -- "zh-Hans"...); restore: the word of the button under the rows ("restore" or "undo"), nil when the page has none;
--- back: whether Escape and Circle come back to the list.
-function M.lines(lang, restore, back)
+-- back: whether Escape and Circle come back to the list; typing: whether the search field types.
+function M.lines(lang, restore, back, typing)
 	local brand, fav = Icons.brand(), PadCommands.acts(FAVORITE)
 	back = back == true
 	if lang ~= S.lang or brand ~= S.brand or restore ~= S.restore or back ~= S.back or fav ~= S.fav then
 		S.lang, S.brand, S.restore, S.back, S.fav = lang, brand, restore, back, fav
 		make(lang, restore, back, fav)
 	end
-	return S.keys, S.pad, S.words
+	return typing and S.typing or S.keys, S.pad, S.words
 end
 
 -- At each opening: device, the one whose press opened the panel.

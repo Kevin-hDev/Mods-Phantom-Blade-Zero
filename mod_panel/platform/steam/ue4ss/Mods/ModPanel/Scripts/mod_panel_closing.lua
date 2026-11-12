@@ -19,13 +19,15 @@ local function say(said, why)
 	said("panel: closed (%s); %s", why, Usage.summary())
 end
 
+-- The chosen mod kept for the next opening; with none chosen (a search or a filter that found none), the one kept
+-- before stays: a typo then the closing forgot the last mod for good (audit of 1.0.4).
 local function keep(state, mod)
-	state.set("mod", mod)
+	if mod ~= nil then state.set("mod", mod) end
 	state.save()
 end
 
--- d: { commands, controls, freeze, claim, nav, edits, state, said(fmt, ...) (the openings' and closings' lines),
--- problem(fmt, ...) }. Returns close(pc, why), for a panel open on pc.
+-- d: { commands, typing, controls, freeze, claim, nav, edits, state, said(fmt, ...) (the openings' and closings'
+-- lines), problem(fmt, ...) }. Returns close(pc, why), for a panel open on pc.
 function M.new(d)
 	local function guard(what, fn, ...)
 		local ok, err = pcall(fn, ...)
@@ -33,6 +35,8 @@ function M.new(d)
 	end
 
 	return function(pc, why)
+		-- First: while the search field types, a panel key that writes would not open the panel again (D186).
+		guard("ending the search", d.typing.close)
 		guard("leaving the commands", d.commands.left)
 		guard("taking the input context off", d.controls.off)
 		guard("lifting the freeze", d.freeze.lift, pc)

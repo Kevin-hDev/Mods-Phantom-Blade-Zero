@@ -7,28 +7,41 @@
 -- UE4SS calls a bind only while exactly its modifier keys are held (Handler.cpp): the panel key and Escape are also
 -- bound with each modifier alone, or they would do nothing while Shift, the sprint's key, is held (audit of
 -- 5 November 2026). The keys that move in the open panel are bound without, and so are the keys a wait reads (D70).
+-- While the search field types (D186), every key that writes goes to one queue, in the order pressed: the keys that
+-- move in the panel write their letter instead of counting (R, Z, C, X, F), and the panel key, when it writes, does
+-- not count either; those keys are bound with Shift too at the first typing, or a capital typed would be lost. Enter,
+-- Escape and the arrows still count.
 
 local Names = require("mod_panel_key_names")
 
 local M = {}
 
 local MODIFIERS = { "SHIFT", "CONTROL", "ALT" }
-local MAX_PENDING = 8             -- presses kept between two frames, for each count, and keys caught by a wait
+local MAX_PENDING = 8             -- presses kept between two frames, for each count, keys caught or typed
 -- The commands a press counts for; the controller's are the same (mod_panel_pad_commands.lua).
--- top and bottom come only from the controller (L2, R2, D99): no key is bound to them.
+-- top and bottom come only from the controller (L2, R2, D99): no key is bound to them. search: Ctrl+F (D186);
+-- typed: the keys written in the search field, counted so that they act as keys do (the pointer's light off, D100).
 M.COUNTS = { "toggle", "escape", "up", "down", "left", "right", "enter", "prev", "next", "restore", "descriptions",
-	"top", "bottom", "favorite" }
+	"top", "bottom", "favorite", "search", "typed" }
 local COUNTS = M.COUNTS
 
 -- current: the panel key (Mods Menu's spelling), nil for None. bound[name]: whether that key's bind was made; tried
 -- once per key. pending: a press since the last take(). watched: the keys a wait reads bound; catching: a wait runs;
--- caught: the keys it caught since the last caught(), by the engine's name.
+-- caught: the keys it caught since the last caught(), by the engine's name. typing: the search field takes the keys;
+-- typed: what they wrote since the last typed(); shifted: they are bound with Shift too.
 local P = { current = nil, bound = {}, shared = false, pending = false, n = {}, watched = false, catching = false,
-	caught = {} }
+	caught = {}, typing = false, typed = {}, shifted = false }
 for _, c in ipairs(COUNTS) do P.n[c] = 0 end
 
-local function counter(name)
+local function type_in(ch)
+	if #P.typed < MAX_PENDING then P.typed[#P.typed + 1] = ch end
+	if P.n.typed < MAX_PENDING then P.n.typed, P.pending = P.n.typed + 1, true end
+end
+
+-- A press counted for name; while the field types, written instead when the key writes ch.
+local function counter(name, ch)
 	return function()
+		if ch ~= nil and P.typing then return type_in(ch) end
 		if P.n[name] < MAX_PENDING then
 			P.n[name] = P.n[name] + 1
 			P.pending = true
@@ -59,7 +72,16 @@ local function bind(name, fn, with_modifiers)
 	return true, string.format("not while %s is held (%s)", names, why)
 end
 
--- Escape and the keys of the open panel, bound once whatever the panel key.
+-- A bind of the key called name (UE4SS's) made only while the modifier mod ("SHIFT", "CONTROL") alone is held; whether
+-- it was made.
+local function bind_with(name, mod, fn)
+	local keys, mods = rawget(_G, "Key"), rawget(_G, "ModifierKey")
+	local code, m = keys and keys[name], mods and mods[mod]
+	if code == nil or m == nil then return false end
+	return (pcall(RegisterKeyBind, code, { m }, fn))
+end
+
+-- Escape, Ctrl+F and the keys of the open panel, bound once whatever the panel key.
 local function bind_shared(log)
 	local ok, err = bind("ESCAPE", counter("escape"), true)
 	if not ok then
@@ -68,8 +90,9 @@ local function bind_shared(log)
 		log("Escape is read in the panel, %s", err)
 	end
 	local missed = {}
+	if not bind_with("F", "CONTROL", counter("search")) then missed[1] = "F with Control" end
 	for key, c in pairs(Names.MOVES) do
-		if not bind(key, counter(c), false) then missed[#missed + 1] = key end
+		if not bind(key, counter(c, Names.CHARS[key]), false) then missed[#missed + 1] = key end
 	end
 	if #missed > 0 then
 		table.sort(missed)
@@ -93,7 +116,9 @@ function M.want(name, log)
 	if P.current == nil then return end
 	M.share(log)
 	if P.bound[name] ~= nil then return end
+	local writes = Names.CHARS[Names.UE4SS[name]] ~= nil
 	local ok, err = bind(Names.UE4SS[name], function()
+		if P.typing and writes then return end
 		if P.current == name and P.n.toggle < MAX_PENDING then
 			P.n.toggle = P.n.toggle + 1
 			P.pending = true
@@ -107,16 +132,22 @@ function M.want(name, log)
 	end
 end
 
--- The keys a wait reads (D70): every key Mod Panel can name, bound at the first wait of a key in the game, never
--- before: UE4SS cannot drop a bind, and reads each key bound at each of its turns, on its own thread. A bind adds its
--- key to those caught only while a wait runs, and does nothing else. log(fmt, ...): the panel's lines.
+-- The keys a wait reads (D70): every key Mod Panel can name, bound at the first wait of a key or the first typing in
+-- the game, never before: UE4SS cannot drop a bind, and reads each key bound at each of its turns, on its own thread.
+-- A bind adds its key to those caught while a wait runs, writes it while the field types, and does nothing else.
+-- log(fmt, ...): the panel's lines.
 function M.watch(log)
 	if P.watched then return end
 	P.watched = true
 	local began, missed = os.clock(), {}
 	for _, name in ipairs(Names.KEYS) do
+		local ch = Names.CHARS[Names.UE4SS[name]]
 		local ok = bind(Names.UE4SS[name], function()
-			if P.catching and #P.caught < MAX_PENDING then P.caught[#P.caught + 1] = name end
+			if P.catching then
+				if #P.caught < MAX_PENDING then P.caught[#P.caught + 1] = name end
+			elseif P.typing and ch ~= nil then
+				type_in(ch)
+			end
 		end, false)
 		if not ok then missed[#missed + 1] = name end
 	end
@@ -141,9 +172,47 @@ function M.caught()
 	return t
 end
 
+-- Every key that writes, bound with Shift, once.
+local function shift(log)
+	if P.shifted then return end
+	P.shifted = true
+	local missed = {}
+	for name, ch in pairs(Names.CHARS) do
+		if not bind_with(name, "SHIFT", function() if P.typing then type_in(ch) end end) then
+			missed[#missed + 1] = name
+		end
+	end
+	if #missed > 0 then
+		table.sort(missed)
+		log("panel: these keys type nothing with Shift held, UE4SS cannot watch them: %s", table.concat(missed, ", "))
+	end
+end
+
+-- The search field types (on) or no longer: its keys bound at its first typing (M.watch, then with Shift); what was
+-- typed before dropped. log(fmt, ...): the panel's lines.
+function M.type(on, log)
+	if on then
+		M.watch(log)
+		shift(log)
+	end
+	P.typing = on == true
+	if #P.typed > 0 then P.typed = {} end
+end
+
+-- Whether the search field types: this module alone holds it, its binds acting on it.
+function M.typing() return P.typing end
+
+-- What the keys wrote since the last call, in their order (a character, or "\b" for Backspace), or nil for nothing.
+function M.typed()
+	local t = P.typed
+	if #t == 0 then return nil end
+	P.typed = {}
+	return t
+end
+
 -- The presses since the last call, by count (toggle, escape, up, down, left, right, enter, prev, next, restore,
--- descriptions, and top and bottom, which only the controller gives), or nil when there were none: a frame without a
--- press makes no table.
+-- descriptions, favorite, search, typed, and top and bottom, which only the controller gives), or nil when there were
+-- none: a frame without a press makes no table.
 function M.take()
 	if not P.pending then return nil end
 	P.pending = false

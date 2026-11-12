@@ -17,7 +17,7 @@ local MOVING = { "up", "down", "left", "right", "enter", "prev", "next", "restor
 -- d: nav (mod_panel_nav.lua), changes (mod_panel_changes.lua), capture (mod_panel_capture.lua), controls
 -- (mod_panel_controls.lua), edits (mod_panel_edits.lua), catalog, head (mod_panel_head.lua), state
 -- (mod_panel_state.lua), listing (mod_panel_listing.lua), favorites (mod_panel_favorites.lua), switches
--- (mod_panel_switches.lua), classic() (whether the navigation is Classic now).
+-- (mod_panel_switches.lua), typing (mod_panel_typing.lua), classic() (whether the navigation is Classic now).
 function M.new(d)
 	local nav, changes, capture, controls, head = d.nav, d.changes, d.capture, d.controls, d.head
 	-- over, over_head: the row and the frame's head item under the pointer at the last frame. stale: the mod changed
@@ -196,6 +196,8 @@ function M.new(d)
 	-- page of the Classic navigation, where they come back to the list (D130).
 	function C.frame(k, c, R, now)
 		local was, waiting = nav.mod, capture.waiting()
+		-- The search field types (D186): it takes the keys first, and its text may choose another mod.
+		if not waiting then k, c = d.typing.frame(k, c, R, now) end
 		local all = not waiting and controls.merge(k, c) or nil
 		if waiting then wait(k, R, now) else moves(all, R) end
 		if nav.mod ~= was then

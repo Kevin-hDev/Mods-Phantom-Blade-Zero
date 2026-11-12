@@ -76,6 +76,12 @@ local WORDS = {
 	hide = "Hide",
 	show = "Show",
 	descriptions = "Descriptions",
+	-- The search (D186): the empty field, with its key; the phrases of a list emptied by it; the help while it types.
+	search = "Search  Ctrl+F",
+	search_none = "No mod matches the search.",
+	search_hidden = "The mods that match are hidden: check Mod enabled or Mod disabled.",
+	done = "Done",
+	erase = "Erase",
 }
 
 -- The names of the words, for the tests that check every language has each.

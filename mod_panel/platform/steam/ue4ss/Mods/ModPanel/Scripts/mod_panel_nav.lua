@@ -9,6 +9,10 @@
 -- (D123, D130) has two levels: the list, where each opening starts, Up and Down going through the head and the mods;
 -- the mod's page, entered by Cross, left by Circle or Escape, first row a stop.
 
+local Places = require("mod_panel_places")
+
+local first, place = Places.first, Places.place
+
 local M = {}
 
 -- d: { catalog, listing (mod_panel_listing.lua), rows_of(entry) (the rows a mod's page shows), own (Mod Panel's
@@ -27,22 +31,6 @@ function M.new(d)
 
 	local function choosable(r, i)
 		return i ~= nil and r[i] ~= nil
-	end
-
-	-- The row a page starts on: its first that is not a title, Up reaching a title above it; a title when the page
-	-- shows only titles (every section folded).
-	local function first(r)
-		for i = 1, #r do
-			if r[i].type ~= "heading" then return i end
-		end
-		return r[1] ~= nil and 1 or nil
-	end
-
-	local function place(list, name)
-		for i, entry in ipairs(list) do
-			if entry.name == name then return i end
-		end
-		return nil
 	end
 
 	local function in_list() return N.list and d.classic() end
@@ -210,12 +198,15 @@ function M.new(d)
 	end
 
 	-- The filter changed: a chosen mod it no longer lets through gives way to the first mod listed, or to none (D94).
-	function N.refilter()
+	-- typed: the search changed instead (D186). The chosen mod then stays while the search finds it, as the list keeps
+	-- it (D94, D183) even when the filter hides it; with no mod found, none is chosen and the head is left as it is:
+	-- the Enabled box of D97 answers an empty filter, and chosen after a typo, a second Enter unchecked it (audit 1.0.4).
+	function N.refilter(typed)
 		local entry = N.mod and d.catalog.get(N.mod)
-		if entry ~= nil and d.listing.passes(entry) then return end
+		if entry ~= nil and (typed and d.listing.found(entry) or not typed and d.listing.passes(entry)) then return end
 		local list = d.listing.list(nil)
 		if #list > 0 then return choose(list, 1) end
-		none()
+		if typed then N.mod, N.row = nil, nil else none() end
 	end
 
 	function N.rows() return rows() end

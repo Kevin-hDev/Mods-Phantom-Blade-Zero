@@ -46,7 +46,7 @@ function M.new(d)
 	local freeze = Freeze.new(d.report, d.problem)
 	local claim = Claim.new(d.own, d.problem)
 	local close = Closing.new({ commands = commands, controls = controls, freeze = freeze, claim = claim, nav = nav,
-		edits = d.edits, state = d.state, said = d.said, problem = d.problem })
+		edits = d.edits, state = d.state, said = d.said, problem = d.problem, typing = parts.typing })
 	-- state: "closed", "opening" or "open". taken: the input context tried at this opening, the panel shown at the
 	-- next frame. by_pad: this opening came from the controller's button. frames, longest: this opening's frames and
 	-- its longest. opened: openings in all. ticks: this opening's ticks.

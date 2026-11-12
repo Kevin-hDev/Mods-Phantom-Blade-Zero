@@ -2,17 +2,19 @@
 -- panel's state; the view sets in the game only what changed (mod_panel_view.lua, mod_panel_view_head.lua). The head of
 -- the list (mod_panel_head.lua); the list the filter shows (mod_panel_listing.lua), the mods' titles in the player's
 -- language, each mod's diamond, gold on a favourite (D178), its On/Off switch and its title pale when off (D183), the
--- chosen mod lit, a phrase when none is listed. The chosen mod's rows,
+-- chosen mod lit, a phrase when none is listed, which says when the search found none or the filter hid those it found;
+-- the search field (D186). The chosen mod's rows,
 -- each kind as Mods Menu shows it but a button row, whose value is the button's icon (mod_panel_icons.lua), a change
 -- waiting shown over the file's value, and a row awaiting a key or a button saying so (mod_panel_capture.lua); under
 -- its title, "Settings not saved" while a writing fails. A greyed row in grey, without its arrows (D148); a section's
 -- title with "Show" when folded, "Hide" when open, the rows of a folded section left out (D150).
 -- The descriptions: the chosen head's item, or the chosen row's and the mod's (mod_panel_about.lua). Restore defaults
--- (or Undo), Close with the panel key and Escape, and the help of the last device (mod_panel_hints.lua). The columns
--- where the descriptions shown or hidden want them, with Hide and Show (D90).
+-- (or Undo), Close with the panel key and Escape (neither while the search types), and the help of the last device
+-- (mod_panel_hints.lua). The columns where the descriptions shown or hidden want them, with Hide and Show (D90).
 
 local L = require("mod_panel_layout")
 local Text = require("mod_panel_text")
+local Keys = require("mod_panel_keys")
 local KeyNames = require("mod_panel_key_names")
 local Values = require("mod_panel_values")
 local Words = require("mod_panel_words")
@@ -31,10 +33,10 @@ local M = {}
 -- d: { catalog (the mods read), own (Mod Panel's folder name), changes (mod_panel_changes.lua) and edits
 -- (mod_panel_edits.lua): what the commands changed; capture (mod_panel_capture.lua): the wait for a key; listing
 -- (mod_panel_listing.lua), head (mod_panel_head.lua), folds (mod_panel_folds.lua), favorites
--- (mod_panel_favorites.lua), switches (mod_panel_switches.lua) }.
+-- (mod_panel_favorites.lua), switches (mod_panel_switches.lua), search (mod_panel_search.lua) }.
 function M.new(d)
 	local catalog, own, changes, edits, capture = d.catalog, d.own, d.changes, d.edits, d.capture
-	local S = { lang = "en", close = "", key_shown = nil, back_shown = false }
+	local S = { lang = "en", close = "", key_shown = nil, back_shown = false, typing_shown = false }
 	local looks, heads = {}, {}       -- by row, by head's item: its look, a table used again at each frame
 	local page = Page.new(own, d.folds)
 	local about = About.new({ own = own, changes = changes, capture = capture })
@@ -43,11 +45,13 @@ function M.new(d)
 	local function say(name) return Words.say(name, S.lang) end
 	local function pick(t) return Text.pick(t, S.lang) end
 
-	-- Close and the keys that close: the panel key and Escape, but Escape while it comes back to the list (back).
-	local function close_with(key_label, back)
-		S.key_shown, S.back_shown = key_label, back
+	-- Close and the keys that close: the panel key and Escape, but Escape while it comes back to the list (back), and
+	-- neither while the search types (D186), where Escape erases and a panel key that is a letter types it (audit of
+	-- 1.0.4).
+	local function close_with(key_label, back, typing)
+		S.key_shown, S.back_shown, S.typing_shown = key_label, back, typing
 		local escape = not back and say("escape") or nil
-		local keys = key_label and escape and key_label .. " / " .. escape or key_label or escape
+		local keys = not typing and (key_label and escape and key_label .. " / " .. escape or key_label or escape) or nil
 		S.close = keys and say("close") .. L.FOOTER_GAP .. keys or say("close")
 	end
 
@@ -55,13 +59,13 @@ function M.new(d)
 	-- none).
 	function S.start(lang, key_label)
 		S.lang = lang
-		close_with(key_label, false)
+		close_with(key_label, false, false)
 	end
 
 	-- The panel key's name now, ten times a second while the panel is open: Close made again when it changed (audit of
 	-- 0.4.3: the key changed in the panel worked, and Close said the old one until the next opening).
 	function S.key_now(key_label)
-		if key_label ~= S.key_shown then close_with(key_label, S.back_shown) end
+		if key_label ~= S.key_shown then close_with(key_label, S.back_shown, S.typing_shown) end
 	end
 
 	-- The look of a row of value v (k: a table used again); word: what an action row says now (nil for "Run"), or
@@ -135,7 +139,10 @@ function M.new(d)
 	-- now, the clock; back, whether Escape and Circle come back to the list }.
 	function S.paint(state)
 		Icons.use(state.icons)
-		if (state.back == true) ~= S.back_shown then close_with(S.key_shown, state.back == true) end
+		local typing = Keys.typing()
+		if (state.back == true) ~= S.back_shown or typing ~= S.typing_shown then
+			close_with(S.key_shown, state.back == true, typing)
+		end
 		local list = d.listing.list(state.mod)
 		local chosen = state.mod and catalog.get(state.mod) or nil
 		local rows = chosen and S.rows_of(chosen) or {}
@@ -148,7 +155,10 @@ function M.new(d)
 			or chosen and about.of(chosen, row, v, state.now, S.lang) or ""
 		View.texts(say("title"), count, chosen and pick(chosen.title) or "", sub, about, S.close)
 		paint_head(state.head)
-		ViewHead.empty(say("empty"), #list == 0)
+		local search = d.search
+		ViewHead.search(search.text(), typing, say("search"))
+		local empty = not search.active() and "empty" or d.listing.hidden() > 0 and "search_hidden" or "search_none"
+		ViewHead.empty(say(empty), #list == 0)
 		local on_word, off_word = say("on"), say("off")
 		for i, entry in ipairs(list) do
 			local sw, locked = d.switches.look(entry)
@@ -171,7 +181,7 @@ function M.new(d)
 		View.hide_from(#rows + 1, #list + 1)
 		local label = chosen and changes.label(chosen, S.all_rows_of(chosen))
 		View.restore(label and say(label), state.on_restore)
-		local keys, pad, words = Hints.lines(S.lang, label, state.back)
+		local keys, pad, words = Hints.lines(S.lang, label, state.back, typing)
 		View.hints(keys, pad, words, Hints.device())
 		View.backdrop(state.opacity, state.color)
 		ViewHead.columns(state.descriptions, say("hide"), say("show"), state.lit)

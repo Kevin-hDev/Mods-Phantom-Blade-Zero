@@ -73,6 +73,15 @@ M.FAVORITE_FILE = "Icons/favorite.png"
 M.FAVORITE_ICON = "/Game/PBZContent/UI/InGame/Quest/T_Track_Story.T_Track_Story"
 M.FAVORITE_SIZE = 24
 M.FAVORITE_PADDING = { Left = 0, Top = 0, Right = 10, Bottom = 0 }
+-- The search (D186), right of the list's title on its line, its foot on the title's: the magnifier and the cross are
+-- Mod Panel's own drawings, white, read as the diamond is; the line under the field pale, lit while it types, as the
+-- drawings; the caret after the text while it types.
+M.SEARCH_FILE, M.CLEAR_FILE = "Icons/search.png", "Icons/clear.png"
+M.SEARCH_ICON_SIZE, M.CLEAR_SIZE, M.SEARCH_LINE_HEIGHT = 20, 14, 1
+M.SEARCH_PADDING = { Left = 24, Top = 0, Right = 0, Bottom = 4 }
+M.SEARCH_ICON_PADDING = { Left = 0, Top = 0, Right = 8, Bottom = 0 }
+M.SEARCH_LINE_PADDING = { Left = 0, Top = 3, Right = 0, Bottom = 0 }
+M.CARET = "|"
 -- The head of the list (D92), its items as high as a mod of the list. Between its arrows, a value of 52 at least holds
 -- "90 %" (49) and "开启" (48), with the model of D87, and as much as the language's On and Off take: "Encendido" ran
 -- over its right arrow (captures of 10 November 2026, D183). "Panel background", measured to fit, was cut in the game
@@ -113,6 +122,8 @@ M.FAVORITE_OFF = { R = 0.073, G = 0.073, B = 0.073, A = 1 }
 M.SWITCH_ON = { R = 0.745, G = 0.479, B = 0.162, A = 1 }
 M.SWITCH_ON_DARK = { R = 0.216, G = 0.102, B = 0.008, A = 1 }
 M.SWITCH_WORD_PADDING = { Left = 6, Top = 0, Right = 6, Bottom = 0 }   -- between the switch's word and its arrows
+-- The search's line and drawings: as pale as a box's square while the field waits, nearly white while it types.
+M.SEARCH_DIM, M.SEARCH_LIT = M.CHECK_EDGE, { R = 1, G = 1, B = 1, A = 0.85 }
 -- The chosen band, faint, on the list's entry under the pointer: lit enough to follow the mouse, never mistaken for the
 -- chosen mod, whose band is whole (D55).
 M.HOVER_OPACITY = 0.3

@@ -31,7 +31,9 @@ function M.new(d)
 	-- waited: a wait ran at the last frame. slowest: this opening's slowest check of the input context, in seconds.
 	local C = { no_context = nil, waited = false, slowest = 0 }
 	local merged = {}                 -- the keys' and the controller's commands of a frame with both, used again
-	local seen = { buttons = nil, button = false }   -- this frame's buttons pressed (nil: none), the panel's button
+	-- This frame's buttons pressed (nil: none), the panel's button, and its player controller while the controller is
+	-- read, for a left click asked by the search alone (C.clicked).
+	local seen = { buttons = nil, button = false, pc = nil }
 
 	-- Whether the controller's button was pressed during this frame.
 	function C.pressed(pc)
@@ -81,7 +83,9 @@ function M.new(d)
 	-- closes it only when it is no command of the panel (D81): Cross chosen for it still selects, and Circle is escape.
 	-- So does the combination, out of a wait (D133).
 	function C.frame(pc, now, waiting)
-		seen.buttons, seen.button = nil, false
+		-- pc first: without the input context the controller is not read, and a click the game got still ends the
+		-- search's typing (C.clicked; audit of 1.0.4).
+		seen.buttons, seen.button, seen.pc = nil, false, pc
 		if not Context.on_now() then return nil, nil end
 		local button = d.pad_button()
 		local read = nil                  -- the panel's button, read in this frame
@@ -123,6 +127,20 @@ function M.new(d)
 	-- The buttons pressed in this frame, by engine name, or nil; and whether the panel's button was.
 	function C.buttons() return seen.buttons end
 	function C.button() return seen.button end
+
+	-- Whether the game got a left click in this frame, out of the controller's mode: a click off the panel's buttons,
+	-- which ends the search's typing (D186; not verified in game). In the controller's mode, that click is a Cross
+	-- CommonUI made, already read with the buttons (discovery 24). Asked of the game only while the field types.
+	function C.clicked()
+		return seen.pc ~= nil and not Input.pad_mode() and Pad.usable() and Pad.pressed(seen.pc, LEFT_CLICK)
+	end
+
+	-- Whether the key called name (the engine's) is held now: a key held in the search field writes again
+	-- (mod_panel_key_repeat.lua; not verified in game). Without the input context, no key reaches the player controller
+	-- (mod_panel_input.lua): the game is not asked then.
+	function C.down(name)
+		return seen.pc ~= nil and Context.on_now() and Pad.down(seen.pc, name)
+	end
 
 	-- -1 or 1 while the controller holds left or right, else nil.
 	function C.side()

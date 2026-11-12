@@ -60,6 +60,23 @@ for i, d in ipairs(DIGITS) do
 end
 for _, name in ipairs(MORE) do add(name) end
 
+-- What each key writes in the search field (D186): a letter in lower case, a digit of the top row or of the number pad,
+-- a space; Backspace erases ("\b", mod_panel_search.lua). CHARS: by UE4SS's name, for its binds (mod_panel_keys.lua);
+-- HELD: the keys that write each, by the engine's name, read held for the repeat (mod_panel_key_repeat.lua, D187).
+M.CHARS, M.HELD = {}, {}
+local function writes(name, ch)
+	M.CHARS[ue4ss_name(name)] = ch
+	M.HELD[ch] = M.HELD[ch] or {}
+	table.insert(M.HELD[ch], name)
+end
+writes("SpaceBar", " ")
+writes("BackSpace", "\b")
+for c in ("ABCDEFGHIJKLMNOPQRSTUVWXYZ"):gmatch(".") do writes(c, c:lower()) end
+for i, d in ipairs(DIGITS) do
+	writes(d, tostring(i - 1))
+	writes("NumPad" .. d, tostring(i - 1))
+end
+
 -- A key as the player reads it ("Page Up", "NumPad 0", "Space Bar", "None"), or nil for a key Mod Panel cannot name.
 -- In another language (lang, one of mod_panel_text.lua's LANGS), the number pad's prefix and None as its file writes
 -- them (mod_panel_langs.lua, ids NumPad and None); the other names stay as they are, there too.

@@ -1,5 +1,6 @@
 -- The mouse in the open panel: the row, the list entry and the head's item under it, a click on an entry, on a row's
--- value, on a head's value or box, on Restore defaults, Close, Hide or Show, an arrow held, a bar the player moved.
+-- value, on a head's value or box, on Restore defaults, Close, Hide or Show, on the search field or its cross (D186),
+-- an arrow held, a bar the player moved.
 -- Each row and entry is asked itself whether the pointer is on it, as Dynamic FOV 1.0.4's rows are in play: 0.1.0 first
 -- asked their box, and found nothing under the pointer in the game (D54). It asks the game only where it must: the item
 -- found at the last read first, as the pointer stays on it from frame to frame; else the items the box shows and one on
@@ -29,16 +30,18 @@ local M = {}
 -- or box clicked; close, restore, hide, show: those buttons clicked; on_close, on_restore: the pointer on them; lit:
 -- "hide" or "show" under the pointer; moved: a row whose bar the player moved, to fraction; mouse_moved: the mouse
 -- itself moved; band: the entry to light, under the pointer while the mouse is in use; pressed: a button, an arrow or
--- a bar under the pointer is held. on_close, on_restore and lit stay off while the mouse is not in use. A table used
--- again at each read.
+-- a bar under the pointer is held. on_close, on_restore and lit stay off while the mouse is not in use. search, clear:
+-- the search field or its cross clicked, on_search: the pointer on either (D186). A table used again at each read.
 local R = { over = nil, entry = nil, pick = nil, fav = nil, switch = nil, flip = nil, arrow = nil, value = false,
 	head = nil, head_arrow = nil,
 	head_click = false, close = false, on_close = false, restore = false, on_restore = false, hide = false,
-	show = false, lit = nil, moved = nil, fraction = nil, mouse_moved = false, band = nil, pressed = false }
+	show = false, lit = nil, moved = nil, fraction = nil, mouse_moved = false, band = nil, pressed = false,
+	search = false, clear = false, on_search = false }
 local held = nil                  -- the button seen pressed at the last read
 local moving = nil                -- the row whose bar moved at the last read
 local last = { row = nil, entry = nil, head = nil }   -- what was under the pointer at the last read
 local CORNERS = { { "hide_button", "hide" }, { "show_button", "show" } }
+local SEARCH = { { "clear_button", "clear" }, { "search_button", "search" } }
 
 -- Named functions for pcall.
 local function hovered(w) return w:IsHovered() end
@@ -110,9 +113,15 @@ local function on_row(i, before)
 	R.value = clicked(r.value, before)
 end
 
--- Close, else Restore defaults while it shows, else Hide or Show, the one that shows, under the pointer when it is on
--- no row, entry nor head's item.
+-- The search's cross while it shows, else its field, else Close, else Restore defaults while it shows, else Hide or
+-- Show, the one that shows, under the pointer when it is on no row, entry nor head's item.
 local function on_buttons(F, before)
+	for _, b in ipairs(SEARCH) do
+		if (b[1] == "search_button" or ViewHead.button_on(b[1])) and is_hovered(F[b[1]]) then
+			R.on_search, R[b[2]] = true, clicked(F[b[1]], before)
+			return
+		end
+	end
 	R.on_close = is_hovered(F.close_button)
 	if R.on_close then
 		R.close = clicked(F.close_button, before)
@@ -171,7 +180,7 @@ function M.read(rows, entries, keyed)
 	R.switch, R.flip = nil, nil
 	R.head, R.head_arrow, R.head_click, R.hide, R.show, R.lit = nil, nil, false, false, false, nil
 	R.close, R.on_close, R.restore, R.on_restore, R.moved, R.fraction = false, false, false, false, nil, nil
-	R.mouse_moved, R.band, R.pressed = false, nil, false
+	R.mouse_moved, R.band, R.pressed, R.search, R.clear, R.on_search = false, nil, false, false, false, false
 	local F = Frame.get()
 	if F == nil then return R end
 	local before = held

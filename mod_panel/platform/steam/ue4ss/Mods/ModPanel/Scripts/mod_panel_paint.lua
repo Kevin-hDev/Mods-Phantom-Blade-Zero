@@ -77,7 +77,18 @@ end
 -- Whether image w shows the icon of the button name for the icons in use.
 function M.icon(sh, w, name) return holds(sh, w, Icons.path(name), Icons.texture, name) end
 
+-- Each of Mod Panel's drawings found and kept by its key, the functions made once; the diamond falls back on the
+-- game's texture (mod_panel_icons.lua).
+local FIND, KEEP = { favorite = Icons.favorite }, {}
+for _, key in ipairs({ "favorite", "search", "clear" }) do
+	FIND[key] = FIND[key] or function(sh) return Icons.from_file(sh, key) end
+	KEEP[key] = function(sh, t) Icons.keep(sh, key, t) end
+end
+
 -- Whether image w shows the favourites' diamond (D178).
-function M.favorite(sh, w) return holds(sh, w, L.FAVORITE_ICON, Icons.favorite, sh, Icons.kept) end
+function M.favorite(sh, w) return holds(sh, w, L.FAVORITE_ICON, FIND.favorite, sh, KEEP.favorite) end
+
+-- Whether image w shows Mod Panel's drawing key, "search" or "clear" (D186).
+function M.drawing(sh, w, key) return holds(sh, w, key, FIND[key], sh, KEEP[key]) end
 
 return M
