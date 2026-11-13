@@ -4,9 +4,11 @@
 -- eased over BLEND seconds, along the screen (CameraProbe pass 4, 4 November 2026). The layer holds in every mode,
 -- dialogues included (seen then): it is set only while the camera is in a managed mode, and taken away in any other
 -- mode and while a cinematic camera has the view. During an execution, main.lua asks for none, in less time.
+-- Since 1.0.11 each of five situations may have its own place (dynamic_fov_settings_place.lua gives them).
 
 local U = require("dynamic_fov_unreal")
 local Modes = require("dynamic_fov_modes")
+local Situations = require("dynamic_fov_situations")
 local Calls = require("dynamic_fov_calls")
 
 local M = {}
@@ -24,9 +26,11 @@ local SIGNATURES = {
 	{ "IsCineCameraActive", {} },
 }
 
--- Addresses only, compared at each use: no game object is kept from one tick to the next.
-local L = { ready = nil, name = nil, camera = nil, mode = nil, managed = false, base = nil, tag = nil,
-	applied = NONE, no_base = false }
+-- Addresses only, compared at each use: no game object is kept from one tick to the next. place: the situation of
+-- the mode the camera is in, nil for a mode the mod leaves alone; situation: the one the last tick placed the view
+-- for, nil when it placed none; want: what that tick was asked (the settings' own table, no game object).
+local L = { ready = nil, name = nil, camera = nil, mode = nil, place = nil, base = nil, tag = nil,
+	applied = NONE, no_base = false, situation = nil, want = nil }
 
 -- Named functions for pcall rather than a new closure at each tick.
 local function get_mode(cam) return cam:GetCurrentCameraMode() end
@@ -61,31 +65,32 @@ end
 local function follow_mode(cam, log)
 	local ok, mode = pcall(get_mode, cam)
 	if not ok or not U.is_valid(mode) then
-		L.mode, L.managed, L.base, L.tag = nil, false, nil, nil
+		L.mode, L.place, L.base, L.tag = nil, nil, nil, nil
 		return
 	end
 	local addr = U.address(mode)
 	if addr ~= nil and addr == L.mode then return end
 	L.mode, L.tag = addr, Modes.tag_of(mode)
-	L.managed = Modes.setting_of(L.tag) ~= nil
+	L.place = Situations.place_of(L.tag)
 	local okb, base = false, nil
-	if L.managed then okb, base = pcall(get_base, mode) end
+	if L.place ~= nil then okb, base = pcall(get_base, mode) end
 	L.base = okb and U.num(base) or nil
-	if L.managed and L.base == nil and not L.no_base then
+	if L.place ~= nil and L.base == nil and not L.no_base then
 		L.no_base = true
 		log("camera position: the distance of %s cannot be read; its distance stays the game's", tostring(L.tag))
 	end
 end
 
--- What the layer should hold now.
+-- What the layer should hold now, and the situation it is for (nil: none, the game's view).
 local function target(cam, want, log)
 	if want == nil then return NONE end
 	follow_mode(cam, log)
-	if not L.managed then return NONE end
+	if L.place == nil then return NONE end
 	local ok, cine = pcall(get_cine, cam)
 	-- A camera that cannot say counts as cinematic: the game's view rather than a wrong one.
 	if not ok or cine ~= false then return NONE end
-	return { distance = (L.base or 0) * want.distance / 100, height = want.height, side = want.side }
+	local place = want.by[L.place]
+	return { distance = (L.base or 0) * place.distance / 100, height = place.height, side = place.side }, L.place
 end
 
 local function differs(a, b)
@@ -97,11 +102,17 @@ local function is_none(t)
 	return not differs(t, NONE)
 end
 
--- At each tick. want: { distance = % of the mode's own, height, side = cm }, or nil while the mod is off or all three
--- are 0. Returns "idle" when nothing was asked of the game, "kept", "set", "failed" or "off" (unknown functions);
--- report(fmt, ...) hears of each change of the layer. blend: the seconds a change takes, BLEND unless given.
+-- At each tick. want: { by = { situation = { distance = % of the mode's own, height, side = cm } }, eased = the
+-- seconds a change of situation takes, or nil }, or nil while the mod is off or every place is 0. Returns "idle"
+-- when nothing was asked of the game, "kept", "set", "failed" or "off" (unknown functions);
+-- report(fmt, ...) hears of each change of the layer. blend: the seconds a change takes; unless given, want.eased
+-- from one situation to another, BLEND for anything else (a setting changed, the place given back or taken away).
 function M.frame(cam, want, log, report, blend)
-	if want == nil and L.applied == NONE then return "idle" end
+	if want == nil and L.applied == NONE then
+		-- An execution begun where the view had no place of its own: its end is no change of situation.
+		L.situation = nil
+		return "idle"
+	end
 	if not U.is_valid(cam) then
 		-- The layer went with its camera.
 		L.camera, L.applied = nil, NONE
@@ -110,14 +121,20 @@ function M.frame(cam, want, log, report, blend)
 	local addr = U.address(cam)
 	if addr ~= L.camera then
 		-- A new camera starts without our layer.
-		L.camera, L.applied, L.mode = addr, NONE, nil
+		L.camera, L.applied, L.mode, L.situation = addr, NONE, nil, nil
 		if want == nil then return "idle" end
 	end
 	if not ready(log) then return "off" end
-	local t = target(cam, want, log)
+	local t, situation = target(cam, want, log)
+	-- Under the same settings as the tick before only: after a setting changed, an execution or a while with no
+	-- place asked, the view is placed in the layer's own time.
+	local eased = want == L.want and situation ~= nil and L.situation ~= nil and situation ~= L.situation
+		and want.eased or nil
+	L.want, L.situation = want, situation
 	if not differs(t, L.applied) then return "kept" end
-	local ok1 = pcall(set_distance, cam, L.name, t.distance, blend or M.BLEND)
-	local ok2 = pcall(set_offset, cam, L.name, { X = 0, Y = t.side, Z = t.height }, blend or M.BLEND)
+	local seconds = blend or eased or M.BLEND
+	local ok1 = pcall(set_distance, cam, L.name, t.distance, seconds)
+	local ok2 = pcall(set_offset, cam, L.name, { X = 0, Y = t.side, Z = t.height }, seconds)
 	if not (ok1 and ok2) then return "failed" end
 	L.applied = is_none(t) and NONE or t
 	if is_none(t) then
@@ -145,7 +162,7 @@ function M.playable(cam, log)
 	if cine == nil then return false, "the camera cannot say whether a cutscene is on" end
 	if cine then return false end
 	local ok, mode = pcall(get_mode, cam)
-	return ok and U.is_valid(mode) and Modes.setting_of(Modes.tag_of(mode)) ~= nil
+	return ok and U.is_valid(mode) and Situations.place_of(Modes.tag_of(mode)) ~= nil
 end
 
 -- Reads the mode's tag and distance again at the next tick: the game may load a mode again at the same address.

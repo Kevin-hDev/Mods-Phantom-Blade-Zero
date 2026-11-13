@@ -1,12 +1,13 @@
 -- Dynamic FOV for Phantom Blade Zero: a field of view for each situation (normal view, sprint, crouch, enemy locked
 -- on), from a preset or the player's own values, the time the view takes to change between them, and where the view
--- sits (distance, height, side). Settings in DynamicFOV.config.json in the mod's folder (dynamic_fov_settings_file.lua),
--- changed in Mod Panel, in Mods Menu (Nexus 149) or by hand; the mod's own panel (dynamic_fov_panel.lua) is off
--- since 1.0.9 (dynamic_fov_panel_switch.lua). Read at each new pawn, and within a second of a change saved in a menu.
+-- sits (distance, height, side; each situation its own since 1.0.11). Settings in DynamicFOV.config.json in the
+-- mod's folder (dynamic_fov_settings_file.lua), changed in Mod Panel, in Mods Menu (Nexus 149) or by hand; the mod's
+-- own panel (dynamic_fov_panel.lua) is off since 1.0.9 (dynamic_fov_panel_switch.lua). Read at each new pawn, and
+-- within a second of a change saved in a menu.
 --
 -- The field of view goes through the camera's modes (dynamic_fov_camera.lua), looked at once a second. The view's
 -- place goes through the camera's layer (dynamic_fov_layer.lua), which must leave a dialogue's view as it starts:
--- while a place is set, the camera's mode is read at each tick, ten times a second; with the three at 0 and the panel
+-- while a place is set, the camera's mode is read at each tick, ten times a second; with every place at 0 and the panel
 -- closed, a tick asks nothing of the game. Everything runs from the player controller's tick, inside UE4SS's lock
 -- (dynamic_fov_driver.lua).
 -- The colours, the clean image and the cinematic look go through the image settings of the camera seen through
@@ -33,7 +34,7 @@ local Comfort = require("dynamic_fov_comfort")
 local ImageLines = require("dynamic_fov_image_lines")
 local Executions = require("dynamic_fov_executions")
 
-local VERSION = "1.0.9"
+local VERSION = "1.0.11"
 local TICK_SECONDS = 0.1          -- a tick: the view's place
 -- Seconds the place takes to go as an execution starts: 0.2 is too abrupt for the eyes (Kevin, 10 November 2026).
 local EXECUTION_BLEND = 0.4
@@ -75,10 +76,7 @@ end)
 -- The settings in use, and the view's place; no place while the mod is off, so the game's view comes back. at_once:
 -- the camera's modes take them at the next tick (a change made in the panel), else at the next look.
 local function use(s, at_once)
-	S.settings, S.position = s, nil
-	if s.enabled and (s.distance ~= 0 or s.height ~= 0 or s.side ~= 0) then
-		S.position = { distance = s.distance, height = s.height, side = s.side }
-	end
+	S.settings, S.position = s, s.enabled and Settings.place(s) or nil
 	camera.use(s, at_once)
 	-- Nothing an execution would give back to the game, nothing watched: the place at 0, the game's fields of view (the
 	-- transition time paces only the field of view, then the same in every view).

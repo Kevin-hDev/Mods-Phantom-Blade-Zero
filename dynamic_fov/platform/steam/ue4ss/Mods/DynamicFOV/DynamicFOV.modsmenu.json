@@ -4,10 +4,10 @@
     "zh-Hans": "动态视野"
   },
   "description": {
-    "en": "A field of view for each situation (normal view, sprint, crouch, lock-on), transition time, camera distance, height and side, comfort options, vivid colours, a clean image and cinematic looks. Cutscenes, dialogues and special moves keep the game's camera.",
-    "zh-Hans": "为不同状态（普通镜头、冲刺、下蹲、锁定敌人）分别设置视野，并可调整过渡时间，以及镜头的距离、高度和左右位置，还有舒适选项，并能让色彩更鲜艳、画面更纯净，还可选用电影色调。过场动画、对话和特殊招式保持游戏原有镜头。"
+    "en": "A field of view for each situation (normal view, sprint, crouch, lock-on), transition time, camera distance, height and side (for every situation, or each its own), comfort options, vivid colours, a clean image and cinematic looks. Cutscenes, dialogues and special moves keep the game's camera.",
+    "zh-Hans": "为不同状态（普通镜头、冲刺、下蹲、锁定敌人）分别设置视野，并可调整过渡时间，以及镜头的距离、高度和左右位置（可通用，也可按状态分别设置），还有舒适选项，并能让色彩更鲜艳、画面更纯净，还可选用电影色调。过场动画、对话和特殊招式保持游戏原有镜头。"
   },
-  "version": "1.0.9",
+  "version": "1.0.11",
   "greyedUnless": {
     "Enabled": true
   },
@@ -93,8 +93,8 @@
         "zh-Hans": "过渡时间"
       },
       "help": {
-        "en": "Seconds the view takes to change from one situation to another, with every preset. The game's is 1.5 (crouching: about 0.3).",
-        "zh-Hans": "视野从一种状态切换到另一种状态所需的秒数，适用于所有预设。游戏原值为 1.5（下蹲时约 0.3）。"
+        "en": "Seconds the view takes to change from one situation to another, with every preset. The game's is 1.5 (crouching: about 0.3). With Per situation on and a situation's row not at 0, the camera position takes the same time from one situation to another.",
+        "zh-Hans": "视野从一种状态切换到另一种状态所需的秒数，适用于所有预设。游戏原值为 1.5（下蹲时约 0.3）。开启“分状态设置”且有任一状态的项不为 0 时，镜头位置在状态之间的切换也使用同样的时间。"
       },
       "default": 1.5
     },
@@ -116,8 +116,8 @@
         "zh-Hans": "距离"
       },
       "help": {
-        "en": "In % of each view's own distance: negative brings the camera closer, positive takes it farther. 0 is the game's. These three rows apply in all four situations; dialogues, cutscenes and special moves keep the game's camera.",
-        "zh-Hans": "按各镜头原有距离的百分比计：负值拉近镜头，正值拉远镜头。0 为游戏原值。这三项在四种状态下通用；对话、过场动画和特殊招式保持游戏原有镜头。"
+        "en": "In % of each view's own distance: negative brings the camera closer, positive takes it farther. 0 is the game's. These three rows apply in every situation; dialogues, cutscenes and special moves keep the game's camera.",
+        "zh-Hans": "按各镜头原有距离的百分比计：负值拉近镜头，正值拉远镜头。0 为游戏原值。这三项在所有状态下通用；对话、过场动画和特殊招式保持游戏原有镜头。"
       },
       "default": 0
     },
@@ -152,6 +152,312 @@
         "zh-Hans": "单位为厘米：正值使镜头右移，负值左移。游戏镜头位于角色右侧，约 -80 时角色位于画面中央。0 为游戏原值。"
       },
       "default": 0
+    },
+    {
+      "type": "heading",
+      "label": {
+        "en": "Position by situation",
+        "zh-Hans": "按状态设置镜头位置"
+      },
+      "collapsed": true
+    },
+    {
+      "key": "PerSituation",
+      "type": "toggle",
+      "label": {
+        "en": "Per situation",
+        "zh-Hans": "分状态设置"
+      },
+      "help": {
+        "en": "On: each row below is added to Distance, Height or Side in its own situation; a row at 0 leaves that situation as those three set it. Once a row below is not 0, the camera takes Transition time to go from one situation's position to another's. Off: the rows below do nothing.",
+        "zh-Hans": "开启：下方各项会在对应状态下叠加到“距离”“高度”“左右位置”上；为 0 时该状态沿用这三项的设置。只要下方有一项不为 0，镜头在不同状态的位置之间切换时就按“过渡时间”移动。关闭：下方各项不起作用。"
+      },
+      "default": false
+    },
+    {
+      "key": "NormalDistance",
+      "type": "number",
+      "min": -50,
+      "max": 100,
+      "step": 5,
+      "label": {
+        "en": "Normal view distance",
+        "zh-Hans": "普通镜头距离"
+      },
+      "help": {
+        "en": "With Per situation on: standing, walking, running and climbing, with no enemy near. Added to Distance, in % of this view's own distance; the two together stay from -50 to 100.",
+        "zh-Hans": "开启“分状态设置”后：站立、行走、奔跑和攀爬时，且附近没有敌人。叠加到“距离”上，按该镜头原有距离的百分比计；两者之和限制在 -50 到 100 之间。"
+      },
+      "default": 0,
+      "greyedUnless": {
+        "PerSituation": true
+      }
+    },
+    {
+      "key": "NormalHeight",
+      "type": "number",
+      "min": -100,
+      "max": 100,
+      "step": 5,
+      "label": {
+        "en": "Normal view height",
+        "zh-Hans": "普通镜头高度"
+      },
+      "help": {
+        "en": "With Per situation on: standing, walking, running and climbing, with no enemy near. Added to Height, in cm; the two together stay from -100 to 100.",
+        "zh-Hans": "开启“分状态设置”后：站立、行走、奔跑和攀爬时，且附近没有敌人。叠加到“高度”上，单位为厘米；两者之和限制在 -100 到 100 之间。"
+      },
+      "default": 0,
+      "greyedUnless": {
+        "PerSituation": true
+      }
+    },
+    {
+      "key": "NormalSide",
+      "type": "number",
+      "min": -200,
+      "max": 200,
+      "step": 5,
+      "label": {
+        "en": "Normal view side",
+        "zh-Hans": "普通镜头左右位置"
+      },
+      "help": {
+        "en": "With Per situation on: standing, walking, running and climbing, with no enemy near. Added to Side, in cm; the two together stay from -200 to 200.",
+        "zh-Hans": "开启“分状态设置”后：站立、行走、奔跑和攀爬时，且附近没有敌人。叠加到“左右位置”上，单位为厘米；两者之和限制在 -200 到 200 之间。"
+      },
+      "default": 0,
+      "greyedUnless": {
+        "PerSituation": true
+      }
+    },
+    {
+      "key": "SprintDistance",
+      "type": "number",
+      "min": -50,
+      "max": 100,
+      "step": 5,
+      "label": {
+        "en": "Sprint distance",
+        "zh-Hans": "冲刺镜头距离"
+      },
+      "help": {
+        "en": "With Per situation on: while sprinting, near enemies too. Added to Distance, in % of this view's own distance; the two together stay from -50 to 100.",
+        "zh-Hans": "开启“分状态设置”后：冲刺时，附近有敌人时也一样。叠加到“距离”上，按该镜头原有距离的百分比计；两者之和限制在 -50 到 100 之间。"
+      },
+      "default": 0,
+      "greyedUnless": {
+        "PerSituation": true
+      }
+    },
+    {
+      "key": "SprintHeight",
+      "type": "number",
+      "min": -100,
+      "max": 100,
+      "step": 5,
+      "label": {
+        "en": "Sprint height",
+        "zh-Hans": "冲刺镜头高度"
+      },
+      "help": {
+        "en": "With Per situation on: while sprinting, near enemies too. Added to Height, in cm; the two together stay from -100 to 100.",
+        "zh-Hans": "开启“分状态设置”后：冲刺时，附近有敌人时也一样。叠加到“高度”上，单位为厘米；两者之和限制在 -100 到 100 之间。"
+      },
+      "default": 0,
+      "greyedUnless": {
+        "PerSituation": true
+      }
+    },
+    {
+      "key": "SprintSide",
+      "type": "number",
+      "min": -200,
+      "max": 200,
+      "step": 5,
+      "label": {
+        "en": "Sprint side",
+        "zh-Hans": "冲刺镜头左右位置"
+      },
+      "help": {
+        "en": "With Per situation on: while sprinting, near enemies too. Added to Side, in cm; the two together stay from -200 to 200.",
+        "zh-Hans": "开启“分状态设置”后：冲刺时，附近有敌人时也一样。叠加到“左右位置”上，单位为厘米；两者之和限制在 -200 到 200 之间。"
+      },
+      "default": 0,
+      "greyedUnless": {
+        "PerSituation": true
+      }
+    },
+    {
+      "key": "CrouchDistance",
+      "type": "number",
+      "min": -50,
+      "max": 100,
+      "step": 5,
+      "label": {
+        "en": "Crouch distance",
+        "zh-Hans": "下蹲镜头距离"
+      },
+      "help": {
+        "en": "With Per situation on: while crouching. Added to Distance, in % of this view's own distance; the two together stay from -50 to 100.",
+        "zh-Hans": "开启“分状态设置”后：下蹲时。叠加到“距离”上，按该镜头原有距离的百分比计；两者之和限制在 -50 到 100 之间。"
+      },
+      "default": 0,
+      "greyedUnless": {
+        "PerSituation": true
+      }
+    },
+    {
+      "key": "CrouchHeight",
+      "type": "number",
+      "min": -100,
+      "max": 100,
+      "step": 5,
+      "label": {
+        "en": "Crouch height",
+        "zh-Hans": "下蹲镜头高度"
+      },
+      "help": {
+        "en": "With Per situation on: while crouching. Added to Height, in cm; the two together stay from -100 to 100.",
+        "zh-Hans": "开启“分状态设置”后：下蹲时。叠加到“高度”上，单位为厘米；两者之和限制在 -100 到 100 之间。"
+      },
+      "default": 0,
+      "greyedUnless": {
+        "PerSituation": true
+      }
+    },
+    {
+      "key": "CrouchSide",
+      "type": "number",
+      "min": -200,
+      "max": 200,
+      "step": 5,
+      "label": {
+        "en": "Crouch side",
+        "zh-Hans": "下蹲镜头左右位置"
+      },
+      "help": {
+        "en": "With Per situation on: while crouching. Added to Side, in cm; the two together stay from -200 to 200.",
+        "zh-Hans": "开启“分状态设置”后：下蹲时。叠加到“左右位置”上，单位为厘米；两者之和限制在 -200 到 200 之间。"
+      },
+      "default": 0,
+      "greyedUnless": {
+        "PerSituation": true
+      }
+    },
+    {
+      "key": "CombatDistance",
+      "type": "number",
+      "min": -50,
+      "max": 100,
+      "step": 5,
+      "label": {
+        "en": "Combat distance",
+        "zh-Hans": "战斗镜头距离"
+      },
+      "help": {
+        "en": "With Per situation on: enemies near and none locked on. The game keeps this view until you move away from them; sprinting takes the sprint's. Added to Distance, in % of this view's own distance; the two together stay from -50 to 100.",
+        "zh-Hans": "开启“分状态设置”后：附近有敌人且未锁定时。在远离敌人之前，游戏会一直保持此镜头；冲刺时则使用冲刺的设置。叠加到“距离”上，按该镜头原有距离的百分比计；两者之和限制在 -50 到 100 之间。"
+      },
+      "default": 0,
+      "greyedUnless": {
+        "PerSituation": true
+      }
+    },
+    {
+      "key": "CombatHeight",
+      "type": "number",
+      "min": -100,
+      "max": 100,
+      "step": 5,
+      "label": {
+        "en": "Combat height",
+        "zh-Hans": "战斗镜头高度"
+      },
+      "help": {
+        "en": "With Per situation on: enemies near and none locked on. The game keeps this view until you move away from them; sprinting takes the sprint's. Added to Height, in cm; the two together stay from -100 to 100.",
+        "zh-Hans": "开启“分状态设置”后：附近有敌人且未锁定时。在远离敌人之前，游戏会一直保持此镜头；冲刺时则使用冲刺的设置。叠加到“高度”上，单位为厘米；两者之和限制在 -100 到 100 之间。"
+      },
+      "default": 0,
+      "greyedUnless": {
+        "PerSituation": true
+      }
+    },
+    {
+      "key": "CombatSide",
+      "type": "number",
+      "min": -200,
+      "max": 200,
+      "step": 5,
+      "label": {
+        "en": "Combat side",
+        "zh-Hans": "战斗镜头左右位置"
+      },
+      "help": {
+        "en": "With Per situation on: enemies near and none locked on. The game keeps this view until you move away from them; sprinting takes the sprint's. Added to Side, in cm; the two together stay from -200 to 200.",
+        "zh-Hans": "开启“分状态设置”后：附近有敌人且未锁定时。在远离敌人之前，游戏会一直保持此镜头；冲刺时则使用冲刺的设置。叠加到“左右位置”上，单位为厘米；两者之和限制在 -200 到 200 之间。"
+      },
+      "default": 0,
+      "greyedUnless": {
+        "PerSituation": true
+      }
+    },
+    {
+      "key": "LockOnDistance",
+      "type": "number",
+      "min": -50,
+      "max": 100,
+      "step": 5,
+      "label": {
+        "en": "Lock-on distance",
+        "zh-Hans": "锁定镜头距离"
+      },
+      "help": {
+        "en": "With Per situation on: with an enemy locked on. Added to Distance, in % of this view's own distance; the two together stay from -50 to 100.",
+        "zh-Hans": "开启“分状态设置”后：锁定敌人时。叠加到“距离”上，按该镜头原有距离的百分比计；两者之和限制在 -50 到 100 之间。"
+      },
+      "default": 0,
+      "greyedUnless": {
+        "PerSituation": true
+      }
+    },
+    {
+      "key": "LockOnHeight",
+      "type": "number",
+      "min": -100,
+      "max": 100,
+      "step": 5,
+      "label": {
+        "en": "Lock-on height",
+        "zh-Hans": "锁定镜头高度"
+      },
+      "help": {
+        "en": "With Per situation on: with an enemy locked on. Added to Height, in cm; the two together stay from -100 to 100.",
+        "zh-Hans": "开启“分状态设置”后：锁定敌人时。叠加到“高度”上，单位为厘米；两者之和限制在 -100 到 100 之间。"
+      },
+      "default": 0,
+      "greyedUnless": {
+        "PerSituation": true
+      }
+    },
+    {
+      "key": "LockOnSide",
+      "type": "number",
+      "min": -200,
+      "max": 200,
+      "step": 5,
+      "label": {
+        "en": "Lock-on side",
+        "zh-Hans": "锁定镜头左右位置"
+      },
+      "help": {
+        "en": "With Per situation on: with an enemy locked on. Added to Side, in cm; the two together stay from -200 to 200.",
+        "zh-Hans": "开启“分状态设置”后：锁定敌人时。叠加到“左右位置”上，单位为厘米；两者之和限制在 -200 到 200 之间。"
+      },
+      "default": 0,
+      "greyedUnless": {
+        "PerSituation": true
+      }
     },
     {
       "type": "heading",

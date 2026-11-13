@@ -9,6 +9,7 @@ local Values = require("dynamic_fov_values")
 local Looks = require("dynamic_fov_looks")
 local Switch = require("dynamic_fov_panel_switch")
 local Text = require("dynamic_fov_settings_text")
+local Place = require("dynamic_fov_settings_place")
 
 local M = {}
 
@@ -25,9 +26,9 @@ M.COLOURS = { "Game", "120", "140", "160", "180", "200" }
 -- How dark the panel's backdrop is, in % (5 November 2026: a little darker than 1.0.2's 55 by default).
 M.OPACITY_MIN, M.OPACITY_MAX, M.OPACITY_STEP = 40, 90, 5
 M.DEFAULTS = { enabled = true, preset = "Default", normal = M.GAME_FOV, sprint = 90, crouch = M.GAME_FOV,
-	lock_on = M.GAME_FOV, transition = 1.5, distance = 0, height = 0, side = 0, steady = false, no_recenter = false,
-	no_pull_back = false, no_shake = false, colours = "Game", clean_image = false, cinematic_look = false,
-	look = Looks.NAMES[1], panel_opacity = 65, panel_key = Hotkey.DEFAULT }
+	lock_on = M.GAME_FOV, transition = 1.5, distance = 0, height = 0, side = 0, per_situation = false, steady = false,
+	no_recenter = false, no_pull_back = false, no_shake = false, colours = "Game", clean_image = false,
+	cinematic_look = false, look = Looks.NAMES[1], panel_opacity = 65, panel_key = Hotkey.DEFAULT }
 -- Each preset moves the four fields of view from the defaults above by the same amount, so the sprint stays wider
 -- than the normal view (values and names chosen on 3 November 2026). Game gives the game's own everywhere, the sprint
 -- too, first in the list (7 November 2026: Default widens the sprint, and no preset gave the game's view). Custom uses
@@ -46,15 +47,8 @@ M.FOV_KEYS = {
 	{ field = "crouch", key = "crouch", name = "Crouch" },
 	{ field = "lock_on", key = "lockon", name = "LockOn" },
 }
--- Where the view sits, the same in the four situations (design decision, 4 November 2026). Distance in % of each
--- mode's own, so the sprint keeps its step back; height and side in cm, side positive to the right (the game's view
--- sits 80 cm right of the character: -80 centres it, CameraProbe pass 4). 0 is the game's view, and no preset
--- changes them.
-M.POSITION_KEYS = {
-	{ field = "distance", key = "distance", name = "Distance", min = -50, max = 100, step = 5 },
-	{ field = "height", key = "height", name = "Height", min = -100, max = 100, step = 5 },
-	{ field = "side", key = "side", name = "Side", min = -200, max = 200, step = 5 },
-}
+-- Where the view sits: the three rows for every situation; each situation's own are in dynamic_fov_settings_place.lua.
+M.POSITION_KEYS = Place.KEYS
 -- The comfort options (1.0.5, chosen on 7 November 2026), the game's camera unless turned on: a mod updated changes no
 -- one's camera unasked. No preset changes them (dynamic_fov_comfort.lua writes them).
 M.COMFORT_KEYS = {
@@ -79,7 +73,7 @@ for _, name in ipairs({ M.ENABLED, M.PRESET, M.TRANSITION, M.PANEL_KEY, M.COLOUR
 	M.SPELLING[name:lower()] = name
 end
 for _, k in ipairs(M.FOV_KEYS) do M.SPELLING[k.key] = k.name end
-for _, k in ipairs(M.POSITION_KEYS) do M.SPELLING[k.key] = k.name end
+for _, name in ipairs(Place.names()) do M.SPELLING[name:lower()] = name end
 for _, k in ipairs(M.COMFORT_KEYS) do M.SPELLING[k.key] = k.name end
 
 M.snap = Values.snap
@@ -129,9 +123,7 @@ function M.resolve(raw, warn)
 	end
 	s.transition = Values.number(raw, M.TRANSITION:lower(), M.TRANSITION, M.DEFAULTS.transition, M.TIME_MIN,
 		M.TIME_MAX, M.TIME_STEP, warn)
-	for _, k in ipairs(M.POSITION_KEYS) do
-		s[k.field] = Values.number(raw, k.key, k.name, M.DEFAULTS[k.field], k.min, k.max, k.step, warn)
-	end
+	Place.resolve(raw, s, M.DEFAULTS, warn)
 	for _, k in ipairs(M.COMFORT_KEYS) do
 		s[k.field] = Values.switch(raw, k.key, k.name, M.DEFAULTS[k.field], warn)
 	end
@@ -159,6 +151,9 @@ function M.colour_factor(s)
 	return percent and percent / 100 or nil
 end
 
+-- What the camera's layer is asked for the view's place, or nil for the game's everywhere.
+M.place = Place.want
+
 -- What the image is asked (dynamic_fov_image.lua): the colours' factor, whether it is cleaned, the cinematic look's
 -- name or nil while it is off; the mod off, the game's image.
 function M.image(s)
@@ -167,9 +162,9 @@ function M.image(s)
 end
 
 -- The file's keys for settings s, as resolve() would read them back: the switch, the preset, the transition, the four
--- fields of view as set under Custom, the place, the comfort options, the image and the look, then the panel's
--- backdrop and key. entries(): those the file holds, in the order the mod writes them; the panel's two only while
--- it can be opened.
+-- fields of view as set under Custom, the place and each situation's own, the comfort options, the image and the
+-- look, then the panel's backdrop and key. entries(): those the file holds, in the order the mod writes them; the
+-- panel's two only while it can be opened.
 function M.raw(s)
 	local raw = { [M.ENABLED:lower()] = s.enabled, [M.PRESET:lower()] = s.preset,
 		[M.TRANSITION:lower()] = s.transition, [M.COLOURS_KEY:lower()] = s.colours,
@@ -177,7 +172,7 @@ function M.raw(s)
 		[M.LOOK_KEY:lower()] = s.look, [M.OPACITY_KEY:lower()] = s.panel_opacity,
 		[M.PANEL_KEY:lower()] = s.panel_key }
 	for _, k in ipairs(M.FOV_KEYS) do raw[k.key] = s.custom[k.field] end
-	for _, k in ipairs(M.POSITION_KEYS) do raw[k.key] = s[k.field] end
+	Place.raw(s, raw)
 	for _, k in ipairs(M.COMFORT_KEYS) do raw[k.key] = s[k.field] end
 	return raw
 end
@@ -186,7 +181,7 @@ function M.entries(s)
 	local raw = M.raw(s)
 	local order = { M.ENABLED, M.PRESET, M.TRANSITION }
 	for _, k in ipairs(M.FOV_KEYS) do order[#order + 1] = k.name end
-	for _, k in ipairs(M.POSITION_KEYS) do order[#order + 1] = k.name end
+	for _, name in ipairs(Place.names()) do order[#order + 1] = name end
 	for _, k in ipairs(M.COMFORT_KEYS) do order[#order + 1] = k.name end
 	for _, name in ipairs({ M.COLOURS_KEY, M.CLEAN_KEY, M.LOOK_ON_KEY, M.LOOK_KEY }) do order[#order + 1] = name end
 	if Switch.ON then

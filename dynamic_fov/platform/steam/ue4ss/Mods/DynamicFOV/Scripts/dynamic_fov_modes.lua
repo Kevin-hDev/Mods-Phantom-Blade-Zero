@@ -5,9 +5,10 @@
 -- through the camera itself (dynamic_fov_layer.lua).
 --
 -- The game may load the modes again as new objects (not seen with CameraProbe): the game's values are kept by mode
--- name, and every scan finds the new objects.
+-- name, and every scan finds the new objects. Which mode takes which setting: dynamic_fov_situations.lua.
 
 local U = require("dynamic_fov_unreal")
+local Situations = require("dynamic_fov_situations")
 
 local M = {}
 
@@ -19,36 +20,6 @@ local MAX_MODES = 512             -- the game has 123; a bound against a camera 
 -- smallest gap between two speeds the menu gives (0.026, between 2.9 s and 3 s).
 local SAME = 1e-3
 M.MAX_MODES, M.SAME = MAX_MODES, SAME   -- the comfort options' scan and comparisons too
-
--- Setting for each managed mode, by its gameplay tag. Seen in play with CameraProbe: ShoulderDefault (standing,
--- walking, running, climbing), Sprint, Crouch, Combat (an enemy near, none locked on: it stays after unlocking, until
--- the player walks away, seen in play on 5 November 2026; CameraProbe also saw it while sprinting) and Combat.Focus (enemy
--- locked on). Combat follows the normal view, so unlocking changes the view at once. One enemy's own combat view
--- (Custom) is seen in play, CameraType.Combat.Custom.PengMeng (the mod's first write to it, 4 November 2026); that
--- each is the view of its kind is not verified. Each follows its kind, so the view does not change from one boss to
--- the next. WeakLockNext is a combat view the game turns to now and then, no enemy locked on: left alone, the mod took
--- the camera's place away and the field of view went back to the game's 75 for one to three seconds, and the camera
--- jumped (seen in play on 5 November 2026); it follows the normal view, as Combat. What brings it in play is not
--- verified.
-local EXACT = {
-	["CameraType.ShoulderDefault"] = "normal",
-	["CameraType.Sprint"] = "sprint",
-	["CameraType.Crouch"] = "crouch",
-	["CameraType.Combat"] = "normal",
-	["CameraType.WeakLockNext"] = "normal",
-	["CameraType.Combat.Focus"] = "lock_on",
-}
--- { prefix, setting }: neither prefix starts the other.
-local PREFIXES = { { "CameraType.Combat.Custom.", "normal" }, { "CameraType.Combat.Focus.Custom.", "lock_on" } }
-
-function M.setting_of(tag)
-	if tag == nil then return nil end
-	if EXACT[tag] ~= nil then return EXACT[tag] end
-	for _, p in ipairs(PREFIXES) do
-		if tag:sub(1, #p[1]) == p[1] then return p[2] end
-	end
-	return nil
-end
 
 -- known[address] = false for a mode the mod leaves alone, or the managed mode's record. game[name] and last[name]: the
 -- game's values and the mod's last written values of a managed mode, kept across loads; reported[name]: the mode's
@@ -153,7 +124,7 @@ function M.scan(camera)
 			if rec and tag_of(mode) ~= rec.tag then rec = nil end
 			if rec == nil then
 				local tag = tag_of(mode)
-				local setting = M.setting_of(tag)
+				local setting = Situations.setting_of(tag)
 				rec = false
 				if setting ~= nil then
 					local okn, name = pcall(function() return mode:GetFullName() end)
